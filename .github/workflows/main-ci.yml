@@ -2,24 +2,21 @@ name: Main CI
 on: [push, pull_request]
 
 jobs:
-  check:
-    name: Check
+  fmt:
+    name: Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: nightly
           override: true
-      - name: Cache cargo dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/
-          key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
+          components: rustfmt
       - uses: actions-rs/cargo@v1
         with:
-          command: check
+          command: fmt
+          args: --all -- --check
 
   test:
     name: Test
@@ -39,41 +36,3 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-
-  fmt:
-    name: Formatting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          components: rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-
-  clippy:
-    name: Linting
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: clippy
-      - name: Cache cargo dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/
-          key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
