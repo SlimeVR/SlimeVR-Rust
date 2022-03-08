@@ -1,0 +1,15 @@
+# consistent with python's black
+max_width = 88
+newline_style = "Native"
+use_try_shorthand = true
+
+# Nightly features
+format_code_in_doc_comments = true
+reorder_impl_items = true
+wrap_comments = true
+normalize_comments = true
+error_on_unformatted = true
+normalize_doc_attributes = true
+
+# Ignore generated files
+ignore =  ["**/*_generated.rs"]
