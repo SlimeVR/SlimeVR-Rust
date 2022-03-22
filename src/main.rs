@@ -1,56 +1,61 @@
+use std::sync::atomic::Ordering;
+use std::sync::{atomic::AtomicBool, Arc};
 use std::time::Duration;
 
 use eyre::{Result, WrapErr};
-use openxr as xr;
+
+use ovr_overlay as ovr;
+
+const OVERLAY_KEY: &'static str = "SLIMEVR_OVERLAY";
+const OVERLAY_DISPLAY_NAME: &'static str = "SlimeVR Overlay";
+
+const WIDTH: usize = 1920;
+const HEIGHT: usize = 1080;
 
 fn main() -> Result<()> {
-    let entry = if let Ok(entry) = xr::Entry::load() {
-        entry
-    } else {
-        xr::Entry::linked()
+    pretty_env_logger::init();
+
+    let stop_signal = Arc::new(AtomicBool::new(false));
+
+    {
+        let stop_signal_copy = stop_signal.clone();
+        ctrlc::set_handler(move || stop_signal_copy.store(true, Ordering::Relaxed)).unwrap();
+    }
+
+    log::info!("Initializing OpenVR context");
+    let context = ovr::Context::init().wrap_err("Failed to initialize OpenVR")?;
+    let mut overlay = context.overlay();
+
+    // Set up overlay
+    let _handle = {
+        let handle = overlay
+            .create_overlay(OVERLAY_KEY, OVERLAY_DISPLAY_NAME)
+            .wrap_err("Failed to create overlay")?;
+
+        // Log some info about the overlay state
+        log::debug!("Visible: {}", overlay.is_visible(handle));
+        log::debug!("Opacity: {}", overlay.opacity(handle)?);
+        log::debug!("Curvature: {}", overlay.curvature(handle)?);
+        log::debug!("Width: {}", overlay.width(handle)?);
+
+        overlay.set_curvature(handle, -1.)?;
+        let white_pixels = vec![255; WIDTH * HEIGHT * 4];
+        overlay
+            .set_raw_data(handle, white_pixels, WIDTH, HEIGHT, 4)
+            .wrap_err("Failed to set raw data")?;
+        overlay
+            .show_overlay(handle)
+            .wrap_err("Failed to show overlay")?;
+
+        handle
     };
 
-    let extensions = entry.enumerate_extensions().unwrap();
-    println!("supported extensions: {:#?}", extensions);
-    let layers = entry.enumerate_layers().unwrap();
-    println!("supported layers: {:?}", layers);
-
-    let instance = entry
-        .create_instance(
-            &xr::ApplicationInfo {
-                application_name: "SlimeVR Overlay",
-                ..Default::default()
-            },
-            &xr::ExtensionSet::default(),
-            &[],
-        )
-        .wrap_err("Failed to create OpenXR instance")?;
-    let instance_props = instance.properties().unwrap();
-    println!(
-        "loaded instance: {} v{}",
-        instance_props.runtime_name, instance_props.runtime_version
-    );
-
-    let system = instance
-        .system(xr::FormFactor::HEAD_MOUNTED_DISPLAY)
-        .wrap_err("Could not create OpenXR System")?;
-    let properties = instance
-        .system_properties(system)
-        .wrap_err("Could not get system properties")?;
-    println!("HMD System properties: {properties:?}");
-
-    // We cannot create the session to read the input actions without initializing
-    // a graphics context
-    // let session = unsafe { instance.create_session(system, info) };
-
-    let left_pose_path = instance
-        .string_to_path("/user/hand/left/input/grip/pose")
-        .wrap_err("Failed to get left hand pose path")?;
-    let right_pose_path = instance
-        .string_to_path("/user/hand/right/input/grip/pose")
-        .wrap_err("Failed to get right hand pose path")?;
-
-    loop {
+    log::info!("Main Loop");
+    while !stop_signal.load(Ordering::Relaxed) {
         std::thread::sleep(Duration::from_millis(1));
     }
+
+    log::info!("Shutting down OpenVR context");
+    unsafe { context.shutdown() };
+    Ok(())
 }
