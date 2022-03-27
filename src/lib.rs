@@ -10,12 +10,7 @@ use ovr_overlay as ovr;
 
 use crate::bone::{Bone, Isometry};
 
-const OVERLAY_KEY: &'static str = "SLIMEVR_OVERLAY";
-const OVERLAY_DISPLAY_NAME: &'static str = "SlimeVR Overlay";
-
-const WIDTH: usize = 1920;
-const HEIGHT: usize = 1080;
-const RADIUS: f32 = 0.05;
+const RADIUS: f32 = 0.01;
 
 pub fn main() -> Result<()> {
     let stop_signal = Arc::new(AtomicBool::new(false));
@@ -29,8 +24,10 @@ pub fn main() -> Result<()> {
     let context = ovr::Context::init().wrap_err("Failed to initialize OpenVR")?;
     let mngr = &mut context.overlay_mngr();
 
+    let mut bone_length = 2. * RADIUS;
+
     // Set up overlay
-    let bone = Bone::new(
+    let mut bone = Bone::new(
         mngr,
         RGBA {
             red: 255,
@@ -41,14 +38,19 @@ pub fn main() -> Result<()> {
         Isometry::default(),
         String::from("Bone"),
         RADIUS,
-        1.,
+        bone_length,
     )
     .wrap_err("Could not create bone")?;
-    bone.set_visibility(mngr, true)?;
+
+    bone.set_visibility(true);
 
     log::info!("Main Loop");
     while !stop_signal.load(Ordering::Relaxed) {
-        std::thread::sleep(Duration::from_millis(1));
+        bone_length *= 2.;
+        bone.set_length(bone_length)?;
+        bone.update_render(mngr)
+            .wrap_err("Could not update render")?;
+        std::thread::sleep(Duration::from_millis(1000));
     }
 
     log::info!("Shutting down OpenVR context");
