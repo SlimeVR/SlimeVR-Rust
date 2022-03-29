@@ -1,6 +1,7 @@
 use crate::RGBA;
 
 use eyre::{eyre, Result, WrapErr};
+use nalgebra::{Isometry3, UnitQuaternion, Vector3};
 use ovr_overlay::overlay::{OverlayHandle, OverlayManager};
 use ovr_overlay::pose::{Matrix3x4, TrackingUniverseOrigin};
 use ovr_overlay::ColorTint;
@@ -34,7 +35,8 @@ impl Bone {
             let overlay = mngr
                 .create_overlay(key, key)
                 .wrap_err("Failed to create overlay")?;
-            mngr.set_curvature(overlay, 1.)
+            // TODO: Figure out workaround for hourglass issue
+            mngr.set_curvature(overlay, 0.)
                 .wrap_err("Failed to set curvature")?;
             mngr.set_raw_data(overlay, &[255u8; 4], 1, 1, 4)
                 .wrap_err("Failed to set raw data")?;
@@ -95,6 +97,8 @@ impl Bone {
         // Set transform
         {
             let mut f = |overlay, iso: &Isometry| -> Result<()> {
+                // let trans_absolute = Matrix3x4::from(nalgebra::Matrix3x4::<f32>::identity().sli);
+                // let mngr.get_transform_absolute(overlay, )?;
                 let homo: nalgebra::Matrix4<f32> = iso.to_homogeneous();
                 let col_major_3x4 = Matrix3x4::from(homo.fixed_rows::<3>(0));
                 mngr.set_transform_absolute(
@@ -106,8 +110,18 @@ impl Bone {
                 Ok(())
             };
 
+            let flipped = {
+                let mut rotation =
+                    UnitQuaternion::from_axis_angle(&Vector3::y_axis(), std::f32::consts::PI);
+                rotation = self.iso.rotation * rotation;
+                Isometry3 {
+                    rotation,
+                    translation: self.iso.translation,
+                }
+            };
+
             f(self.overlays.0, &self.iso)?;
-            f(self.overlays.1, &self.iso)?;
+            f(self.overlays.1, &flipped)?;
         }
 
         Ok(())
