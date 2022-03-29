@@ -36,7 +36,7 @@ impl Bone {
                 .create_overlay(key, key)
                 .wrap_err("Failed to create overlay")?;
             // TODO: Figure out workaround for hourglass issue
-            mngr.set_curvature(overlay, 0.)
+            mngr.set_curvature(overlay, 1.)
                 .wrap_err("Failed to set curvature")?;
             mngr.set_raw_data(overlay, &[255u8; 4], 1, 1, 4)
                 .wrap_err("Failed to set raw data")?;
@@ -96,11 +96,27 @@ impl Bone {
 
         // Set transform
         {
-            let mut f = |overlay, iso: &Isometry| -> Result<()> {
+            let mut f = |overlay, iso: &Isometry, flip: f32| -> Result<()> {
                 // let trans_absolute = Matrix3x4::from(nalgebra::Matrix3x4::<f32>::identity().sli);
                 // let mngr.get_transform_absolute(overlay, )?;
-                let homo: nalgebra::Matrix4<f32> = iso.to_homogeneous();
-                let col_major_3x4 = Matrix3x4::from(homo.fixed_rows::<3>(0));
+
+                let direction = iso.rotation.transform_vector(&Vector3::y_axis());
+                let transform = if direction == Vector3::y_axis().into_inner() || direction == -Vector3::y_axis().into_inner() {
+                    // just use the existing rotation, there won't be any distortion
+                    iso.to_homogeneous().remove_fixed_rows::<1>(3)
+                } else {
+                    // construct rotation matrix from the lengthwise vector of the bone, and the y axis to avoid overlay distortion.
+                    let other_axis = flip * Vector3::<f32>::y_axis().cross(&direction).normalize();
+                    let y_projection = direction.cross(&other_axis).normalize();
+
+                    let new_rotation = nalgebra::Matrix3::from_columns(&[y_projection, direction, other_axis]);
+                    let mut transform = new_rotation.fixed_resize::<3, 4>(0.0);
+                    transform.set_column(3, &iso.translation.vector);
+
+                    transform
+                };
+
+                let col_major_3x4 = Matrix3x4::from(&transform);
                 mngr.set_transform_absolute(
                     overlay,
                     TrackingUniverseOrigin::TrackingUniverseStanding,
@@ -120,8 +136,8 @@ impl Bone {
                 }
             };
 
-            f(self.overlays.0, &self.iso)?;
-            f(self.overlays.1, &flipped)?;
+            f(self.overlays.0, &self.iso, 1.0)?;
+            f(self.overlays.1, &flipped, -1.0)?;
         }
 
         Ok(())
