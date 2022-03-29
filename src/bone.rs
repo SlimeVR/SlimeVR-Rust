@@ -1,10 +1,9 @@
 use crate::RGBA;
 
 use eyre::{eyre, Result, WrapErr};
-use ovr_overlay::{
-    overlay::{OverlayHandle, OverlayManager},
-    ColorTint,
-};
+use ovr_overlay::overlay::{OverlayHandle, OverlayManager};
+use ovr_overlay::pose::{Matrix3x4, TrackingUniverseOrigin};
+use ovr_overlay::ColorTint;
 
 pub type Isometry = nalgebra::Isometry3<f32>;
 
@@ -95,10 +94,20 @@ impl Bone {
 
         // Set transform
         {
-            let homo = self.iso.to_homogeneous();
+            let mut f = |overlay, iso: &Isometry| -> Result<()> {
+                let homo: nalgebra::Matrix4<f32> = iso.to_homogeneous();
+                let col_major_3x4 = Matrix3x4::from(homo.fixed_rows::<3>(0));
+                mngr.set_transform_absolute(
+                    overlay,
+                    TrackingUniverseOrigin::TrackingUniverseStanding,
+                    &col_major_3x4,
+                )
+                .wrap_err("Failed to set transform")?;
+                Ok(())
+            };
 
-            // TODO: Set position
-            // TODO: Set rotation
+            f(self.overlays.0, &self.iso)?;
+            f(self.overlays.1, &self.iso)?;
         }
 
         Ok(())

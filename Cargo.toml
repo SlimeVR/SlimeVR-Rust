@@ -7,7 +7,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ovr_overlay = { path = "../ovr_overlay" }
+ovr_overlay = { path = "../ovr_overlay", features = ["nalgebra"] }
 eyre = "0.6"
 ctrlc = "3"
 log = "0.4"
