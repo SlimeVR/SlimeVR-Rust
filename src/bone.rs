@@ -1,6 +1,6 @@
 use crate::RGBA;
 
-use eyre::{eyre, Result, WrapErr};
+use eyre::{Result, WrapErr};
 use nalgebra::{Isometry3, UnitQuaternion, Vector3};
 use ovr_overlay::overlay::{OverlayHandle, OverlayManager};
 use ovr_overlay::pose::{Matrix3x4, TrackingUniverseOrigin};
@@ -8,14 +8,10 @@ use ovr_overlay::ColorTint;
 
 pub type Isometry = nalgebra::Isometry3<f32>;
 
-const WIDTH_PIXELS: usize = 10;
-const MAX_HEIGHT_PIXELS: usize = 10_000;
-
 pub struct Bone {
     overlays: (OverlayHandle, OverlayHandle),
     iso: Isometry,
     color: RGBA,
-    keys: (String, String),
     radius: f32,
     length: f32,
     is_visible: bool,
@@ -48,7 +44,6 @@ impl Bone {
 
         Ok(Self {
             overlays,
-            keys,
             iso: isometry,
             radius,
             length,

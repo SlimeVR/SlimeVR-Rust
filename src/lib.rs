@@ -7,10 +7,10 @@ use std::time::Duration;
 
 use eyre::{Result, WrapErr};
 
-use nalgebra::{Isometry3, SVector, UnitQuaternion, UnitVector3, Vector3};
+use nalgebra::{Isometry3, SVector, UnitQuaternion, Vector3};
 use ovr_overlay as ovr;
 
-use crate::bone::{Bone, Isometry};
+use crate::bone::Bone;
 
 const RADIUS: f32 = 0.01;
 
