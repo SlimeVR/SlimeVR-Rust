@@ -100,16 +100,20 @@ impl Bone {
                 // let trans_absolute = Matrix3x4::from(nalgebra::Matrix3x4::<f32>::identity().sli);
                 // let mngr.get_transform_absolute(overlay, )?;
 
-                let direction = iso.rotation.transform_vector(&Vector3::y_axis());
-                let transform = if direction == Vector3::y_axis().into_inner() || direction == -Vector3::y_axis().into_inner() {
+                // our y axis/y basis is along the length of the bone
+                let y_basis = iso.rotation.transform_vector(&Vector3::y_axis());
+                let transform = if y_basis == Vector3::y_axis().into_inner() || y_basis == -Vector3::y_axis().into_inner() {
                     // just use the existing rotation, there won't be any distortion
                     iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 } else {
-                    // construct rotation matrix from the lengthwise vector of the bone, and the y axis to avoid overlay distortion.
-                    let other_axis = flip * Vector3::<f32>::y_axis().cross(&direction).normalize();
-                    let y_projection = direction.cross(&other_axis).normalize();
+                    // construct rotation matrix from the lengthwise vector of the bone, and the y axis to avoid overlay distortion
 
-                    let new_rotation = nalgebra::Matrix3::from_columns(&[y_projection, direction, other_axis]);
+                    // both a basis vector, and an intermediate product in calculating the projection of the y axis via dir.cross(y_axis.cross(dir))
+                    let z_basis = flip * Vector3::<f32>::y_axis().cross(&y_basis).normalize();
+                    // This also happens to be the projection of the world y axis onto the plane perpendicular to the y basis.
+                    let x_basis = y_basis.cross(&z_basis).normalize();
+
+                    let new_rotation = nalgebra::Matrix3::from_columns(&[x_basis, y_basis, z_basis]);
                     let mut transform = new_rotation.fixed_resize::<3, 4>(0.0);
                     transform.set_column(3, &iso.translation.vector);
 
