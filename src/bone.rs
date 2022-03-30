@@ -96,7 +96,7 @@ impl Bone {
 
         // Set transform
         {
-            let mut f = |overlay, iso: &Isometry, flip: f32| -> Result<()> {
+            let mut f = |overlay, mut iso: Isometry, flip: f32| -> Result<()> {
                 // let trans_absolute = Matrix3x4::from(nalgebra::Matrix3x4::<f32>::identity().sli);
                 // let mngr.get_transform_absolute(overlay, )?;
 
@@ -106,6 +106,9 @@ impl Bone {
                     || y_basis == -Vector3::y_axis().into_inner()
                 {
                     // just use the existing rotation, there won't be any distortion
+                    iso.translation.vector +=
+                        iso.rotation
+                            .transform_vector(&Vector3::new(0., 0., -self.radius));
                     iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 } else {
                     // construct rotation matrix from the lengthwise vector of the bone, and the y axis to avoid overlay distortion
@@ -118,7 +121,7 @@ impl Bone {
                     let new_rotation =
                         nalgebra::Matrix3::from_columns(&[x_basis, y_basis, z_basis]);
                     let mut transform = new_rotation.fixed_resize::<3, 4>(0.0);
-                    transform.set_column(3, &iso.translation.vector);
+                    transform.set_column(3, &(iso.translation.vector + z_basis * -self.radius));
 
                     transform
                 };
@@ -143,8 +146,8 @@ impl Bone {
                 }
             };
 
-            f(self.overlays.0, &self.iso, 1.0)?;
-            f(self.overlays.1, &flipped, -1.0)?;
+            f(self.overlays.0, self.iso, 1.0)?;
+            f(self.overlays.1, flipped, -1.0)?;
         }
 
         Ok(())
