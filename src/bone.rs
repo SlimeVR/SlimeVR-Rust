@@ -92,9 +92,6 @@ impl Bone {
         // Set transform
         {
             let mut f = |overlay, mut iso: Isometry, flip: f32| -> Result<()> {
-                // let trans_absolute = Matrix3x4::from(nalgebra::Matrix3x4::<f32>::identity().sli);
-                // let mngr.get_transform_absolute(overlay, )?;
-
                 // our y axis/y basis is along the length of the bone
                 let y_basis = iso.rotation.transform_vector(&Vector3::y_axis());
                 let transform = if y_basis == Vector3::y_axis().into_inner()
@@ -106,11 +103,14 @@ impl Bone {
                             .transform_vector(&Vector3::new(0., 0., -self.radius));
                     iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 } else {
-                    // construct rotation matrix from the lengthwise vector of the bone, and the y axis to avoid overlay distortion
+                    // construct rotation matrix from the lengthwise vector of the bone,
+                    // and the y axis to avoid overlay distortion
 
-                    // both a basis vector, and an intermediate product in calculating the projection of the y axis via dir.cross(y_axis.cross(dir))
+                    // both a basis vector, and an intermediate product in calculating
+                    // the projection of the y axis via dir.cross(y_axis.cross(dir))
                     let z_basis = flip * Vector3::<f32>::y_axis().cross(&y_basis).normalize();
-                    // This also happens to be the projection of the world y axis onto the plane perpendicular to the y basis.
+                    // This also happens to be the projection of the world y axis onto
+                    // the plane perpendicular to the y basis.
                     let x_basis = y_basis.cross(&z_basis).normalize();
 
                     let new_rotation =
