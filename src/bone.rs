@@ -102,7 +102,9 @@ impl Bone {
 
                 // our y axis/y basis is along the length of the bone
                 let y_basis = iso.rotation.transform_vector(&Vector3::y_axis());
-                let transform = if y_basis == Vector3::y_axis().into_inner() || y_basis == -Vector3::y_axis().into_inner() {
+                let transform = if y_basis == Vector3::y_axis().into_inner()
+                    || y_basis == -Vector3::y_axis().into_inner()
+                {
                     // just use the existing rotation, there won't be any distortion
                     iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 } else {
@@ -113,7 +115,8 @@ impl Bone {
                     // This also happens to be the projection of the world y axis onto the plane perpendicular to the y basis.
                     let x_basis = y_basis.cross(&z_basis).normalize();
 
-                    let new_rotation = nalgebra::Matrix3::from_columns(&[x_basis, y_basis, z_basis]);
+                    let new_rotation =
+                        nalgebra::Matrix3::from_columns(&[x_basis, y_basis, z_basis]);
                     let mut transform = new_rotation.fixed_resize::<3, 4>(0.0);
                     transform.set_column(3, &iso.translation.vector);
 
