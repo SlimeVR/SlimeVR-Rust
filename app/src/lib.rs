@@ -1,4 +1,7 @@
+mod client;
+mod codec;
 mod color;
+mod data;
 mod model;
 
 pub use color::RGBA;
