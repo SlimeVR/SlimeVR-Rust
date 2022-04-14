@@ -8,6 +8,7 @@ use ovr_overlay::ColorTint;
 
 pub type Isometry = nalgebra::Isometry3<f32>;
 
+#[derive(Debug)]
 pub struct Bone {
     overlays: (OverlayHandle, OverlayHandle),
     iso: Isometry,
@@ -31,7 +32,6 @@ impl Bone {
             let overlay = mngr
                 .create_overlay(key, key)
                 .wrap_err("Failed to create overlay")?;
-            // TODO: Figure out workaround for hourglass issue
             mngr.set_curvature(overlay, 1.)
                 .wrap_err("Failed to set curvature")?;
             mngr.set_raw_data(overlay, &[255u8; 4], 1, 1, 4)

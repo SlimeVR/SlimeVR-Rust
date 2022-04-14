@@ -16,7 +16,7 @@ jobs:
       - name: Cache cargo dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.cargo/
+          path: ~/.cargo/registry
           key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
       - uses: actions-rs/cargo@v1
         with:
@@ -40,7 +40,7 @@ jobs:
       - name: Cache cargo dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.cargo/
+          path: ~/.cargo/registry
           key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
       - uses: actions-rs/cargo@v1
         with:
