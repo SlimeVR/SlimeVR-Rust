@@ -2,8 +2,8 @@ name: Main CI
 on: [pull_request]
 
 jobs:
-  fmt:
-    name: Formatting
+  linting:
+    name: Linting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -12,11 +12,15 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-          components: rustfmt
+          components: rustfmt, clippy
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-features
 
   test:
     name: Test
