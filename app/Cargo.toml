@@ -21,9 +21,10 @@ pretty_env_logger = "0.4"
 stackvec = "0.2"
 thiserror = "1"
 bytes = "1"
-tokio-util = { version = "0.7", features = ["codec"] }
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.17"
 futures-util = "0.3"
 ouroboros = "0.15"
 slimevr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "4f87d1a5317f777f5080db1d31767491432de424" }
+tokio-stream = "0.1"
+tokio_shutdown = { path = "../crates/tokio_shutdown" }

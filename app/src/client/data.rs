@@ -21,9 +21,18 @@ pub struct Data {
     table: OutboundPacket<'this>,
 }
 impl Data {
-    pub fn new_from_data(data: Vec<u8>) -> Result<Self, DecodeError> {
+    // TODO: add a new function
+
+    pub fn deserialize(data: Vec<u8>) -> Result<Self, DecodeError> {
         Self::try_new(data, |v| flatbuffers::root::<OutboundPacket>(v)).map_err(|e| e.into())
+    }
+
+    pub fn serialize(self) -> Vec<u8> {
+        self.into_heads().data
     }
 }
 
 pub type DataResult = Result<Data, DecodeError>;
+
+// TODO
+pub struct FeedUpdate;

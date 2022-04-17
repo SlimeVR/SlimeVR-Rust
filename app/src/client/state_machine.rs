@@ -1,15 +1,19 @@
-use super::Wss;
-use crate::data::{Data, DataResult};
+use crate::client::{Data, DataResult};
 
-use eyre::{Result, WrapErr};
-use futures_util::{
-    stream::{SplitSink, SplitStream},
-    StreamExt,
-};
-use tokio::sync::mpsc::Sender;
+use eyre::{eyre, Result, WrapErr};
+use futures_util::stream::SplitStream;
+use futures_util::{Sink, SinkExt, StreamExt};
+use tokio::sync::watch;
 use tokio_tungstenite::{connect_async, tungstenite};
 use tungstenite::error::Error as WsError;
 use tungstenite::Message;
+
+use super::data::FeedUpdate;
+use super::Wss;
+
+type DeserializeFn = fn(Result<Message, WsError>) -> Result<Data>;
+type SlimeStream = futures_util::stream::Map<SplitStream<Wss>, DeserializeFn>;
+type SlimeSink = Box<dyn Sink<Data, Error = eyre::Report>>; // Cringe
 
 pub struct ClientStateMachine<State = Disconnected> {
     state: State,
@@ -18,7 +22,7 @@ pub struct ClientStateMachine<State = Disconnected> {
 }
 impl ClientStateMachine {
     /// Creates a new `NetworkStateMachine`. This starts in the [`Disconnected`] state.
-    pub fn new(connect_to: String, sender: Sender<Data>) -> Self {
+    pub fn new(connect_to: String) -> Self {
         Self {
             state: Disconnected,
             connect_to,
@@ -42,43 +46,53 @@ type M<S> = ClientStateMachine<S>;
 /// Client is fully disconnected from the server.
 pub struct Disconnected;
 impl M<Disconnected> {
-    pub async fn connect(self) -> Result<M<ReadyForHandshake>, (Self, eyre::Report)> {
+    pub async fn connect(self) -> Result<M<Connected>, (Self, eyre::Report)> {
         match connect_async(&self.connect_to.clone())
             .await
             .wrap_err("Could not open websocket connection")
         {
-            Ok((socket, _)) => Ok(self.into_state(ReadyForHandshake { socket })),
+            Ok((socket, _)) => {
+                let (sink, stream) = socket.split();
+                async fn serialize(data: Data) -> Result<Message> {
+                    let v = data.serialize();
+                    Ok(Message::Binary(v))
+                }
+                fn deserialize(msg: Result<Message, WsError>) -> Result<Data> {
+                    match msg {
+                        Ok(Message::Binary(v)) => {
+                            Ok(Data::deserialize(v).wrap_err("Invalid message")?)
+                        }
+                        _ => Err(eyre!("Invalid websocket payload type")),
+                    }
+                }
+                let sink = Box::new(sink.with(serialize));
+                let stream: SlimeStream = stream.map(deserialize);
+                Ok(self.into_state(Connected { sink, stream }))
+            }
             Err(e) => Err((self.into_state(Disconnected), e)),
         }
     }
 }
 
-/// Client is connected over websocket but not yet handshaked.
-pub struct ReadyForHandshake {
-    socket: Wss,
+/// Client is connected over websocket
+pub struct Connected {
+    sink: SlimeSink,
+    stream: SlimeStream,
 }
-impl M<ReadyForHandshake> {
-    pub async fn handshake(self) -> Result<M<Connected>, (Self, eyre::Report)> {
+impl M<Connected> {
+    pub async fn request_feed(self) -> Result<M<Active>, (M<Disconnected>, WsError)> {
         todo!()
     }
 }
 
-/// Client is connected and ready to send data
-pub struct Connected {
-    sink: SplitSink<Wss, Message>,
-    stream: SplitStream<Wss>,
+pub struct Active {
+    sink: SlimeSink,
+    stream: SlimeStream,
+    sender: watch::Sender<FeedUpdate>,
 }
-impl M<Connected> {
-    /// Receives data
-    pub async fn recv(mut self) -> RecvResult {
-        if let Some(stream_result) = self.state.stream.next().await {
-            match stream_result {
-                Ok(msg) => RecvResult::Ok(self, Data::new_from_data(msg.into_data())),
-                Err(err) => RecvResult::CriticalError(self.into_state(Disconnected), err),
-            }
-        } else {
-            RecvResult::NoData(self)
-        }
+impl M<Active> {
+    pub async fn recv(self) -> Result<(Self, FeedUpdate), (M<Disconnected>, WsError)> {
+        todo!()
     }
 }
 

@@ -1,115 +1,82 @@
+mod data;
 mod state_machine;
 
-use crate::data::Data;
+use self::data::{Data, DataResult, FeedUpdate};
+use self::state_machine::ClientStateMachine;
 
-use eyre::eyre;
 use eyre::{Result, WrapErr};
-use futures_util::stream::SplitSink;
-use futures_util::stream::SplitStream;
-use futures_util::StreamExt;
+
 use tokio::net::TcpStream;
-use tokio::sync;
-use tokio::sync::oneshot;
+use tokio::sync::watch;
 use tokio::task;
 use tokio::task::JoinHandle;
-use tokio_tungstenite::connect_async;
-use tokio_tungstenite::tungstenite::client::IntoClientRequest;
-use tokio_tungstenite::tungstenite::Message;
+use tokio_shutdown::Listener as ShutdownListener;
 use tokio_tungstenite::MaybeTlsStream;
 use tokio_tungstenite::WebSocketStream;
 
 type Wss = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
-type DisconnectReason = eyre::Report;
-
 pub struct Client {
     socket_task: JoinHandle<Result<()>>,
-    shutdown_signal: sync::oneshot::Sender<()>,
 }
 impl Client {
-    pub async fn new<C>(connect_to: C) -> Result<(Self, sync::mpsc::Receiver<Data>)>
-    where
-        C: IntoClientRequest + Clone + Unpin + Send + Sync + 'static,
-    {
-        let (shutdown_signal, shutdown_signal_recv) = sync::oneshot::channel();
-        let (data_send, data_recv) = sync::mpsc::channel(1);
+    pub fn new(
+        connect_to: String,
+        mut shutdown_signal: ShutdownListener,
+    ) -> Result<(Self, watch::Receiver<Option<FeedUpdate>>)> {
+        let (data_send, data_recv) = watch::channel(None);
 
         let socket_task = task::spawn(async move {
-            let mut shutdown_signal = shutdown_signal_recv;
-            loop {
-                tokio::select! {
-                    _ = &mut shutdown_signal => {
-                        break;
-                    }
-                    else => {
-                        let (socket, _) = connect_async(connect_to.clone())
-                            .await.wrap_err("Could not open websocket connection")?;
-                        if let Err(err) = Self::on_connect(socket, &mut shutdown_signal, data_send.clone()).await {
-                            Self::on_disconnect(err)
-                        }
-                    }
-                }
-            }
+            tokio::select! {
+                _ = shutdown_signal.recv() => {}
+                result = Self::run(connect_to, data_send) => {result?}
+            };
             Ok(())
         });
 
-        Ok((
-            Self {
-                socket_task,
-                shutdown_signal,
-            },
-            data_recv,
-        ))
+        Ok((Self { socket_task }, data_recv))
     }
 
-    async fn on_connect(
-        socket: Wss,
-        mut stop_signal: &mut oneshot::Receiver<()>,
-        mut data_send: sync::mpsc::Sender<Data>,
-    ) -> Result<(), DisconnectReason> {
-        let (mut sink, mut stream): (SplitSink<Wss, Message>, SplitStream<Wss>) = socket.split();
-        // Do initial handshake
-        {
-            //TODO
-        }
+    async fn run(connect_to: String, data_send: watch::Sender<Option<FeedUpdate>>) -> Result<()> {
+        let mut disconnected = Some(ClientStateMachine::new(connect_to));
         loop {
-            tokio::select! {
-                _ = &mut stop_signal => {
-                    return Err(eyre!("Stopped by us"));
-                },
-                msg = stream.next() => {
-                    match msg {
-                        Some(Ok(msg)) => Self::on_msg(&mut sink, &mut data_send, msg)?,
-                        Some(Err(err)) => return Err(err).wrap_err("Tungstenite error")?,
-                        None => {
-                            log::warn!("Remote disconnected!")
-                        }
+            let ready = match disconnected.take().unwrap().connect().await {
+                Ok(ready) => ready,
+                Err((d, err)) => {
+                    log::error!("{}", err.wrap_err("Failed to connect"));
+                    disconnected = Some(d);
+                    continue;
+                }
+            };
+            let active = match ready.request_feed().await {
+                Ok(active) => active,
+                Err((d, err)) => {
+                    log::error!(
+                        "{}",
+                        eyre::Report::new(err).wrap_err("Failed to request feed")
+                    );
+                    disconnected = Some(d);
+                    continue;
+                }
+            };
+            let mut active = Some(active);
+            loop {
+                match active.take().unwrap().recv().await {
+                    Ok((a, update)) => {
+                        active = Some(a);
+                        data_send.send_replace(Some(update));
                     }
-                },
+                    Err((d, err)) => {
+                        log::error!(
+                            "{}",
+                            eyre::Report::new(err).wrap_err("Failed to receive feed")
+                        );
+                        disconnected = Some(d);
+                        break;
+                    }
+                }
             }
         }
-    }
-
-    fn on_msg(
-        sink: &mut SplitSink<Wss, Message>,
-        data_send: &mut sync::mpsc::Sender<Data>,
-        msg: Message,
-    ) -> Result<()> {
-        log::debug!("{}", msg);
-        let v = msg.into_data();
-        let data = Data::new_from_data(v).wrap_err("Failed to deserialize message")?;
-        data_send.try_send(data).ok(); // If we would block, better to return and fetch again
-        Ok(())
-    }
-
-    fn on_disconnect(err: DisconnectReason) {
-        // TODO: Actually handle this
-        log::error!("{}", err);
-    }
-
-    pub async fn shutdown(self) -> Result<()> {
-        drop(self.shutdown_signal);
-        self.socket_task.await.wrap_err("Failed to join!")?
     }
 
     pub async fn join(self) -> Result<()> {
