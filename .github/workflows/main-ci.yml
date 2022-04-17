@@ -13,6 +13,15 @@ jobs:
           toolchain: nightly
           override: true
           components: rustfmt, clippy
+      - name: Cache cargo dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/
+          key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
