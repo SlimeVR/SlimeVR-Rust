@@ -1,4 +1,7 @@
-mod bone;
+mod color;
+mod model;
+
+pub use color::RGBA;
 
 use std::f32::consts::PI;
 use std::sync::atomic::Ordering;
@@ -10,7 +13,7 @@ use eyre::{Result, WrapErr};
 use nalgebra::{Isometry3, SVector, UnitQuaternion, Vector3};
 use ovr_overlay as ovr;
 
-use crate::bone::Bone;
+use crate::model::Bone;
 
 const RADIUS: f32 = 0.01;
 
@@ -73,14 +76,6 @@ pub fn main() -> Result<()> {
     log::info!("Shutting down OpenVR context");
     unsafe { context.shutdown() };
     Ok(())
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub struct RGBA {
-    r: u8,
-    g: u8,
-    b: u8,
-    a: u8,
 }
 
 #[cfg(test)]
