@@ -1,5 +1,5 @@
-# rust-template
-A template for a Rust project. Provides CI, gitignore, and rustfmt.toml out of the box.
+# SlimeVR Overlay
+A SteamVR overlay for rendering the SlimeVR skeletal model from a first person perspective while inside other VR apps.
 
 ## License
 All code in this repository is dual-licensed under either:
