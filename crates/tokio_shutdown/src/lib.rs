@@ -27,7 +27,7 @@ impl<R: Clone, A> Broadcaster<R, A> {
         Self {
             broadcaster: b_sender,
             shutdown_watcher: mpsc_receiver,
-            mpsc_copy: mpsc_sender.clone(),
+            mpsc_copy: mpsc_sender,
         }
     }
 
@@ -58,6 +58,11 @@ impl<R: Clone, A> Broadcaster<R, A> {
             self.broadcaster.send(r).ok();
         }
         self.shutdown_watcher
+    }
+}
+impl<R: Clone, A> Default for Broadcaster<R, A> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
