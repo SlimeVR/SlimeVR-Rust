@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::iter::{Enumerate, Map};
 
 /// Provides a map of `BoneKind` -> `T`.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct BoneMap<T>([T; BoneKind::num_types()]);
 impl<T> BoneMap<T> {
     pub fn new(map: [T; BoneKind::num_types()]) -> Self {

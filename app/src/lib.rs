@@ -13,9 +13,8 @@ use eyre::{Result, WrapErr};
 use nalgebra::{Isometry3, SVector, UnitQuaternion, Vector3};
 use ovr_overlay as ovr;
 
-use crate::model::Bone;
-
-const RADIUS: f32 = 0.01;
+use crate::model::skeleton::SkeletonBuilder;
+use crate::model::BoneKind;
 
 const ROTATION_SPEED: f32 = 2.0 * 2.0 * PI;
 const TRANSLATION_SPEED: f32 = 0.5 * 2.0 * PI;
@@ -33,29 +32,16 @@ pub fn main() -> Result<()> {
     let context = ovr::Context::init().wrap_err("Failed to initialize OpenVR")?;
     let mngr = &mut context.overlay_mngr();
 
-    let bone_length = 1.;
     let mut iso = Isometry3 {
         translation: SVector::from([0., 0., 0.]).into(),
         ..Default::default()
     };
 
     // Set up overlay
-    let mut bone = Bone::new(
-        mngr,
-        RGBA {
-            r: 255,
-            g: 255,
-            b: 0,
-            a: 20,
-        },
-        iso,
-        String::from("Bone"),
-        RADIUS,
-        bone_length,
-    )
-    .wrap_err("Could not create bone")?;
-
-    bone.set_visibility(true);
+    let mut skeleton = SkeletonBuilder::default()
+        .build(mngr)
+        .wrap_err("Could not create skeleton")?;
+    skeleton.set_visibility(true);
 
     log::info!("Main Loop");
     let start_time = std::time::SystemTime::now();
@@ -66,10 +52,14 @@ pub fn main() -> Result<()> {
             UnitQuaternion::from_axis_angle(&Vector3::x_axis(), elapsed * ROTATION_SPEED);
         iso.rotation = rotation;
         iso.translation.vector = SVector::from([(elapsed * TRANSLATION_SPEED).sin(), 0., 0.]);
-        bone.set_isometry(iso);
-        bone.set_length(((elapsed * SIZE_SPEED).cos() + 1.0) * 0.5);
-        bone.update_render(mngr)
-            .wrap_err("Could not update render")?;
+        for bone_kind in BoneKind::iter() {
+            skeleton.set_isometry(bone_kind, iso);
+            skeleton.set_length(bone_kind, ((elapsed * SIZE_SPEED).cos() + 1.0) * 0.5);
+            if let Err(e) = skeleton.update_render(bone_kind, mngr) {
+                log::error!("Error updating render for bone {bone_kind:?}: {}", e);
+            }
+        }
+
         std::thread::sleep(Duration::from_millis(1));
     }
 
