@@ -96,6 +96,10 @@ impl BoneKind {
             WristR => ForearmR,
         })
     }
+
+    pub fn iter() -> std::iter::Map<std::ops::RangeInclusive<u8>, fn(u8) -> BoneKind> {
+        (Self::MIN as u8..=Self::MAX as u8).map(|x| x.try_into().unwrap())
+    }
 }
 impl TryFrom<u8> for BoneKind {
     type Error = ();
