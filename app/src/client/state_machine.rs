@@ -13,7 +13,7 @@ use super::Wss;
 
 type DeserializeFn = fn(Result<Message, WsError>) -> Result<Data>;
 type SlimeStream = futures_util::stream::Map<SplitStream<Wss>, DeserializeFn>;
-type SlimeSink = Box<dyn Sink<Data, Error = eyre::Report>>; // Cringe
+type SlimeSink = Box<dyn Sink<Data, Error = eyre::Report> + Send>; // Cringe
 
 pub struct ClientStateMachine<State = Disconnected> {
     state: State,
@@ -55,9 +55,11 @@ impl M<Disconnected> {
                 let (sink, stream) = socket.split();
                 async fn serialize(data: Data) -> Result<Message> {
                     let v = data.serialize();
+                    log::trace!("Sending serialized data: {v:?}");
                     Ok(Message::Binary(v))
                 }
                 fn deserialize(msg: Result<Message, WsError>) -> Result<Data> {
+                    log::trace!("Received message: {msg:?}");
                     match msg {
                         Ok(Message::Binary(v)) => {
                             Ok(Data::deserialize(v).wrap_err("Invalid message")?)

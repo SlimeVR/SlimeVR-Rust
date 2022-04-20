@@ -10,7 +10,7 @@ use tokio::net::TcpStream;
 use tokio::sync::watch;
 use tokio::task;
 use tokio::task::JoinHandle;
-use tokio_shutdown::Listener as ShutdownListener;
+use tokio_graceful_shutdown::SubsystemHandle;
 use tokio_tungstenite::MaybeTlsStream;
 use tokio_tungstenite::WebSocketStream;
 
@@ -22,13 +22,13 @@ pub struct Client {
 impl Client {
     pub fn new(
         connect_to: String,
-        mut shutdown_signal: ShutdownListener,
+        sub: SubsystemHandle,
     ) -> Result<(Self, watch::Receiver<Option<FeedUpdate>>)> {
         let (data_send, data_recv) = watch::channel(None);
 
         let socket_task = task::spawn(async move {
             tokio::select! {
-                _ = shutdown_signal.recv() => {}
+                _ = sub.on_shutdown_requested() => {}
                 result = Self::run(connect_to, data_send) => {result?}
             };
             Ok(())
