@@ -43,7 +43,7 @@ impl Client {
             let ready = match disconnected.take().unwrap().connect().await {
                 Ok(ready) => ready,
                 Err((d, err)) => {
-                    log::error!("{}", err.wrap_err("Failed to connect"));
+                    log::error!("{:?}", err.wrap_err("Failed to connect"));
                     disconnected = Some(d);
                     continue;
                 }
@@ -52,7 +52,7 @@ impl Client {
                 Ok(active) => active,
                 Err((d, err)) => {
                     log::error!(
-                        "{}",
+                        "{:?}",
                         eyre::Report::new(err).wrap_err("Failed to request feed")
                     );
                     disconnected = Some(d);
@@ -67,10 +67,7 @@ impl Client {
                         data_send.send_replace(Some(update));
                     }
                     Err((d, err)) => {
-                        log::error!(
-                            "{}",
-                            eyre::Report::new(err).wrap_err("Failed to receive feed")
-                        );
+                        log::error!("{:?}", err.wrap_err("Failed to receive feed"));
                         disconnected = Some(d);
                         break;
                     }

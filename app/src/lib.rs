@@ -2,13 +2,13 @@ mod client;
 mod color;
 mod model;
 
+use client::Client;
 pub use color::RGBA;
 
 use crate::model::skeleton::SkeletonBuilder;
 use crate::model::BoneKind;
 
 use eyre::{Result, WrapErr};
-use lazy_static::lazy_static;
 use nalgebra::{Isometry3, SVector, UnitQuaternion, Vector3};
 use ovr_overlay as ovr;
 use std::f32::consts::PI;
@@ -19,6 +19,8 @@ const ROTATION_SPEED: f32 = 2.0 * 2.0 * PI;
 const TRANSLATION_SPEED: f32 = 0.5 * 2.0 * PI;
 const SIZE_SPEED: f32 = 0.25 * 2.0 * PI;
 
+const CONNECT_STR: &'static str = "ws://localhost:21110";
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ShutdownReason {
     CtrlC,
@@ -28,12 +30,13 @@ pub enum ShutdownReason {
 pub async fn main() -> Result<()> {
     Toplevel::new()
         .start("Overlay", overlay)
+        .start("networking", networking)
         .catch_signals()
         .handle_shutdown_requests(Duration::from_millis(1000))
         .await
 }
 
-pub async fn overlay(subsys: SubsystemHandle) -> Result<()> {
+async fn overlay(subsys: SubsystemHandle) -> Result<()> {
     log::info!("Initializing OpenVR context");
     let context = ovr::Context::init().wrap_err("Failed to initialize OpenVR")?;
     let mngr = &mut context.overlay_mngr();
@@ -50,7 +53,7 @@ pub async fn overlay(subsys: SubsystemHandle) -> Result<()> {
 
     log::info!("Main Loop");
     let start_time = std::time::SystemTime::now();
-    let result = tokio::select! {
+    tokio::select! {
         _ = subsys.on_shutdown_requested() => {
             log::debug!("overlay shutdown requested");
         },
@@ -66,7 +69,7 @@ pub async fn overlay(subsys: SubsystemHandle) -> Result<()> {
                     skeleton.set_isometry(bone_kind, iso);
                     skeleton.set_length(bone_kind, ((elapsed * SIZE_SPEED).cos() + 1.0) * 0.5);
                     if let Err(e) = skeleton.update_render(bone_kind, mngr) {
-                        log::error!("Error updating render for bone {bone_kind:?}: {}", e);
+                        log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
                     }
                 }
 
@@ -78,4 +81,13 @@ pub async fn overlay(subsys: SubsystemHandle) -> Result<()> {
     log::info!("Shutting down OpenVR context");
     unsafe { context.shutdown() };
     Ok(())
+}
+
+async fn networking(subsys: SubsystemHandle) -> Result<()> {
+    let (client, mut recv) =
+        Client::new(CONNECT_STR.to_string(), subsys).wrap_err("Failed to start client")?;
+    while let Some(update) = recv.borrow_and_update().as_ref() {
+        log::info!("update: {:?}", update.0.as_slice());
+    }
+    client.join().await
 }

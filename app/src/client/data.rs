@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use solarxr_protocol::flatbuffers;
 use solarxr_protocol::flatbuffers::InvalidFlatbuffer;
 use solarxr_protocol::MessageBundle;
@@ -32,8 +34,12 @@ impl Data {
     pub fn into_vec(self) -> Vec<u8> {
         self.into_heads().data
     }
+
+    pub fn as_slice(&self) -> &[u8] {
+        self.with_data(|v| v.as_slice())
+    }
 }
 
 pub type DataResult = Result<Data, DecodeError>;
 
-pub struct FeedUpdate;
+pub struct FeedUpdate(pub Data);
