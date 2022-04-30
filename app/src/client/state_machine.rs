@@ -1,19 +1,20 @@
+use super::data::FeedUpdate;
+use super::Wss;
 use crate::client::{Data, DataResult};
 
 use eyre::{eyre, Result, WrapErr};
 use futures_util::stream::SplitStream;
 use futures_util::{Sink, SinkExt, StreamExt};
+use solarxr_protocol::flatbuffers::FlatBufferBuilder;
+use solarxr_protocol::{MessageBundle, MessageBundleBuilder};
 use tokio::sync::watch;
 use tokio_tungstenite::{connect_async, tungstenite};
 use tungstenite::error::Error as WsError;
 use tungstenite::Message;
 
-use super::data::FeedUpdate;
-use super::Wss;
-
 type DeserializeFn = fn(Result<Message, WsError>) -> Result<Data>;
 type SlimeStream = futures_util::stream::Map<SplitStream<Wss>, DeserializeFn>;
-type SlimeSink = Box<dyn Sink<Data, Error = eyre::Report> + Send>; // Cringe
+type SlimeSink = Box<dyn Sink<Data, Error = eyre::Report> + Send + Unpin>; // Cringe
 
 pub struct ClientStateMachine<State = Disconnected> {
     state: State,
@@ -54,7 +55,7 @@ impl M<Disconnected> {
             Ok((socket, _)) => {
                 let (sink, stream) = socket.split();
                 async fn serialize(data: Data) -> Result<Message> {
-                    let v = data.serialize();
+                    let v = data.into_vec();
                     log::trace!("Sending serialized data: {v:?}");
                     Ok(Message::Binary(v))
                 }
@@ -62,14 +63,18 @@ impl M<Disconnected> {
                     log::trace!("Received message: {msg:?}");
                     match msg {
                         Ok(Message::Binary(v)) => {
-                            Ok(Data::deserialize(v).wrap_err("Invalid message")?)
+                            Ok(Data::from_vec(v).wrap_err("Invalid message")?)
                         }
                         _ => Err(eyre!("Invalid websocket payload type")),
                     }
                 }
                 let sink = Box::new(sink.with(serialize));
                 let stream: SlimeStream = stream.map(deserialize);
-                Ok(self.into_state(Connected { sink, stream }))
+                Ok(self.into_state(Connected {
+                    sink,
+                    stream,
+                    fbb: FlatBufferBuilder::new(),
+                }))
             }
             Err(e) => Err((self.into_state(Disconnected), e)),
         }
@@ -80,9 +85,43 @@ impl M<Disconnected> {
 pub struct Connected {
     sink: SlimeSink,
     stream: SlimeStream,
+    fbb: FlatBufferBuilder<'static>,
 }
 impl M<Connected> {
-    pub async fn request_feed(self) -> Result<M<Active>, (M<Disconnected>, WsError)> {
+    pub async fn request_feed(mut self) -> Result<M<Active>, (M<Disconnected>, WsError)> {
+        use solarxr_protocol::{
+            data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
+            MessageBundleArgs,
+        };
+        let fbb = &mut self.state.fbb;
+        let data = {
+            let header = DataFeedMessageHeader::create(
+                fbb,
+                &DataFeedMessageHeaderArgs {
+                    ..Default::default()
+                },
+            );
+            let header = fbb.create_vector(&[header]);
+            let root = MessageBundle::create(
+                fbb,
+                &MessageBundleArgs {
+                    data_feed_msgs: Some(header),
+                    ..Default::default()
+                },
+            );
+            fbb.finish(root, None);
+            let v = fbb.finished_data().to_vec();
+
+            #[cfg(not(debug_assertions))]
+            unsafe {
+                Data::from_vec_unchecked(v)
+            }
+            #[cfg(debug_assertions)]
+            Data::from_vec(v).unwrap()
+        };
+
+        self.state.sink.send(data);
+
         todo!()
     }
 }

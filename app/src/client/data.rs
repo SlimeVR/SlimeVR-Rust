@@ -1,6 +1,6 @@
-use slimevr_protocol::flatbuffers;
-use slimevr_protocol::flatbuffers::InvalidFlatbuffer;
-use slimevr_protocol::server::OutboundPacket;
+use solarxr_protocol::flatbuffers;
+use solarxr_protocol::flatbuffers::InvalidFlatbuffer;
+use solarxr_protocol::MessageBundle;
 
 use ouroboros::self_referencing;
 
@@ -18,21 +18,22 @@ pub struct Data {
     data: Vec<u8>,
     #[borrows(data)]
     #[covariant]
-    table: OutboundPacket<'this>,
+    table: MessageBundle<'this>,
 }
 impl Data {
-    // TODO: add a new function
-
-    pub fn deserialize(data: Vec<u8>) -> Result<Self, DecodeError> {
-        Self::try_new(data, |v| flatbuffers::root::<OutboundPacket>(v)).map_err(|e| e.into())
+    pub unsafe fn from_vec_unchecked(data: Vec<u8>) -> Self {
+        Self::new(data, |v| flatbuffers::root_unchecked::<MessageBundle>(v))
     }
 
-    pub fn serialize(self) -> Vec<u8> {
+    pub fn from_vec(data: Vec<u8>) -> Result<Self, DecodeError> {
+        Self::try_new(data, |v| flatbuffers::root::<MessageBundle>(v)).map_err(|e| e.into())
+    }
+
+    pub fn into_vec(self) -> Vec<u8> {
         self.into_heads().data
     }
 }
 
 pub type DataResult = Result<Data, DecodeError>;
 
-// TODO
 pub struct FeedUpdate;
