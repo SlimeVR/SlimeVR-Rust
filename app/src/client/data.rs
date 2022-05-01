@@ -1,5 +1,3 @@
-use std::pin::Pin;
-
 use solarxr_protocol::flatbuffers;
 use solarxr_protocol::flatbuffers::InvalidFlatbuffer;
 use solarxr_protocol::MessageBundle;
@@ -41,8 +39,6 @@ impl Data {
         self.with_data(|v| v.as_slice())
     }
 }
-
-pub type DataResult = Result<Data, DecodeError>;
 
 #[derive(Debug)]
 pub struct FeedUpdate(pub Data);

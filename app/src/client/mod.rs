@@ -3,7 +3,7 @@ mod state_machine;
 
 use crate::client::state_machine::DeserializeError;
 
-pub use self::data::{Data, DataResult, DecodeError, FeedUpdate};
+pub use self::data::{Data, DecodeError, FeedUpdate};
 use self::state_machine::{ClientStateMachine, RecvError};
 
 use eyre::{Result, WrapErr};
@@ -71,7 +71,7 @@ impl Client {
                         data_send.send_replace(Some(update));
                     }
                     Err(err) => {
-                        let display = format!("{:#}", &err);
+                        let display = format!("{}", &err);
                         match err {
                             E::CriticalWs(d, _) => {
                                 log::error!("Critical websocket error: {}", display);
@@ -83,6 +83,7 @@ impl Client {
                                 disconnected = Some(d);
                                 break;
                             }
+                            E::Deserialize(a, DeserializeError::PayloadType(_)) => active = Some(a),
                             E::Deserialize(a, d_err) => {
                                 match d_err {
                                     DeserializeError::PayloadType(_) => log::trace!("{}", d_err),

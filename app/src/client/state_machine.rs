@@ -50,6 +50,7 @@ impl<S> ClientStateMachine<S> {
     }
 }
 
+// Makes things easier to type
 type M<S> = ClientStateMachine<S>;
 
 // ---- The different states of the state machine ----
@@ -152,7 +153,7 @@ impl M<Connected> {
             Ok(()) => Ok(M {
                 common: self.common,
                 state: Active {
-                    sink: self.state.sink,
+                    _sink: self.state.sink,
                     stream: self.state.stream,
                 },
             }),
@@ -167,9 +168,10 @@ impl M<Connected> {
     }
 }
 
+/// Datafeed is active
 #[derive(Debug)]
 pub struct Active {
-    sink: Pin<SlimeSink>,
+    _sink: Pin<SlimeSink>,
     stream: SlimeStream,
 }
 impl M<Active> {
