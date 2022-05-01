@@ -1,8 +1,10 @@
 mod data;
 mod state_machine;
 
-use self::data::{Data, DataResult, FeedUpdate};
-use self::state_machine::ClientStateMachine;
+use crate::client::state_machine::DeserializeError;
+
+pub use self::data::{Data, DataResult, DecodeError, FeedUpdate};
+use self::state_machine::{ClientStateMachine, RecvError};
 
 use eyre::{Result, WrapErr};
 
@@ -43,7 +45,7 @@ impl Client {
             let ready = match disconnected.take().unwrap().connect().await {
                 Ok(ready) => ready,
                 Err((d, err)) => {
-                    log::error!("{:?}", err.wrap_err("Failed to connect"));
+                    log::error!("Error while connecting: {}", err);
                     disconnected = Some(d);
                     continue;
                 }
@@ -61,15 +63,34 @@ impl Client {
             };
             let mut active = Some(active);
             loop {
+                use RecvError as E;
                 match active.take().unwrap().recv().await {
                     Ok((a, update)) => {
+                        log::trace!("Sending data to watchers: {:?}", update);
                         active = Some(a);
                         data_send.send_replace(Some(update));
                     }
-                    Err((d, err)) => {
-                        log::error!("{:?}", err.wrap_err("Failed to receive feed"));
-                        disconnected = Some(d);
-                        break;
+                    Err(err) => {
+                        let display = format!("{:#}", &err);
+                        match err {
+                            E::CriticalWs(d, _) => {
+                                log::error!("Critical websocket error: {}", display);
+                                disconnected = Some(d);
+                                break;
+                            }
+                            E::None(d) => {
+                                log::error!("Critical websocket error: {}", display);
+                                disconnected = Some(d);
+                                break;
+                            }
+                            E::Deserialize(a, d_err) => {
+                                match d_err {
+                                    DeserializeError::PayloadType(_) => log::trace!("{}", d_err),
+                                    _ => log::warn!("Deserialization error: {}", display),
+                                }
+                                active = Some(a);
+                            }
+                        }
                     }
                 }
             }

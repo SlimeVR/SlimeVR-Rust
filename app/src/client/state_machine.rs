@@ -1,25 +1,32 @@
 use super::data::FeedUpdate;
 use super::Wss;
-use crate::client::{Data, DataResult};
+use crate::client::{Data, DecodeError};
 
-use eyre::{eyre, Result, WrapErr};
 use futures_util::stream::SplitStream;
 use futures_util::{Sink, SinkExt, StreamExt};
 use solarxr_protocol::flatbuffers::FlatBufferBuilder;
 use solarxr_protocol::MessageBundle;
+use std::fmt::Debug;
+use std::future;
 use std::pin::Pin;
 use tokio_tungstenite::{connect_async, tungstenite};
 use tungstenite::error::Error as WsError;
 use tungstenite::Message;
 
-type DeserializeFn = fn(Result<Message, WsError>) -> Result<Data>;
+type DeserializeFn = fn(Result<Message, WsError>) -> Result<Data, DeserializeError>;
 type SlimeStream = futures_util::stream::Map<SplitStream<Wss>, DeserializeFn>;
-type SlimeSink = Box<dyn Sink<Data, Error = WsError> + Send>; // Cringe
+
+// The need for this trait object is cringe
+type SlimeSink = Box<dyn SlimeSinkT>;
+trait SlimeSinkT: Sink<Data, Error = WsError> + Send + Debug {}
+impl<T> SlimeSinkT for T where T: Sink<Data, Error = WsError> + Send + Debug {}
 
 /// Data common to all states goes here
+#[derive(Debug)]
 struct Common {
     connect_to: String,
 }
+#[derive(Debug)]
 pub struct ClientStateMachine<State = Disconnected> {
     state: State,
     common: Common,
@@ -47,33 +54,47 @@ type M<S> = ClientStateMachine<S>;
 
 // ---- The different states of the state machine ----
 
+#[derive(thiserror::Error, Debug)]
+pub enum DeserializeError {
+    #[error("Decoding error")]
+    DecodeError(Vec<u8>, #[source] DecodeError),
+    #[error("Payload was an invalid type")]
+    PayloadType(Message),
+    #[error(transparent)]
+    Ws(#[from] WsError),
+}
+
 /// Client is fully disconnected from the server.
+#[derive(Debug)]
 pub struct Disconnected;
 impl M<Disconnected> {
-    pub async fn connect(self) -> Result<M<Connected>, (Self, eyre::Report)> {
-        match connect_async(&self.common.connect_to)
-            .await
-            .wrap_err("Could not open websocket connection")
-        {
+    pub async fn connect(self) -> Result<M<Connected>, (Self, WsError)> {
+        match connect_async(&self.common.connect_to).await {
             Ok((socket, _)) => {
                 let (sink, stream) = socket.split();
-                async fn serialize(data: Data) -> Result<Message, WsError> {
+
+                // We never actually error, but this signature satisfies `sink.with()`
+                // `Ready` is required because otherwise our `Future` won't implement `Debug`
+                fn serialize(data: Data) -> future::Ready<Result<Message, WsError>> {
                     let v = data.into_vec();
                     log::trace!("Sending serialized data: {v:?}");
-                    Ok(Message::Binary(v))
+                    future::ready(Ok(Message::Binary(v)))
                 }
-                fn deserialize(msg: Result<Message, WsError>) -> Result<Data> {
-                    log::trace!("Received message: {msg:?}");
+
+                fn deserialize(msg: Result<Message, WsError>) -> Result<Data, DeserializeError> {
+                    log::trace!("Received ws message: {msg:?}");
+                    use DeserializeError::*;
                     match msg {
                         Ok(Message::Binary(v)) => {
-                            Ok(Data::from_vec(v).wrap_err("Invalid message")?)
+                            Data::from_vec(v).map_err(|e| DecodeError(e.0, e.1))
                         }
-                        Ok(m) => Err(eyre!("Invalid websocket payload type: {m:?}")),
-                        Err(err) => Err(err).wrap_err("Encountered error while deserializing"),
+                        Ok(m) => Err(PayloadType(m)),
+                        Err(err) => Err(Ws(err)),
                     }
                 }
 
-                let sink = Box::pin(sink.with(serialize));
+                let sink = sink.with(serialize);
+                let sink: Pin<Box<dyn SlimeSinkT>> = Box::pin(sink);
                 let stream: SlimeStream = stream.map(deserialize);
                 Ok(self.into_state(Connected {
                     sink,
@@ -87,6 +108,7 @@ impl M<Disconnected> {
 }
 
 /// Client is connected over websocket
+#[derive(Debug)]
 pub struct Connected {
     sink: Pin<SlimeSink>,
     stream: SlimeStream,
@@ -145,27 +167,33 @@ impl M<Connected> {
     }
 }
 
+#[derive(Debug)]
 pub struct Active {
     sink: Pin<SlimeSink>,
     stream: SlimeStream,
 }
 impl M<Active> {
-    pub async fn recv(mut self) -> Result<(Self, FeedUpdate), (M<Disconnected>, eyre::Report)> {
-        let result = self.state.stream.next().await;
-        let result = match result {
-            Some(Ok(v)) => Ok(FeedUpdate(v)),
-            Some(Err(err)) => Err(err).wrap_err("Websocket error while receiving"),
-            None => Err(eyre!("Stream was `None`")),
-        };
-        match result {
-            Ok(d) => Ok((self, d)),
-            Err(err) => Err((self.into_state(Disconnected), err)),
+    pub async fn recv(mut self) -> RecvResult {
+        use RecvError as E;
+        match self.state.stream.next().await {
+            Some(Ok(v)) => Ok((self, FeedUpdate(v))),
+            Some(Err(DeserializeError::Ws(ws_err))) => {
+                Err(E::CriticalWs(self.into_state(Disconnected), ws_err))
+            }
+            Some(Err(err)) => Err(E::Deserialize(self, err)),
+            None => Err(E::None(self.into_state(Disconnected))),
         }
     }
 }
 
-pub enum RecvResult {
-    Ok(M<Connected>, DataResult),
-    NoData(M<Connected>),
-    CriticalError(M<Disconnected>, WsError),
+#[derive(thiserror::Error, Debug)]
+pub enum RecvError {
+    #[error("Critical websocket error: {1}")]
+    CriticalWs(M<Disconnected>, WsError),
+    #[error("Error while deserializing: {1}")]
+    Deserialize(M<Active>, DeserializeError),
+    #[error("Stream produced `None`")]
+    None(M<Disconnected>),
 }
+
+pub type RecvResult = Result<(M<Active>, FeedUpdate), RecvError>;

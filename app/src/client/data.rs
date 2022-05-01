@@ -16,6 +16,7 @@ pub enum DecodeError {
 
 /// Root flatbuffer type, after verification
 #[self_referencing]
+#[derive(Debug)]
 pub struct Data {
     data: Vec<u8>,
     #[borrows(data)]
@@ -27,8 +28,9 @@ impl Data {
         Self::new(data, |v| flatbuffers::root_unchecked::<MessageBundle>(v))
     }
 
-    pub fn from_vec(data: Vec<u8>) -> Result<Self, DecodeError> {
-        Self::try_new(data, |v| flatbuffers::root::<MessageBundle>(v)).map_err(|e| e.into())
+    pub fn from_vec(data: Vec<u8>) -> Result<Self, (Vec<u8>, DecodeError)> {
+        Self::try_new_or_recover(data, |v| flatbuffers::root::<MessageBundle>(v))
+            .map_err(|(e, data)| (data.data, e.into()))
     }
 
     pub fn into_vec(self) -> Vec<u8> {
@@ -42,4 +44,5 @@ impl Data {
 
 pub type DataResult = Result<Data, DecodeError>;
 
+#[derive(Debug)]
 pub struct FeedUpdate(pub Data);
