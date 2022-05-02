@@ -3,10 +3,11 @@ use solarxr_protocol::flatbuffers::InvalidFlatbuffer;
 use solarxr_protocol::MessageBundle;
 
 use ouroboros::self_referencing;
+use std::fmt::Debug;
 
 #[derive(thiserror::Error, Debug)]
 pub enum DecodeError {
-    #[error("Flatbuffer failed verification")]
+    #[error("Flatbuffer failed verification: {0}")]
     FbVerification(#[from] InvalidFlatbuffer),
     // #[error("Io error: {0}")]
     // Io(#[from] std::io::Error),
@@ -14,7 +15,6 @@ pub enum DecodeError {
 
 /// Root flatbuffer type, after verification
 #[self_referencing]
-#[derive(Debug)]
 pub struct Data {
     data: Vec<u8>,
     #[borrows(data)]
@@ -37,6 +37,18 @@ impl Data {
 
     pub fn as_slice(&self) -> &[u8] {
         self.with_data(|v| v.as_slice())
+    }
+
+    pub fn table(&self) -> MessageBundle {
+        *self.borrow_table()
+    }
+}
+
+impl Debug for Data {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Data")
+            .field("table", self.borrow_table())
+            .finish()
     }
 }
 

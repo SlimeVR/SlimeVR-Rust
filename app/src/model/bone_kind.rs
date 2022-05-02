@@ -1,5 +1,6 @@
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::FromPrimitive;
+use solarxr_protocol::datatypes::BodyPart;
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]
@@ -122,5 +123,37 @@ impl From<BoneKind> for u8 {
 impl From<BoneKind> for usize {
     fn from(other: BoneKind) -> Self {
         other as _
+    }
+}
+impl TryFrom<BodyPart> for BoneKind {
+    type Error = ();
+    fn try_from(other: BodyPart) -> Result<Self, Self::Error> {
+        use BodyPart as O;
+        Ok(match other {
+            O::NONE
+            | O::HMD
+            | O::LEFT_CONTROLLER
+            | O::RIGHT_CONTROLLER
+            | O::LEFT_HAND
+            | O::RIGHT_HAND => return Err(()),
+
+            O::NECK => Self::Neck,
+            O::CHEST => Self::Chest,
+            O::WAIST => Self::Waist,
+            O::HIP => Self::Hip,
+            O::LEFT_KNEE => Self::ThighL,
+            O::RIGHT_KNEE => Self::ThighR,
+            O::LEFT_ANKLE => Self::AnkleL,
+            O::RIGHT_ANKLE => Self::AnkleR,
+            O::LEFT_FOOT => Self::FootL,
+            O::RIGHT_FOOT => Self::FootR,
+
+            O::LEFT_FOREARM => Self::ForearmL,
+            O::RIGHT_FOREARM => Self::ForearmR,
+            O::LEFT_UPPER_ARM => Self::UpperArmL,
+            O::RIGHT_UPPER_ARM => Self::UpperArmR,
+
+            O(_) => return Err(()),
+        })
     }
 }

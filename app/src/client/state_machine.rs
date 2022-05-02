@@ -4,6 +4,7 @@ use crate::client::{Data, DecodeError};
 
 use futures_util::stream::SplitStream;
 use futures_util::{Sink, SinkExt, StreamExt};
+use solarxr_protocol::data_feed::DataFeedMessageHeaderBuilder;
 use solarxr_protocol::flatbuffers::FlatBufferBuilder;
 use solarxr_protocol::MessageBundle;
 use std::fmt::Debug;
@@ -57,7 +58,7 @@ type M<S> = ClientStateMachine<S>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum DeserializeError {
-    #[error("Decoding error")]
+    #[error("Decoding error: {1}")]
     DecodeError(Vec<u8>, #[source] DecodeError),
     #[error("Payload was an invalid type")]
     PayloadType(Message),
@@ -83,7 +84,7 @@ impl M<Disconnected> {
                 }
 
                 fn deserialize(msg: Result<Message, WsError>) -> Result<Data, DeserializeError> {
-                    log::trace!("Received ws message: {msg:?}");
+                    log::trace!("Received websocket message");
                     use DeserializeError::*;
                     match msg {
                         Ok(Message::Binary(v)) => {
@@ -123,9 +124,45 @@ impl M<Connected> {
         };
         let fbb = &mut self.state.fbb;
         let data = {
+            use solarxr_protocol::data_feed::tracker::{TrackerDataMask, TrackerDataMaskArgs};
+            use solarxr_protocol::data_feed::{
+                DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
+                StartDataFeedArgs,
+            };
+
+            let tracker_mask = TrackerDataMask::create(
+                fbb,
+                &TrackerDataMaskArgs {
+                    // TODO: We only need the body part here, not the whole TrackerInfo
+                    info: true,
+                    rotation: true,
+                    position: true,
+                    ..Default::default()
+                },
+            );
+
+            let data_feed_config = DataFeedConfig::create(
+                fbb,
+                &DataFeedConfigArgs {
+                    minimum_time_since_last: 10,
+                    data_mask: None, // We don't care about anything but synthetic trackers
+                    synthetic_trackers_mask: Some(tracker_mask),
+                    ..Default::default()
+                },
+            );
+            let data_feed_config = fbb.create_vector(&[data_feed_config]);
+
+            let start_data_feed = StartDataFeed::create(
+                fbb,
+                &StartDataFeedArgs {
+                    data_feeds: Some(data_feed_config),
+                },
+            );
             let header = DataFeedMessageHeader::create(
                 fbb,
                 &DataFeedMessageHeaderArgs {
+                    message_type: DataFeedMessage::StartDataFeed,
+                    message: Some(start_data_feed.as_union_value()),
                     ..Default::default()
                 },
             );

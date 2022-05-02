@@ -66,7 +66,7 @@ impl Client {
                 use RecvError as E;
                 match active.take().unwrap().recv().await {
                     Ok((a, update)) => {
-                        log::trace!("Sending data to watchers: {:?}", update);
+                        log::trace!("Sending data to watchers: {:#?}", update);
                         active = Some(a);
                         data_send.send_replace(Some(update));
                     }
