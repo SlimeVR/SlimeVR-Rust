@@ -6,10 +6,10 @@ pub use self::color::RGBA;
 
 use crate::client::{Client, FeedUpdate};
 use crate::model::skeleton::SkeletonBuilder;
-use crate::model::BoneKind;
+use crate::model::{BoneKind, Isometry};
 
 use eyre::{Result, WrapErr};
-use nalgebra::{Isometry3, SVector, UnitQuaternion, Vector3};
+use nalgebra::{Quaternion, SVector, Translation3, UnitQuaternion, Vector3};
 use ovr_overlay as ovr;
 use std::f32::consts::PI;
 use std::time::Duration;
@@ -54,11 +54,6 @@ async fn overlay(
     let context = ovr::Context::init().wrap_err("Failed to initialize OpenVR")?;
     let mngr = &mut context.overlay_mngr();
 
-    let mut iso = Isometry3 {
-        translation: SVector::from([0., 0., 0.]).into(),
-        ..Default::default()
-    };
-
     let mut skeleton = SkeletonBuilder::default()
         .build(mngr)
         .wrap_err("Could not create skeleton")?;
@@ -73,7 +68,7 @@ async fn overlay(
                 .await
                 .wrap_err("Error while attempting to watch for feed update")?;
 
-            {
+            let trackers = {
                 let guard = recv.borrow_and_update();
                 let table = guard.as_ref().unwrap().0.table();
                 log::trace!("update: {:#?}", table);
@@ -89,28 +84,40 @@ async fn overlay(
                     .filter_map(|t| {
                         let part = t.info()?.body_part();
                         log::trace!("body_part: {part:?}");
-                        let part = BoneKind::try_from(part).ok();
+                        let bone_kind = BoneKind::try_from(part).ok()?;
+                        let pos = if let Some(p) = t.position() {
+                            p
+                        } else {
+                            log::warn!("No position");
+                            return None;
+                        };
+                        let rot = if let Some(r) = t.rotation() {
+                            r
+                        } else {
+                            log::warn!("No rotation");
+                            return None;
+                        };
 
-                        part
+                        let pos = Translation3::new(pos.x(), pos.y(), pos.z());
+                        let rot = UnitQuaternion::from_quaternion(
+                            [rot.x(), rot.y(), rot.z(), rot.w()].into(),
+                        );
+                        Some((bone_kind, pos, rot))
                     })
                     .collect();
                 log::info!("trackers: {trackers:?}");
-            }
-            let elapsed = start_time.elapsed().unwrap().as_secs_f32();
-
-            let rotation =
-                UnitQuaternion::from_axis_angle(&Vector3::x_axis(), elapsed * ROTATION_SPEED);
-            iso.rotation = rotation;
-            iso.translation.vector = SVector::from([(elapsed * TRANSLATION_SPEED).sin(), 0., 0.]);
-            for bone_kind in BoneKind::iter() {
+                trackers
+            };
+            for (bone_kind, pos, rot) in trackers {
+                let iso = Isometry {
+                    rotation: rot,
+                    translation: pos,
+                };
                 skeleton.set_isometry(bone_kind, iso);
-                skeleton.set_length(bone_kind, ((elapsed * SIZE_SPEED).cos() + 1.0) * 0.5);
                 if let Err(e) = skeleton.update_render(bone_kind, mngr) {
                     log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
                 }
             }
-
-            tokio::time::sleep(Duration::from_millis(1)).await;
         }
     };
     tokio::select! {
