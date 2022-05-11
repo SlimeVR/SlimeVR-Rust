@@ -68,7 +68,7 @@ async fn overlay(
                 .await
                 .wrap_err("Error while attempting to watch for feed update")?;
 
-            let trackers = {
+            let trackers: Vec<_> = {
                 let guard = recv.borrow_and_update();
                 let table = guard.as_ref().unwrap().0.table();
                 log::trace!("update: {:#?}", table);
@@ -79,7 +79,7 @@ async fn overlay(
                 let trackers = unwrap_or_continue!(m.synthetic_trackers());
                 log::debug!("Got {} trackers before filtering", trackers.len());
 
-                let trackers: Vec<_> = trackers
+                trackers
                     .iter()
                     .filter_map(|t| {
                         let part = t.info()?.body_part();
@@ -104,10 +104,9 @@ async fn overlay(
                         );
                         Some((bone_kind, pos, rot))
                     })
-                    .collect();
-                log::info!("trackers: {trackers:?}");
-                trackers
+                    .collect()
             };
+            log::trace!("trackers: {trackers:?}");
             for (bone_kind, pos, rot) in trackers {
                 let iso = Isometry {
                     rotation: rot,
