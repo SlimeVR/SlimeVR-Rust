@@ -126,7 +126,7 @@ impl From<BoneKind> for usize {
     }
 }
 impl TryFrom<BodyPart> for BoneKind {
-    type Error = ();
+    type Error = BodyPart;
     fn try_from(other: BodyPart) -> Result<Self, Self::Error> {
         use BodyPart as O;
         Ok(match other {
@@ -135,7 +135,7 @@ impl TryFrom<BodyPart> for BoneKind {
             | O::LEFT_CONTROLLER
             | O::RIGHT_CONTROLLER
             | O::LEFT_HAND
-            | O::RIGHT_HAND => return Err(()),
+            | O::RIGHT_HAND => return Err(other),
 
             O::NECK => Self::Neck,
             O::CHEST => Self::Chest,
@@ -153,7 +153,7 @@ impl TryFrom<BodyPart> for BoneKind {
             O::LEFT_UPPER_ARM => Self::UpperArmL,
             O::RIGHT_UPPER_ARM => Self::UpperArmR,
 
-            O(_) => return Err(()),
+            O(_) => return Err(other),
         })
     }
 }
