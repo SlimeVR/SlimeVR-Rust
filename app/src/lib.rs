@@ -82,9 +82,20 @@ async fn overlay(
                 trackers
                     .iter()
                     .filter_map(|t| {
-                        let part = t.info()?.body_part();
+                        let part = t
+                            .info()
+                            .or_else(|| {
+                                log::warn!("No info field on `TrackerData`");
+                                None
+                            })?
+                            .body_part();
                         log::trace!("body_part: {part:?}");
-                        let bone_kind = BoneKind::try_from(part).ok()?;
+                        let bone_kind = BoneKind::try_from(part)
+                            .or_else(|e| {
+                                log::trace!("Filtering out {e:?}");
+                                Err(e)
+                            })
+                            .ok()?;
                         let pos = if let Some(p) = t.position() {
                             p
                         } else {
@@ -106,7 +117,11 @@ async fn overlay(
                     })
                     .collect()
             };
-            log::trace!("trackers: {trackers:?}");
+            log::debug!(
+                "Trackers after filtering: {:?}",
+                trackers.iter().map(|t| t.0).collect::<Vec<_>>()
+            );
+            log::trace!("Tracker data: {trackers:?}");
             for (bone_kind, pos, rot) in trackers {
                 let iso = Isometry {
                     rotation: rot,
