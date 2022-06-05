@@ -1,0 +1,2 @@
+[workspace]
+members = ["firmware", "skeletal_model", "server"]

@@ -1,0 +1,10 @@
+[package]
+name = "firmware"
+version = "0.0.0"
+
+license = "MIT OR Apache-2.0"
+authors = ["Ryan Butler <thebutlah@gmail.com>"]
+repository = "https://github.com/TheButlah/ferrous_slimevr"
+
+edition = "2021"
+rust-version = "1.61"
