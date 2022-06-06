@@ -1,1 +1,2 @@
-# Default rustfmt settings
+# Adopt python's `black` column limit for easier side-by-side and vim use
+max_width = 88

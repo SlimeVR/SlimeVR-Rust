@@ -11,3 +11,7 @@ rust-version = "1.61"
 
 [dependencies]
 nalgebra = "0.31"
+thiserror = "1"
+derive_more = "0.99"
+petgraph = "0.6"
+daggy = "0.8"
