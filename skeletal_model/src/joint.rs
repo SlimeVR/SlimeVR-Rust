@@ -1,4 +1,4 @@
-use crate::Translation;
+use crate::prelude::*;
 
 /// A `PositionConstraint` represents position as a global translation vector.
 /// It is a constraint because the skeleton will have some [`Joint`]s what have a fixed

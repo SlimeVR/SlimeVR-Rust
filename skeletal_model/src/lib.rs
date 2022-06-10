@@ -1,7 +1,11 @@
-mod bone;
-mod joint;
-mod skeleton;
+//! The SlimeVR skeletal model.
+//!
+//! asdfadsf
+//!
+//!
 
-pub type Isometry = nalgebra::Isometry3<f32>;
-pub type Translation = nalgebra::Translation3<f32>;
-pub type UnitQuat = nalgebra::UnitQuaternion<f32>;
+mod bone;
+pub mod conventions;
+mod joint;
+pub mod prelude;
+mod skeleton;
