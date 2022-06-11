@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::iter::{Enumerate, Map};
 
 /// Provides a map of `BoneKind` -> `T`.
-#[derive(Debug, Default, Clone, Copy, From)]
+#[derive(Debug, Default, Clone, Copy, From, Eq, PartialEq)]
 pub struct BoneMap<T>([T; BoneKind::num_types()]);
 impl<T> BoneMap<T> {
     pub fn new(map: [T; BoneKind::num_types()]) -> Self {
@@ -115,4 +115,32 @@ impl<'a, T> IntoIterator for &'a mut BoneMap<T> {
 
 fn map_idx<T>(item: (usize, T)) -> (BoneKind, T) {
     (BoneKind::try_from(item.0).unwrap(), item.1)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_default() {
+        let zeros = BoneMap::new([0u8; BoneKind::NUM_TYPES]);
+        let ones = BoneMap::new([1u8; BoneKind::NUM_TYPES]);
+        assert_eq!(zeros, BoneMap::default());
+        assert_ne!(ones, BoneMap::default());
+
+        #[derive(Copy, Clone, Eq, PartialEq, Debug)]
+        struct Foo;
+        let nones: BoneMap<Option<Foo>> = BoneMap::new([None; BoneKind::NUM_TYPES]);
+        assert_eq!(nones, BoneMap::default())
+    }
+
+    #[test]
+    fn test_map() {
+        let zeros = BoneMap::new([0u8; BoneKind::NUM_TYPES]);
+
+        let as_u8 = zeros.map(|kind, _| kind as u8);
+        for (kind, _) in zeros.iter() {
+            assert_eq!(kind as u8, as_u8[kind]);
+        }
+    }
 }

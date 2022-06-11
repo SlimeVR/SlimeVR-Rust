@@ -36,6 +36,7 @@ pub fn right_vec() -> Unit<Vector3<f32>> {
 mod tests {
     use crate::prelude::*;
 
+    use approx::assert_relative_eq;
     use nalgebra::Vector3;
     use std::f32::consts::FRAC_PI_2;
 
@@ -45,6 +46,6 @@ mod tests {
         let euler = UnitQuat::from_euler_angles(0., -FRAC_PI_2, 0.);
         let matrix = UnitQuat::look_at_rh(&-Vector3::y_axis(), &-Vector3::z_axis());
 
-        assert_eq!(euler, matrix);
+        assert_relative_eq!(euler, matrix);
     }
 }
