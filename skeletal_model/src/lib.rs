@@ -7,5 +7,10 @@
 mod bone;
 pub mod conventions;
 mod joint;
+mod newtypes;
 pub mod prelude;
-mod skeleton;
+pub mod skeleton;
+
+pub use crate::bone::Bone;
+pub use crate::joint::Joint;
+pub use crate::skeleton::Skeleton;

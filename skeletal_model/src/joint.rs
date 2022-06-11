@@ -1,34 +1,35 @@
 use crate::prelude::*;
 
-/// A `PositionConstraint` represents position as a global translation vector.
-/// It is a constraint because the skeleton will have some [`Joint`]s what have a fixed
-/// position and some joints that have an unknown position, that may or may not have
-/// been solved for.
-///
-/// - It can be `Fixed`, which means the position is constrained to a particular
-///   position.
-/// - It can be `Unsolved` which means the position has been unconstrained, but it has
-///   not yet been solved for.
-/// - It can also be `Solved` which means the position has been solved for based on the
-///   other `Fixed` positions in the skeleton.
-#[derive(Debug, PartialEq)]
-pub enum PositionConstraint {
-    /// Means the position is constrained to a particular position.
-    Fixed(Translation),
-    /// The position has been unconstrained, but it has not yet been solved for.
-    Solved(Translation),
-    /// The position has been solved for based on the other `Fixed` positions in the skeleton.
-    Unsolved,
-}
-impl Default for PositionConstraint {
-    fn default() -> Self {
-        PositionConstraint::Unsolved
-    }
-}
-
-/// Joints represent the pivot points of [`Bone`]s in the skeleton. Pivot points have
-/// positions, but not rotations,
+/// Joints represent the pivot points of [`Bone`]s in the skeleton. Joints have
+/// positions, but not rotations.
 #[derive(Debug, Default)]
 pub struct Joint {
-    global_pos: PositionConstraint,
+    /// Input position in global space. If it is unconstrained, it is `None`.
+    input_pos_g: Option<Global<Point>>,
+    /// The output position of the Joint. Solving the skeleton updates this.
+    output_pos_g: Global<Point>,
+}
+impl Joint {
+    pub fn new() -> Self {
+        Self {
+            input_pos_g: None,
+            output_pos_g: Default::default(),
+        }
+    }
+
+    pub fn input_position(&self) -> Option<&Global<Point>> {
+        self.input_pos_g.as_ref()
+    }
+
+    pub fn input_position_mut(&mut self) -> Option<&mut Global<Point>> {
+        self.input_pos_g.as_mut()
+    }
+
+    pub fn output_position(&self) -> &Global<Point> {
+        &self.output_pos_g
+    }
+
+    pub fn output_position_mut(&mut self) -> &mut Global<Point> {
+        &mut self.output_pos_g
+    }
 }

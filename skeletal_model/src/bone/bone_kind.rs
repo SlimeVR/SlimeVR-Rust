@@ -2,7 +2,6 @@ use crate::prelude::*;
 
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::FromPrimitive;
-use std::f32::consts::FRAC_PI_2;
 
 /// `BoneKind` describes the fixed relationship between the various types of bones, as
 /// well as static, compile-time information about them such as their parents/children,
@@ -106,7 +105,7 @@ impl BoneKind {
 
     /// Returns the initial calibration pose of the bone. Rotating the up vector by
     /// this rotation would cause it to point in the same target direction as the bone.
-    pub const fn calibration_rotation(self) -> Global<UnitQuat> {
+    pub fn calibration_rotation(self) -> Global<UnitQuat> {
         use BoneKind::*;
         Global(match self {
             FootL | FootR => UnitQuat::look_at_rh(&-up_vec(), &forward_vec()),
@@ -116,7 +115,7 @@ impl BoneKind {
 
     /// Returns the initial calibration pose of the bone, as a rotation relative to the
     /// parent bone. See also: [`Self::calibration_rotation`]
-    pub const fn calibration_rotation_local(self) -> Local<UnitQuat> {
+    pub fn calibration_rotation_local(self) -> Local<UnitQuat> {
         let child_rot_g = self.calibration_rotation();
         let parent_rot_g = self.parent().unwrap_or(self).calibration_rotation();
         Local(parent_rot_g.0.rotation_to(&child_rot_g.0))
