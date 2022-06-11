@@ -5,7 +5,8 @@ The skeletal model for SlimeVR.
 ## Goals
 * Should be independent of networking/server
 * Easily embeddable in other applications
-* Support bindings to at least Java, maybe also WASM/Javascript
+* Support bindings to Java, and typescript via
+  [deno_bindgen](https://github.com/denoland/deno_bindgen).
 
 ## Implementation Status
-Doesn't exist yet! 👀
+The basic graph structure is being worked on as we speak.

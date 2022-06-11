@@ -2,8 +2,9 @@
 A rust implementation of [SlimeVR](https://github.com/SlimeVR)
 
 ## Current Status
-Nothing has been implemented yet. If you're really passionate about rust and want to
-make this a reality, feel free to reach out to me on the official SlimeVR discord for questions.
+The [skeletal model](skeletal_model/) is in the early stages of development. If you're
+really passionate about rust and want to make this a reality, feel free to reach out to
+me on the official SlimeVR discord for questions.
 
 ## Motivation
 * Fulfill the Rewrite It In Rust meme
