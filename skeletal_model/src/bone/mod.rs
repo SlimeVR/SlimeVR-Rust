@@ -6,13 +6,14 @@ pub use self::bone_map::BoneMap;
 
 use crate::prelude::*;
 
-/// Bones represent the connections between the [`Joint`]s of the skeleton. Bones have
-/// a global rotation, represented as a unit quaternion. To get a bones position, you
-/// can get the position of either of its two attached `Joint`s.
+/// Bones represent the connections between the [`Joint`](crate::Joint)s of the
+/// skeleton. Bones have a global rotation, represented as a unit quaternion. To
+/// get a bone's position, you can get the position of either of its two attached
+/// `Joint`s.
 ///
 /// Note that by convention, the directionality of bones points towards the top of the
-/// skeleton. So the head of the bone would connect to the tail of a bone closer to
-/// the top of the skeleton. This is simply to give the parent and child of a bone a
+/// skeleton. So the head of the bone would also be the tail of a bone closer to the
+/// top of the skeleton. This is simply to give the parent and child of a bone a
 /// consistent meaning.
 pub struct Bone {
     kind: BoneKind,

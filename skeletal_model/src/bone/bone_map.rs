@@ -6,7 +6,25 @@ use stackvec::{error::IncompleteArrayError, TryCollect, TryFromIterator};
 use std::collections::HashMap;
 use std::iter::{Enumerate, Map};
 
-/// Provides a map of `BoneKind` -> `T`.
+/// Provides a map of `BoneKind` -> `T`. Every possible `BoneKind` must have a
+/// corresponding value.
+///
+/// This is more efficient than a `HashMap`, because it is done without allocation
+/// inline, and the `BoneKind`s don't need to be hashed.
+///
+/// # Example
+///
+/// ```
+/// # use skeletal_model::bone::{BoneMap, BoneKind};
+/// let mut m = BoneMap::new([-1; BoneKind::num_types()]);
+/// let mut i = 0;
+/// for b in BoneKind::iter() {
+///     m[b] = i;
+///     i += 1;
+/// }
+///
+/// assert_eq!(m[BoneKind::Chest], 1)
+/// ```
 #[derive(Debug, Default, Clone, Copy, From, Eq, PartialEq)]
 pub struct BoneMap<T>([T; BoneKind::num_types()]);
 impl<T> BoneMap<T> {

@@ -13,7 +13,10 @@
 //!
 //! # Rotation representation
 //! We use quaternions to represent rotations whenever possible. We try not to use
-//! quaternions in our implementation to avoid possible gimbal lock issues.
+//! euler angles in our implementation to avoid possible gimbal lock issues.
+
+#[allow(unused)]
+use crate::prelude::*;
 
 use nalgebra::{Unit, Vector3};
 

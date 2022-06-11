@@ -4,9 +4,9 @@
 //!
 //!
 
-mod bone;
+pub mod bone;
 pub mod conventions;
-mod joint;
+pub mod joint;
 mod newtypes;
 pub mod prelude;
 pub mod skeleton;

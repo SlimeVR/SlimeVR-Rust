@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
-/// Joints represent the pivot points of [`Bone`]s in the skeleton. Joints have
-/// positions, but not rotations.
+/// Joints represent the pivot points of [`Bone`](crate::Bone)s in the skeleton.
+/// `Joint`s have positions, but not rotations.
 #[derive(Debug, Default)]
 pub struct Joint {
     /// Input position in global space. If it is unconstrained, it is `None`.

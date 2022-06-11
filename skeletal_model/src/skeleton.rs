@@ -19,7 +19,7 @@ impl Skeleton {
         // Option is used for resiliance against bugs while the map is being built
         let mut bone_map: BoneMap<Option<EdgeIndex>> = BoneMap::default();
 
-        // Create root bone (edge + joints)
+        // Create root bone: edge (bone) connects to nodes (joints)
         {
             let head = g.add_node(Joint::new());
             let tail = g.add_node(Joint::new());
@@ -28,19 +28,22 @@ impl Skeleton {
             bone_map[BoneKind::Neck] = Some(edge);
         }
 
-        // Adds all the immediate children of `parent_bone` to the graph
+        // This closure adds all the immediate children of `parent_bone` to the graph
         let mut add_child_bones = |parent_bone: BoneKind| {
             let parent_edge =
                 bone_map[parent_bone].expect("Bone was not yet added to graph");
-            let head = g.edge_endpoints(parent_edge).unwrap().1;
+            let head = g.edge_endpoints(parent_edge).unwrap().1; // Get child node of edge
             for child_kind in parent_bone.children() {
-                let child_kind = *child_kind;
+                // No need to work with a ref, `child_kind` is `Copy`
+                let child_kind = child_kind.to_owned();
+
                 let tail = g.add_node(Joint::new());
-                let _child_edge = g.add_edge(
+                g.add_edge(
                     head,
                     tail,
                     Bone::new(child_kind, config.bone_lengths[child_kind]),
-                );
+                )
+                .unwrap();
             }
         };
 
@@ -52,6 +55,7 @@ impl Skeleton {
             bone_stack.extend(parent_bone.children());
         }
 
+        // Map is populated, get rid of the `Optional`
         let bone_map: BoneMap<EdgeIndex> = bone_map.map(|_kind, bone| bone.unwrap());
 
         Self { graph: g, bone_map }
