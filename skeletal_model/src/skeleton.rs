@@ -4,8 +4,14 @@ use crate::joint::Joint;
 use core::ops::Index;
 use daggy::{Dag, EdgeIndex};
 
+/// Used to initialize the [`Skeleton`] with its initial parameters
 pub struct SkeletonConfig {
     bone_lengths: BoneMap<f32>,
+}
+impl SkeletonConfig {
+    pub fn new(bone_lengths: BoneMap<f32>) -> Self {
+        SkeletonConfig { bone_lengths }
+    }
 }
 
 pub struct Skeleton {
@@ -22,9 +28,11 @@ impl Skeleton {
         // Create root bone: edge (bone) connects to nodes (joints)
         {
             let head = g.add_node(Joint::new());
-            let tail = g.add_node(Joint::new());
-            let bone = Bone::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]);
-            let edge = g.add_edge(head, tail, bone).unwrap();
+            let (edge, _tail) = g.add_child(
+                head,
+                Bone::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
+                Joint::new(),
+            );
             bone_map[BoneKind::Neck] = Some(edge);
         }
 
@@ -35,15 +43,15 @@ impl Skeleton {
             let head = g.edge_endpoints(parent_edge).unwrap().1; // Get child node of edge
             for child_kind in parent_bone.children() {
                 // No need to work with a ref, `child_kind` is `Copy`
-                let child_kind = child_kind.to_owned();
+                let child_kind = *child_kind;
 
-                let tail = g.add_node(Joint::new());
-                g.add_edge(
+                let (edge, _tail) = g.add_child(
                     head,
-                    tail,
                     Bone::new(child_kind, config.bone_lengths[child_kind]),
-                )
-                .unwrap();
+                    Joint::new(),
+                );
+
+                bone_map[child_kind] = Some(edge);
             }
         };
 
@@ -67,5 +75,26 @@ impl Index<BoneKind> for Skeleton {
     fn index(&self, index: BoneKind) -> &Self::Output {
         let edge = self.bone_map[index];
         &self.graph[edge]
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    /// Tests that all lengths of the skeleton are properly initialized based on `SkeletonConfig`
+    #[test]
+    fn test_lengths() {
+        let mut bone_lengths = BoneMap::new([0.; BoneKind::num_types()]);
+
+        bone_lengths[BoneKind::FootL] = 4.0;
+
+        let config = SkeletonConfig::new(bone_lengths);
+
+        let skeleton = Skeleton::new(&config);
+
+        for (bone, length) in bone_lengths.iter() {
+            assert_eq!(&skeleton[bone].length(), length);
+        }
     }
 }
