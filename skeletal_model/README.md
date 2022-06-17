@@ -1,6 +1,6 @@
 # Ferrous SimeVR Skeletal Model
 
-The skeletal model for SlimeVR. Documentation for contributors can be found
+The skeletal model for SlimeVR. View the documentation
 [here](https://thebutlah.github.io/ferrous_slimevr/skeletal_model/).
 
 ## Goals
