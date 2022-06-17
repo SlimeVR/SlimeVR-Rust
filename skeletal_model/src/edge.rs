@@ -15,7 +15,9 @@ pub enum EdgeKind {
 }
 
 /// `Edge`s represent the connections between the [`Joint`]s of the
-/// skeleton. Edges have a global rotation, represented as a unit quaternion. To
+/// skeleton.
+///
+/// Edges have a global rotation, represented as a unit quaternion. To
 /// get an edge's position, you can get the position of either of its two attached
 /// `Joint`s.
 ///
@@ -23,6 +25,8 @@ pub enum EdgeKind {
 /// skeleton. So the head of the bone would also be the tail of a bone closer to the
 /// top of the skeleton. This is simply to give the parent and child of a bone a
 /// consistent meaning.
+///
+/// For more information, see the [`skeleton`](crate::skeleton) module.
 pub struct Edge {
     kind: EdgeKind,
     /// Input rotation in global space. If it is unconstrained, it is `None`.

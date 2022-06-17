@@ -1,3 +1,5 @@
+//! Contains trivial "newtype" wrappers
+
 use crate::prelude::*;
 
 /// A newtype on `T` that indicates that it is a global transform.

@@ -2,13 +2,17 @@ use crate::prelude::*;
 
 /// Joints represent the pivot points of [`Edge`]s in the skeleton.
 /// `Joint`s have positions, but not rotations.
+///
+/// For more information, see the [`skeleton`](crate::skeleton) module.
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct Joint {
     /// Input position in global space. If it is unconstrained, it is `None`.
     input_pos_g: Option<Global<Point>>,
     /// The output position of the Joint. Solving the skeleton updates this.
     output_pos_g: Global<Point>,
 }
+#[allow(dead_code)]
 impl Joint {
     pub fn new() -> Self {
         Self {

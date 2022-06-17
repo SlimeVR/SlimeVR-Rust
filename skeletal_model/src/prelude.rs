@@ -1,3 +1,5 @@
+//! Provides convenient re-exports of common types
+
 #![allow(unused)]
 
 pub type Translation = nalgebra::Translation3<f32>;

@@ -6,12 +6,13 @@
 //!
 //! [internal rustdoc]: https://thebutlah.github.io/ferrous_slimevr/skeletal_model
 //!
+//!
 //! # Overview
 //!
 //! This crate provides a well documented, high performance, and very robust model of
 //! a human's pose for the purpose of full body tracking in VR. The role of this crate
 //! is to ingest partially complete human pose data, often from SlimeVR or Vive
-//! trackers, and compute the missing pose pose data. This gives applications a way of
+//! trackers, and compute the missing pose data. This gives applications a way of
 //! accessing that pose data.
 //!
 //! This is accomplished via a simple forward-kinematics solver, which also accounts for
@@ -23,6 +24,7 @@
 //! [java server]: https://github.com/SlimeVR/SlimeVR-Server/
 //! [SlimeVR]: https://github.com/SlimeVR/
 //!
+//!
 //! # Tracker support
 //!
 //! Typically, there are two types of full body trackers:
@@ -30,8 +32,9 @@
 //! - **"6DoF"**: Any tracker with both positional and rotational data. Example: Vive
 //!   trackers.
 //!
-//! This crate is agnostic to the particular tracker hardware or protocol, as reading
-//! the data from the tracker is beyond the scope of this crate. Simply provide position
+//! As long as you can provide position and/or rotation for some bones, this crate
+//! should do the rest.
+//!
 //!
 //! # Scope
 //!
@@ -53,7 +56,12 @@
 //! see the [`conventions`] module.
 
 // These set linter options
-#![deny(rustdoc::broken_intra_doc_links)]
+#![deny(
+    rustdoc::broken_intra_doc_links,
+    invalid_doc_attributes,
+    unused_import_braces,
+    unused
+)]
 
 pub mod bone;
 pub mod conventions;

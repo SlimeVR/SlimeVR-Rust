@@ -49,6 +49,7 @@ mod tests {
         let euler = UnitQuat::from_euler_angles(0., -FRAC_PI_2, 0.);
         let matrix = UnitQuat::look_at_rh(&-Vector3::y_axis(), &-Vector3::z_axis());
 
+        // TODO: why does this fail?
         assert_relative_eq!(euler, matrix);
     }
 }

@@ -16,14 +16,12 @@ use std::iter::{Enumerate, Map};
 ///
 /// ```
 /// # use skeletal_model::bone::{BoneMap, BoneKind};
-/// let mut m = BoneMap::new([-1; BoneKind::num_types()]);
-/// let mut i = 0;
+/// let mut m = BoneMap::default();
 /// for b in BoneKind::iter() {
-///     m[b] = i;
-///     i += 1;
+///     m[b] = format!("this is a {b:?}");
 /// }
 ///
-/// assert_eq!(m[BoneKind::Chest], 1)
+/// assert_eq!(m[BoneKind::Chest], format!("this is a {:?}", BoneKind::Chest))
 /// ```
 #[derive(Debug, Default, Clone, Copy, From, Eq, PartialEq)]
 pub struct BoneMap<T>([T; BoneKind::num_types()]);
@@ -32,14 +30,23 @@ impl<T> BoneMap<T> {
         Self(map)
     }
 
+    /// Gets an iterator over the (key, value) pairs of the `BoneMap`.
+    ///
+    /// Iteration is guaranteed to start at [`BoneKind::root()`] but beyond that,
+    /// iteration order is not guaranteed. However, iteration *is* exhaustive over
+    /// the various kinds of bones.
     pub fn iter(&self) -> Iter<'_, T> {
         self.into_iter()
     }
 
+    /// Gets a mutable iterator over the `(key, value)` pairs of the `BoneMap`.
+    ///
+    /// See also: [`Self::iter()`]
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
         self.into_iter()
     }
 
+    /// Applies a function to each element of the `BoneMap`, mapping it from `T` to `U`.
     pub fn map<U>(self, mut f: impl FnMut(BoneKind, T) -> U) -> BoneMap<U> {
         let it = self.into_iter().map(|(kind, item)| (kind, f(kind, item)));
         it.try_collect().unwrap()
