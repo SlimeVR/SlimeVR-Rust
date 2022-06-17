@@ -1,5 +1,8 @@
-use crate::bone::{Bone, BoneKind, BoneMap};
-use crate::joint::Joint;
+//! The skeleton, and its representation as a graph data structure
+//!
+//!
+
+use crate::prelude::*;
 
 use core::ops::Index;
 use daggy::{Dag, EdgeIndex};
@@ -16,21 +19,23 @@ impl SkeletonConfig {
 
 pub struct Skeleton {
     bone_map: BoneMap<EdgeIndex>,
-    graph: Dag<Joint, Bone>,
+    graph: Dag<Joint, Edge>,
 }
 impl Skeleton {
+    /// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
+    /// not have any input trackers or output trackers.
     pub fn new(config: &SkeletonConfig) -> Self {
         let mut g = Dag::new();
 
         // Option is used for resiliance against bugs while the map is being built
         let mut bone_map: BoneMap<Option<EdgeIndex>> = BoneMap::default();
 
-        // Create root bone: edge (bone) connects to nodes (joints)
+        // Create root skeletal bone: edge (bone) connects to nodes (joints)
         {
             let head = g.add_node(Joint::new());
             let (edge, _tail) = g.add_child(
                 head,
-                Bone::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
+                Edge::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
                 Joint::new(),
             );
             bone_map[BoneKind::Neck] = Some(edge);
@@ -47,7 +52,7 @@ impl Skeleton {
 
                 let (edge, _tail) = g.add_child(
                     head,
-                    Bone::new(child_kind, config.bone_lengths[child_kind]),
+                    Edge::new(child_kind, config.bone_lengths[child_kind]),
                     Joint::new(),
                 );
 
@@ -70,7 +75,7 @@ impl Skeleton {
     }
 }
 impl Index<BoneKind> for Skeleton {
-    type Output = Bone;
+    type Output = Edge;
 
     fn index(&self, index: BoneKind) -> &Self::Output {
         let edge = self.bone_map[index];

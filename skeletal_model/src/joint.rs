@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-/// Joints represent the pivot points of [`Bone`](crate::Bone)s in the skeleton.
+/// Joints represent the pivot points of [`Edge`]s in the skeleton.
 /// `Joint`s have positions, but not rotations.
 #[derive(Debug, Default)]
 pub struct Joint {
