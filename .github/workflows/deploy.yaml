@@ -1,0 +1,34 @@
+name: Deploy Docs
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docs:
+    name: Deploy Docs to Github Pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@v1
+
+      - name: Build Internal Documentation
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --all --no-deps --document-private-items
+
+      - name: Deploy Documentation
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: docs
+          folder: target/doc

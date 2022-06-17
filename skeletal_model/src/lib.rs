@@ -1,9 +1,10 @@
 //! An experimental skeletal model for full body tracking (FBT) in VR.
 //!
-//! Documentation (including internal implementation details for contributors)
-//! is available [here](https://thebutlah.github.com/TheButlah/ferrous_slimevr).
-//! For documentation without internal implementation details, please refer to
-//! the published version on [docs.rs](https://github.com/ferrous_slimevr).
+//! Documentation for contributors is available [here][internal rustdoc].
+//! For documentation without internal implementation details, please run
+//! `cargo doc --all --no-deps --open`
+//!
+//! [internal rustdoc]: https://thebutlah.github.io/ferrous_slimevr/skeletal_model
 //!
 //! # Overview
 //!

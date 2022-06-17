@@ -1,40 +1,53 @@
 name: Main CI
 on: [pull_request]
+permissions: read-all
+
 jobs:
   fmt:
-    name: Formatting
+    name: Check Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
           components: rustfmt
-      - uses: actions-rs/cargo@v1
+
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@v1
+
+      - name: Run rustfmt
+        uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all --check
 
   test:
-    name: Test
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
+
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
+
       - name: Cache cargo dependencies
-        uses: actions/cache@v2
+        uses: Swatinem/rust-cache@v1
+
+      - name: Check that docs build
+        uses: actions-rs/cargo@v1
         with:
-          path: ~/.cargo/
-          key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
-      - uses: actions-rs/cargo@v1
+          command: doc
+          args: --all --all-features --document-private-items
+
+      - name: Run Tests
+        uses: actions-rs/cargo@v1
         with:
           command: test
           args: --all --all-features

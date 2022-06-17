@@ -1,6 +1,4 @@
 //! The skeleton, and its representation as a graph data structure
-//!
-//!
 
 use crate::prelude::*;
 

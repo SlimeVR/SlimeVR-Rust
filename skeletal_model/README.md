@@ -1,6 +1,7 @@
 # Ferrous SimeVR Skeletal Model
 
-The skeletal model for SlimeVR.
+The skeletal model for SlimeVR. Documentation for contributors can be found
+[here](https://thebutlah.github.io/ferrous_slimevr/skeletal_model/).
 
 ## Goals
 * Should be independent of networking/server
