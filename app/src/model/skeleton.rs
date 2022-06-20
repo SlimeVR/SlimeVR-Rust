@@ -19,17 +19,17 @@ lazy_static! {
     static ref DEFAULT_COLORS: BoneMap<RGBA> = {
         use BoneKind::*;
         HashMap::from([
-            (Head, RGBA::SILVER),
-            (Neck, RGBA::GRAY),
+            (Head, RGBA::BLACK),
+            (Neck, RGBA::SILVER),
             (Chest, RGBA::OLIVE),
             (Waist, RGBA::LIME),
-            (Hip, RGBA::GREEN),
-            (ThighL, RGBA::AQUA),
-            (ThighR, RGBA::AQUA),
+            (Hip, RGBA::MAROON),
+            (ThighL, RGBA::BLUE),
+            (ThighR, RGBA::BLUE),
             (AnkleL, RGBA::TEAL),
             (AnkleR, RGBA::TEAL),
-            (FootL, RGBA::BLUE),
-            (FootR, RGBA::BLUE),
+            (FootL, RGBA::PURPLE),
+            (FootR, RGBA::PURPLE),
             (UpperArmL, RGBA::RED),
             (UpperArmR, RGBA::RED),
             (ForearmL, RGBA::PURPLE),
@@ -42,7 +42,7 @@ lazy_static! {
     };
 }
 
-const BONE_RADIUS: f32 = 0.01;
+const BONE_RADIUS: f32 = 0.001;
 
 /// Builder for the [`Skeleton`].
 pub struct SkeletonBuilder {
