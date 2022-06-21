@@ -3,7 +3,7 @@
 use crate::prelude::*;
 
 /// A newtype on `T` that indicates that it is a global transform.
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct Global<T: private::Sealed>(pub T);
 
 /// Implements `From<T> for $ident<T>`
@@ -20,7 +20,7 @@ impl_helper!(Global);
 impl_helper!(Local);
 
 /// A newtype on `T` that indicates that it is a local transform.
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct Local<T: private::Sealed>(pub T);
 
 mod private {
