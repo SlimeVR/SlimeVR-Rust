@@ -44,7 +44,8 @@
 //! enables applications to then build on top of this crate, either through a rust
 //! implementation of the SlimeVR server, or by calling this library via any of the
 //! various language bindings we hope to add soon. We hope that this will enable the
-//! SlimeVR community, as well as other  body tracking
+//! SlimeVR community, as well as other full body tracking solutions, to build on our
+//! work.
 //!
 //!
 //! # Documentation on Internals

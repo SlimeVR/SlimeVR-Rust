@@ -7,9 +7,7 @@
 //! - Your middle finger is `+Y`, which points "up"
 //! - Your thumb is `+Z`, which points "backward". `-Z` points "forward".
 //!
-//! This convention is the same as `nalgebra`'s right handed coordinate system
-//! convention, where the view direction is `-Z`, and is consistent with other
-//! libraries like SteamVR and OpenGL. See also: [`UnitQuat::look_at_rh`].
+//! This convention is the same as other libraries like SteamVR and OpenGL.
 //!
 //! # Rotation representation
 //! We use quaternions to represent rotations whenever possible. We try not to use
