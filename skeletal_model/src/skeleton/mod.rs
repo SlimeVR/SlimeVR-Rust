@@ -42,8 +42,8 @@
 //! While all edges hold the same data internally, they play slightly different
 //! roles depending on what the edge represents. There are really two types of edges:
 //! * A regular bone in the human skeleton.
-//! * A an offset between a tracker (either input or output) and the bone it is
-//!   attached to.
+//! * An offset between a tracker (either input or output) and the bone it is attached
+//!   to.
 //!
 //! The only difference between these two is that a tracker edge never has any children,
 //! and always has a bone as its parent. Also, its local transform with respect to its

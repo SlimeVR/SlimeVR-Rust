@@ -10,7 +10,8 @@ pub enum EdgeKind {
     /// Represents a tracker that is providing pose information as an input to the
     /// skeleton.
     InputTracker,
-    /// Represents a computed/synthetic tracker that will act as a
+    /// Represents a computed/synthetic tracker that will act as an output tracker for
+    /// the skeleton.
     OutputTracker,
 }
 

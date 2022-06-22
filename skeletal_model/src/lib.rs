@@ -40,7 +40,7 @@
 //!
 //! It is important to note that this crate is *only* the skeletal model, and does not
 //! handle networking or anything else necessary for actually reading tracker data. It
-//! also does not expose any networked way of acessing the outputs of the skeleton. This
+//! also does not expose any networked way of accessing the outputs of the skeleton. This
 //! enables applications to then build on top of this crate, either through a Rust
 //! implementation of the SlimeVR server, or by calling this library via any of the
 //! various language bindings we hope to add soon. We hope that this will enable the
