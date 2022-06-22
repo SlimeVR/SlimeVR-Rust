@@ -25,7 +25,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: doc
-          args: --all --no-deps --document-private-items
+          args: --all --all-features --no-deps --document-private-items
 
       - name: Deploy Documentation
         uses: JamesIves/github-pages-deploy-action@v4

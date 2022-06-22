@@ -47,7 +47,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: doc
-          args: --all --all-features --document-private-items
+          args: --all --all-features --no-deps --document-private-items
 
       - name: Run Tests
         uses: actions-rs/cargo@v1
