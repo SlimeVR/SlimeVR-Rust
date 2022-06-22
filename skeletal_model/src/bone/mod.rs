@@ -1,4 +1,4 @@
-//! Contains skeletal bones and their relationships.
+//! Describes skeletal bones and their relationships.
 //!
 //! For more info about skeletal bones and the role they play in the skeleton,
 //! see the module-level documentation on [`crate::skeleton`].

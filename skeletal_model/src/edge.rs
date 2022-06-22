@@ -14,16 +14,16 @@ pub enum EdgeKind {
     OutputTracker,
 }
 
-/// `Edge`s represent the connections between the [`Joint`]s of the
+/// `Edge`s represent the connections between the [`Node`]s of the
 /// skeleton.
 ///
 /// Edges have a global rotation, represented as a unit quaternion. To
 /// get an edge's position, you can get the position of either of its two attached
-/// `Joint`s.
+/// `Node`s.
 ///
-/// Note that by convention, the directionality of bones points towards the top of the
-/// skeleton. So the head of the bone would also be the tail of a bone closer to the
-/// top of the skeleton. This is simply to give the parent and child of a bone a
+/// Note that by convention, the directionality of edges points towards the top of the
+/// skeleton. So the head of the edge would also be the tail of an edge closer to the
+/// top of the skeleton. This is simply to give the parent and child of an edge a
 /// consistent meaning.
 ///
 /// For more information, see the [`skeleton`](crate::skeleton) module.
@@ -31,12 +31,12 @@ pub struct Edge {
     kind: EdgeKind,
     /// Input rotation in global space. If it is unconstrained, it is `None`.
     input_rot_g: Option<Global<UnitQuat>>,
-    /// Rotation of the bone with respect to the parent bone at calibration time. Maps
-    /// from parent frame to child frame.
+    /// Local rotation of the edge with respect to the parent edge at calibration time.
+    /// Maps from parent frame to child frame.
     calib_rot_l: Local<UnitQuat>,
-    /// Length of the bone. May be set by the user, or may be computed at calibration.
+    /// Length of the edge. May be set by the user, or may be computed at calibration.
     length: f32,
-    /// The output rotation of the bone. Solving the skeleton updates this.
+    /// The output rotation of the edge. Solving the skeleton updates this.
     output_rot_g: Global<UnitQuat>,
 }
 impl Edge {

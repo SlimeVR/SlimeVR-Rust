@@ -32,7 +32,7 @@
 //! - **"6DoF"**: Any tracker with both positional and rotational data. Example: Vive
 //!   trackers.
 //!
-//! As long as you can provide position and/or rotation for some bones, this crate
+//! As long as you can provide position and/or rotation for some trackers, this crate
 //! should do the rest.
 //!
 //!
@@ -67,8 +67,8 @@
 pub mod bone;
 pub mod conventions;
 mod edge;
-mod joint;
 mod newtypes;
+mod node;
 pub mod prelude;
 pub mod skeleton;
 

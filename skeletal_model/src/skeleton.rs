@@ -17,7 +17,7 @@ impl SkeletonConfig {
 
 pub struct Skeleton {
     bone_map: BoneMap<EdgeIndex>,
-    graph: Dag<Joint, Edge>,
+    graph: Dag<Node, Edge>,
 }
 impl Skeleton {
     /// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
@@ -30,11 +30,11 @@ impl Skeleton {
 
         // Create root skeletal bone: edge (bone) connects to nodes (joints)
         {
-            let head = g.add_node(Joint::new());
+            let head = g.add_node(Node::new());
             let (edge, _tail) = g.add_child(
                 head,
                 Edge::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
-                Joint::new(),
+                Node::new(),
             );
             bone_map[BoneKind::Neck] = Some(edge);
         }
@@ -51,7 +51,7 @@ impl Skeleton {
                 let (edge, _tail) = g.add_child(
                     head,
                     Edge::new(child_kind, config.bone_lengths[child_kind]),
-                    Joint::new(),
+                    Node::new(),
                 );
 
                 bone_map[child_kind] = Some(edge);
