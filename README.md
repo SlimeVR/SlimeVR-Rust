@@ -1,9 +1,9 @@
 # Ferrous SlimeVR
-A rust implementation of [SlimeVR](https://github.com/SlimeVR)
+A Rust implementation of [SlimeVR](https://github.com/SlimeVR)
 
 ## Current Status
 The [skeletal model](skeletal_model/) is in the early stages of development. If you're
-really passionate about rust and want to make this a reality, feel free to reach out to
+really passionate about Rust and want to make this a reality, feel free to reach out to
 me on the official SlimeVR discord for questions.
 
 ## Motivation
@@ -17,7 +17,7 @@ stay, and thats a good thing. Many people know Java and C++, but not so many
 people know Rust. We should seek to port our work to Java and then upstream it
 to benefit the wider SlimeVR community, and give back to the mainline project.
 
-There are however a few reasons for an alternative, experimental rust implementation:
+There are however a few reasons for an alternative, experimental Rust implementation:
 * Some people are more proficient in Rust than they are in Java or C++
 * Having another implementation lets us validate the interoperability between the
   firmware implementations and the server implementations

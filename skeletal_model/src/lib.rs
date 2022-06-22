@@ -19,9 +19,9 @@
 //! positional constraints from positional trackers, if any are present.
 //!
 //! This crate was both inspired by and written for use in [SlimeVR], and hopes to be a
-//! better version of the current skeletal model implemented in the [java server].
+//! better version of the current skeletal model implemented in the [Java server].
 //!
-//! [java server]: https://github.com/SlimeVR/SlimeVR-Server/
+//! [Java server]: https://github.com/SlimeVR/SlimeVR-Server/
 //! [SlimeVR]: https://github.com/SlimeVR/
 //!
 //!
@@ -41,7 +41,7 @@
 //! It is important to note that this crate is *only* the skeletal model, and does not
 //! handle networking or anything else necessary for actually reading tracker data. It
 //! also does not expose any networked way of acessing the outputs of the skeleton. This
-//! enables applications to then build on top of this crate, either through a rust
+//! enables applications to then build on top of this crate, either through a Rust
 //! implementation of the SlimeVR server, or by calling this library via any of the
 //! various language bindings we hope to add soon. We hope that this will enable the
 //! SlimeVR community, as well as other full body tracking solutions, to build on our
@@ -60,15 +60,14 @@
 #![deny(
     invalid_doc_attributes,
     rustdoc::broken_intra_doc_links,
+    rustdoc::private_intra_doc_links,
     unused_import_braces,
     unused
 )]
 
 pub mod bone;
 pub mod conventions;
-mod edge;
 mod newtypes;
-mod node;
 pub mod prelude;
 pub mod skeleton;
 

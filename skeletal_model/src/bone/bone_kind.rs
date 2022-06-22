@@ -20,7 +20,7 @@ use num_traits::FromPrimitive;
 /// There is also dynamic information associated with bones. "Dynamic" here refers to
 /// the fact that some bone data cannot be known up front and changes as the skeletal
 /// model receives inputs and produces outputs. This data is stored in the
-/// [`Skeleton`](crate::Skeleton) as an [`Edge`](crate::edge::Edge).
+/// [`Skeleton`](crate::Skeleton) as an [`Edge`](crate::skeleton::Edge).
 ///
 /// `BoneKind` is also represented as a `u8`, so it can be used as an index for an
 /// array. This is used for example in [`BoneMap`]. **Please note that we make no

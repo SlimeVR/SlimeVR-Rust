@@ -1,9 +1,11 @@
 use crate::prelude::*;
 
-/// `Node`s represent the connections between [`Edge`]s in the skeleton.
-/// `Node`s have positions, but not rotations.
+/// `Node`s represent the connections between [`Edge`]s in the skeleton. `Node`s have
+/// positions, but not rotations.
 ///
 /// For more information, see the [`skeleton`](crate::skeleton) module.
+///
+/// [`Edge`]: crate::skeleton::Edge
 #[derive(Debug, Default)]
 #[allow(dead_code)]
 pub struct Node {

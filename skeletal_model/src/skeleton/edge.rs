@@ -27,6 +27,8 @@ pub enum EdgeKind {
 /// consistent meaning.
 ///
 /// For more information, see the [`skeleton`](crate::skeleton) module.
+///
+/// [`Node`]: crate::skeleton::Node
 pub struct Edge {
     kind: EdgeKind,
     /// Input rotation in global space. If it is unconstrained, it is `None`.
