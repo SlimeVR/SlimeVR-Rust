@@ -42,7 +42,7 @@ lazy_static! {
     };
 }
 
-const BONE_RADIUS: f32 = 0.001;
+const BONE_RADIUS: f32 = 0.002;
 
 /// Builder for the [`Skeleton`].
 pub struct SkeletonBuilder {
