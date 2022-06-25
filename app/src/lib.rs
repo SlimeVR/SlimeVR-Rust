@@ -15,7 +15,7 @@ use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
 
-const CONNECT_STR: &'static str = "ws://localhost:21110";
+const CONNECT_STR: &str = "ws://localhost:21110";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ShutdownReason {
@@ -80,9 +80,9 @@ async fn overlay(
                         let part = b.body_part();
                         log::trace!("body_part: {part:?}");
                         let bone_kind = BoneKind::try_from(part)
-                            .or_else(|e| {
+                            .map_err(|e| {
                                 log::trace!("Filtering out {e:?}");
-                                Err(e)
+                                e
                             })
                             .ok()?;
                         let pos = if let Some(p) = b.head_position_g() {

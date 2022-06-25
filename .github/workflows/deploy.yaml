@@ -1,0 +1,99 @@
+name: Deployment
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docs:
+    name: Deploy Docs to Github Pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@v1
+
+      - name: Build Internal Documentation
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --all --all-features --no-deps --document-private-items
+
+      - name: Deploy Documentation
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: docs
+          folder: target/doc
+
+  build_binary:
+    name: Build Release Executables
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - runs-on: windows-latest
+            name: windows-x64
+          - runs-on: ubuntu-latest
+            name: linux-x64
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@v1
+
+      - name: Build ${{ matrix.name }} release
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.name }}-binary
+          path: |
+            target/release/slimevr_overlay.exe
+            target/release/slimevr_overlay
+
+  pre-release:
+    name: Pre-Release
+    runs-on: ubuntu-latest
+    needs: build_binary
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-x64-binary
+      - name: Download linux artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-x64-binary
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@d68defdd11f9dcc7f52f35c1b7c236ee7513bcc1"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Latest Build"
+          files: |
+            slimevr_overlay.exe
+            slimevr_overlay

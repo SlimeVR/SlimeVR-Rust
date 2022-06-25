@@ -14,20 +14,19 @@ jobs:
           override: true
           components: rustfmt, clippy
       - name: Cache cargo dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/registry
-          key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
+        uses: Swatinem/rust-cache@v1
+
       - name: Check formatting
         uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --all -- --check
+          args: --all --check
+
       - name: Clippy lints
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all-features
+          args: --all --all-features --all-targets --no-deps
 
   test:
     name: Test
@@ -40,11 +39,10 @@ jobs:
           toolchain: stable
           override: true
       - name: Cache cargo dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/registry
-          key: cache-cargo-deps-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
+        uses: Swatinem/rust-cache@v1
+
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test
+          args: --all --all-features --all-targets
