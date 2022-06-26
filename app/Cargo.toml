@@ -26,4 +26,3 @@ ouroboros = "0.15"
 solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "ceaae26ea249b573ba2f00c1473fb1749c4dc505" }
 tokio-stream = "0.1"
 tokio-graceful-shutdown = "0.6"
-clap = { version = "3", features = ["derive"] }
