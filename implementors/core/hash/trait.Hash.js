@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["slimevr_overlay"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.61.0/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"enum\" href=\"slimevr_overlay/model/bone_kind/enum.BoneKind.html\" title=\"enum slimevr_overlay::model::bone_kind::BoneKind\">BoneKind</a>","synthetic":false,"types":["slimevr_overlay::model::bone_kind::BoneKind"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

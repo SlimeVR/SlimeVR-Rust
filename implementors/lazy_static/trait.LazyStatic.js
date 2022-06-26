@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["slimevr_overlay"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/lazy_static/1.4.0/lazy_static/trait.LazyStatic.html\" title=\"trait lazy_static::LazyStatic\">LazyStatic</a> for <a class=\"struct\" href=\"slimevr_overlay/model/skeleton/struct.DEFAULT_COLORS.html\" title=\"struct slimevr_overlay::model::skeleton::DEFAULT_COLORS\">DEFAULT_COLORS</a>","synthetic":false,"types":["slimevr_overlay::model::skeleton::DEFAULT_COLORS"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
