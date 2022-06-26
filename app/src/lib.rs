@@ -11,14 +11,9 @@ use crate::model::{BoneKind, Isometry};
 use eyre::{Result, WrapErr};
 use nalgebra::{Translation3, UnitQuaternion};
 use ovr_overlay as ovr;
-use std::f32::consts::PI;
 use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
-
-const ROTATION_SPEED: f32 = 2.0 * 2.0 * PI;
-const TRANSLATION_SPEED: f32 = 0.5 * 2.0 * PI;
-const SIZE_SPEED: f32 = 0.25 * 2.0 * PI;
 
 const CONNECT_STR: &'static str = "ws://localhost:21110";
 
