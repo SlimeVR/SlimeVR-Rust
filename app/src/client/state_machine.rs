@@ -4,7 +4,6 @@ use crate::client::{Data, DecodeError};
 
 use futures_util::stream::SplitStream;
 use futures_util::{Sink, SinkExt, StreamExt};
-use solarxr_protocol::data_feed::DataFeedMessageHeaderBuilder;
 use solarxr_protocol::flatbuffers::FlatBufferBuilder;
 use solarxr_protocol::MessageBundle;
 use std::fmt::Debug;
@@ -130,7 +129,7 @@ impl M<Connected> {
                 StartDataFeedArgs,
             };
 
-            let tracker_mask = TrackerDataMask::create(
+            let _tracker_mask = TrackerDataMask::create(
                 fbb,
                 &TrackerDataMaskArgs {
                     // TODO: We only need the body part here, not the whole TrackerInfo
@@ -145,8 +144,8 @@ impl M<Connected> {
                 fbb,
                 &DataFeedConfigArgs {
                     minimum_time_since_last: 10,
-                    data_mask: None, // We don't care about anything but synthetic trackers
-                    synthetic_trackers_mask: Some(tracker_mask),
+                    // We don't care about anything but bones
+                    bone_mask: true,
                     ..Default::default()
                 },
             );

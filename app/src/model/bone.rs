@@ -91,34 +91,47 @@ impl Bone {
 
         // Set transform
         {
+            // Adjusts the rotation of `iso` to have only roll and not pitch, to avoid
+            // distortion due to the curvature that SteamVR causes. Also adjusts the
+            // translation to place the overlay in the center of the tube instead of
+            // the edge
             let mut f = |overlay, mut iso: Isometry, flip: f32| -> Result<()> {
-                // our y axis/y basis is along the length of the bone
-                let y_basis = iso.rotation.transform_vector(&Vector3::y_axis());
-                let transform = if y_basis == Vector3::y_axis().into_inner()
-                    || y_basis == -Vector3::y_axis().into_inner()
+                // Offset for skeleton debugging
+                // iso.translation *= Translation3::new(0., 0., -1.);
+
+                // The direction the overlay's y axis points after the transform.
+                let y_direction = iso.rotation.transform_vector(&Vector3::y_axis());
+                let transform = if y_direction == Vector3::y_axis().into_inner()
+                    || y_direction == -Vector3::y_axis().into_inner()
                 {
                     // just use the existing rotation, there won't be any distortion
-                    iso.translation.vector +=
-                        iso.rotation
-                            .transform_vector(&Vector3::new(0., 0., -self.radius));
+                    iso.translation.vector += iso.rotation.transform_vector(&Vector3::new(
+                        0.,
+                        -self.length / 2.0,
+                        -self.radius,
+                    ));
                     iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 } else {
-                    // construct rotation matrix from the lengthwise vector of the bone,
-                    // and the y axis to avoid overlay distortion
+                    // We can freely rotate around `y_direction`, but to avoid
+                    // distortion we want to have zero pitch, and only roll/yaw. A plane
+                    // with zero pitch would be the plane between two vectors - one
+                    // with the global y axis, and one with `y_direction`. Crossing
+                    // those two vectors gives us the normal of the plane, called
+                    // `z_direction`.
+                    let z_direction =
+                        flip * Vector3::<f32>::y_axis().cross(&y_direction).normalize();
 
-                    // both a basis vector, and an intermediate product in calculating
-                    // the projection of the y axis via dir.cross(y_axis.cross(dir))
-                    let z_basis = flip * Vector3::<f32>::y_axis().cross(&y_basis).normalize();
-                    // This also happens to be the projection of the world y axis onto
-                    // the plane perpendicular to the y basis.
-                    let x_basis = y_basis.cross(&z_basis).normalize();
+                    // Now that we have the y direction and the z direction, we can
+                    // form the rotation corresponding to this orientation.
+                    iso.rotation = UnitQuaternion::face_towards(&z_direction, &y_direction);
+                    // let x_basis = y_basis.cross(&z_basis).normalize();
 
-                    let new_rotation =
-                        nalgebra::Matrix3::from_columns(&[x_basis, y_basis, z_basis]);
-                    let mut transform = new_rotation.fixed_resize::<3, 4>(0.0);
-                    transform.set_column(3, &(iso.translation.vector + z_basis * -self.radius));
+                    // Fixes the "center of tube" issue and the "center of overlay"
+                    // issue
+                    iso.translation.vector += z_direction * -self.radius;
+                    iso.translation.vector -= y_direction * self.length / 2.0;
 
-                    transform
+                    iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 };
 
                 let col_major_3x4 = Matrix3x4::from(&transform);

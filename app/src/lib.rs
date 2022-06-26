@@ -9,16 +9,11 @@ use crate::model::skeleton::SkeletonBuilder;
 use crate::model::{BoneKind, Isometry};
 
 use eyre::{Result, WrapErr};
-use nalgebra::{Quaternion, SVector, Translation3, UnitQuaternion, Vector3};
+use nalgebra::{Translation3, UnitQuaternion};
 use ovr_overlay as ovr;
-use std::f32::consts::PI;
 use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
-
-const ROTATION_SPEED: f32 = 2.0 * 2.0 * PI;
-const TRANSLATION_SPEED: f32 = 0.5 * 2.0 * PI;
-const SIZE_SPEED: f32 = 0.25 * 2.0 * PI;
 
 const CONNECT_STR: &'static str = "ws://localhost:21110";
 
@@ -59,8 +54,7 @@ async fn overlay(
         .wrap_err("Could not create skeleton")?;
     skeleton.set_visibility(true);
 
-    log::info!("Main Loop");
-    let start_time = std::time::SystemTime::now();
+    log::info!("Overlay Loop");
 
     let loop_ = async {
         loop {
@@ -68,7 +62,8 @@ async fn overlay(
                 .await
                 .wrap_err("Error while attempting to watch for feed update")?;
 
-            let trackers: Vec<_> = {
+            log::trace!("Got a feed update");
+            let bones: Vec<_> = {
                 let guard = recv.borrow_and_update();
                 let table = guard.as_ref().unwrap().0.table();
                 log::trace!("update: {:#?}", table);
@@ -76,19 +71,13 @@ async fn overlay(
                 let m = unwrap_or_continue!(table.data_feed_msgs());
                 let m = m.get(0);
                 let m = unwrap_or_continue!(m.message_as_data_feed_update());
-                let trackers = unwrap_or_continue!(m.synthetic_trackers());
-                log::debug!("Got {} trackers before filtering", trackers.len());
+                let bones = unwrap_or_continue!(m.bones());
+                log::debug!("Got {} bones before filtering", bones.len());
 
-                trackers
+                bones
                     .iter()
-                    .filter_map(|t| {
-                        let part = t
-                            .info()
-                            .or_else(|| {
-                                log::warn!("No info field on `TrackerData`");
-                                None
-                            })?
-                            .body_part();
+                    .filter_map(|b| {
+                        let part = b.body_part();
                         log::trace!("body_part: {part:?}");
                         let bone_kind = BoneKind::try_from(part)
                             .or_else(|e| {
@@ -96,38 +85,40 @@ async fn overlay(
                                 Err(e)
                             })
                             .ok()?;
-                        let pos = if let Some(p) = t.position() {
+                        let pos = if let Some(p) = b.head_position_g() {
                             p
                         } else {
                             log::warn!("No position");
                             return None;
                         };
-                        let rot = if let Some(r) = t.rotation() {
+                        let rot = if let Some(r) = b.rotation_g() {
                             r
                         } else {
                             log::warn!("No rotation");
                             return None;
                         };
+                        let length = b.bone_length();
 
                         let pos = Translation3::new(pos.x(), pos.y(), pos.z());
                         let rot = UnitQuaternion::from_quaternion(
                             [rot.x(), rot.y(), rot.z(), rot.w()].into(),
                         );
-                        Some((bone_kind, pos, rot))
+                        Some((bone_kind, pos, rot, length))
                     })
                     .collect()
             };
             log::debug!(
-                "Trackers after filtering: {:?}",
-                trackers.iter().map(|t| t.0).collect::<Vec<_>>()
+                "Bones after filtering: {:?}",
+                bones.iter().map(|t| t.0).collect::<Vec<_>>()
             );
-            log::trace!("Tracker data: {trackers:?}");
-            for (bone_kind, pos, rot) in trackers {
+            log::trace!("Bone data: {bones:?}");
+            for (bone_kind, pos, rot, length) in bones {
                 let iso = Isometry {
                     rotation: rot,
                     translation: pos,
                 };
                 skeleton.set_isometry(bone_kind, iso);
+                skeleton.set_length(bone_kind, length);
                 if let Err(e) = skeleton.update_render(bone_kind, mngr) {
                     log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
                 }
