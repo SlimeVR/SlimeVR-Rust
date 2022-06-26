@@ -87,6 +87,19 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: linux-x64-binary
+
+      - name: Download shared libs
+        run: |
+          wget https://github.com/ValveSoftware/openvr/raw/v1.16.8/lib/win64/openvr_api.lib
+          wget https://github.com/ValveSoftware/openvr/raw/v1.16.8/bin/win64/openvr_api.dll
+          wget https://github.com/ValveSoftware/openvr/raw/v1.16.8/lib/linux64/libopenvr_api.so
+
+      - name: Create Windows Zip
+        run: zip windows-x64.zip openvr_api.lib openvr_api.dll slimevr_overlay.exe
+
+      - name: Create Linux Zip
+        run: zip linux-x64.zip libopenvr_api.so slimevr_overlay
+
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@d68defdd11f9dcc7f52f35c1b7c236ee7513bcc1"
         with:
@@ -95,5 +108,5 @@ jobs:
           prerelease: true
           title: "Latest Build"
           files: |
-            slimevr_overlay.exe
-            slimevr_overlay
+            windows-x64.zip
+            linux-x64.zip

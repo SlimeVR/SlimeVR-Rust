@@ -4,10 +4,11 @@ A SteamVR overlay for rendering the SlimeVR skeletal model from a first person p
 
 ## Installation
 
-The latest builds are available in the published releases for [windows] and [linux]. Simply give them a download and run them!
+The latest builds are available in the published releases for [windows] and [linux].
+Simply give them a download, extract the files, and run the executable!
 
-[windows]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/latest/slimevr_overlay.exe
-[linux]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/latest/slimevr_overlay
+[windows]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/latest/windows-x64.zip
+[linux]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/latest/linux-x64.zip
 
 
 ## Contributing
