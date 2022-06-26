@@ -24,6 +24,6 @@ tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.17"
 futures-util = "0.3"
 ouroboros = "0.15"
-solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "ef019a11c86ad57406b39482b98017136a23fa4d" }
+solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "ceaae26ea249b573ba2f00c1473fb1749c4dc505" }
 tokio-stream = "0.1"
 tokio-graceful-shutdown = "0.6"
