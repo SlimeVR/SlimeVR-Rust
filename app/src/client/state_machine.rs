@@ -129,7 +129,7 @@ impl M<Connected> {
                 StartDataFeedArgs,
             };
 
-            let tracker_mask = TrackerDataMask::create(
+            let _tracker_mask = TrackerDataMask::create(
                 fbb,
                 &TrackerDataMaskArgs {
                     // TODO: We only need the body part here, not the whole TrackerInfo

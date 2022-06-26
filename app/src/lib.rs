@@ -9,7 +9,7 @@ use crate::model::skeleton::SkeletonBuilder;
 use crate::model::{BoneKind, Isometry};
 
 use eyre::{Result, WrapErr};
-use nalgebra::{Quaternion, SVector, Translation3, UnitQuaternion, Vector3};
+use nalgebra::{Translation3, UnitQuaternion};
 use ovr_overlay as ovr;
 use std::f32::consts::PI;
 use std::time::Duration;

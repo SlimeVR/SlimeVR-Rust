@@ -1,7 +1,7 @@
 use crate::RGBA;
 
 use eyre::{Result, WrapErr};
-use nalgebra::{Isometry3, Translation3, UnitQuaternion, Vector3};
+use nalgebra::{Isometry3, UnitQuaternion, Vector3};
 use ovr_overlay::overlay::{OverlayHandle, OverlayManager};
 use ovr_overlay::pose::{Matrix3x4, TrackingUniverseOrigin};
 use ovr_overlay::ColorTint;
