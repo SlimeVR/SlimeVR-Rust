@@ -11,6 +11,7 @@ use crate::model::{BoneKind, Isometry};
 use eyre::{Result, WrapErr};
 use nalgebra::{Translation3, UnitQuaternion};
 use ovr_overlay as ovr;
+use std::collections::HashSet;
 use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
@@ -52,17 +53,21 @@ async fn overlay(
     let mut skeleton = SkeletonBuilder::default()
         .build(mngr)
         .wrap_err("Could not create skeleton")?;
-    skeleton.set_visibility(true);
 
     log::info!("Overlay Loop");
 
     let loop_ = async {
+        let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
         loop {
             recv.changed()
                 .await
                 .wrap_err("Error while attempting to watch for feed update")?;
 
             log::trace!("Got a feed update");
+
+            // Mark all bones as "need to hide"
+            hidden_bones.extend(BoneKind::iter());
+
             let bones: Vec<_> = {
                 let guard = recv.borrow_and_update();
                 let table = guard.as_ref().unwrap().0.table();
@@ -103,6 +108,7 @@ async fn overlay(
                         let rot = UnitQuaternion::from_quaternion(
                             [rot.x(), rot.y(), rot.z(), rot.w()].into(),
                         );
+                        hidden_bones.remove(&bone_kind);
                         Some((bone_kind, pos, rot, length))
                     })
                     .collect()
@@ -119,7 +125,14 @@ async fn overlay(
                 };
                 skeleton.set_isometry(bone_kind, iso);
                 skeleton.set_length(bone_kind, length);
+                skeleton.set_visibility(bone_kind, true);
                 if let Err(e) = skeleton.update_render(bone_kind, mngr) {
+                    log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
+                }
+            }
+            for bone_kind in hidden_bones.iter() {
+                skeleton.set_visibility(*bone_kind, false);
+                if let Err(e) = skeleton.update_render(*bone_kind, mngr) {
                     log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
                 }
             }

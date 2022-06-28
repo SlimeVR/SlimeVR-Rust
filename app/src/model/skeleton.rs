@@ -97,18 +97,16 @@ impl Default for SkeletonBuilder {
 }
 
 pub struct Skeleton {
-    bones: BoneArena,
-    is_visible: bool,
+    pub bones: BoneArena,
 }
 #[allow(dead_code)]
 impl Skeleton {
     pub fn new(bones: BoneArena) -> Self {
-        let mut result = Self {
-            bones,
-            is_visible: false,
-        };
+        let mut result = Self { bones };
         // We explicitly set all bones to invisible, to reduce code brittleness.
-        result.set_visibility(false);
+        for b in BoneKind::iter() {
+            result.set_visibility(b, false);
+        }
         result
     }
 
@@ -128,17 +126,8 @@ impl Skeleton {
             .wrap_err("could not update render for bone")
     }
 
-    pub fn visibility(&self) -> bool {
-        self.is_visible
-    }
-
-    pub fn set_visibility(&mut self, is_visible: bool) {
-        if self.is_visible == is_visible {
-            return;
-        }
-        self.is_visible = is_visible;
-        for (_, bone) in self.bones.iter_mut() {
-            bone.set_visibility(is_visible);
-        }
+    pub fn set_visibility(&mut self, bone: BoneKind, is_visible: bool) {
+        let bone = &mut self.bones[bone];
+        bone.set_visibility(is_visible);
     }
 }
