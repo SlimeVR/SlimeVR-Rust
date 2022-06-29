@@ -67,7 +67,35 @@
 //!   will be solved for.
 //!
 //! # The Skeletal Solver
-//! TODO: We will document this soon
+//! The goal of the skeletal model is to take the input data (positions and rotations),
+//! and compute output data (positions and rotations).
+//!
+//! To accomplish this, the solver starts at any nodes with known positions and performs
+//! "[breadth-first search][bfs]" (BFS), expanding  "outward" from the known positions.
+//! As the traversal proceeds, it uses any known input positions or rotations to compute
+//! the output positions or rotations, step by step.
+//!
+//! [bfs]: https://en.wikipedia.org/wiki/Graph_traversal#Breadth-first_search
+//!
+//! Here is a breakdown of exactly how the outputs are computed from the inputs, at
+//! each step of the traversal:
+//! #### Edge
+//! * If there is an input rotation, copy it to the output rotation
+//! * If there is no input rotation, output the calibration rotation
+//!
+//! #### Node
+//! * If there is an input position, copy it to the output position
+//! * If there is no input position, use the previous edge's rotation and length to
+//!   compute the output position
+//!
+//! ## Handling Equidistant Nodes
+//! In some cases, a node that needs its output position computed, will be equidistant
+//! to two or more other nodes in the graph. In this case, due to small errors and
+//! inconsistencies of the actual global positions, this node will have a different
+//! output position depending on which of the nodes reaches it first. To avoid a
+//! scenario where the value switches between different outputs, a canonical order is
+//! used for the nodes. This order is unspecified, but guaranteed not to change until
+//! new input trackers are added/removed.
 
 mod edge;
 mod node;
