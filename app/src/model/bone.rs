@@ -8,6 +8,21 @@ use ovr_overlay::ColorTint;
 
 pub type Isometry = nalgebra::Isometry3<f32>;
 
+static OVERLAY_TEX: [u8; 40] = [
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF
+];
+
+const OVERLAY_TEX_WIDTH: usize = 10;
+
 #[derive(Debug)]
 pub struct Bone {
     overlays: (OverlayHandle, OverlayHandle),
@@ -16,6 +31,8 @@ pub struct Bone {
     radius: f32,
     length: f32,
     is_visible: bool,
+    // tmp
+    rotation: f32,
 }
 impl Bone {
     pub fn new(
@@ -34,7 +51,7 @@ impl Bone {
                 .wrap_err("Failed to create overlay")?;
             mngr.set_curvature(overlay, 1.)
                 .wrap_err("Failed to set curvature")?;
-            mngr.set_raw_data(overlay, &[255u8; 4], 1, 1, 4)
+            mngr.set_raw_data(overlay, &OVERLAY_TEX, OVERLAY_TEX_WIDTH, 1, 4)
                 .wrap_err("Failed to set raw data")?;
 
             Ok(overlay)
@@ -49,6 +66,7 @@ impl Bone {
             length,
             color,
             is_visible: false,
+            rotation: 0.0,
         })
     }
 
@@ -74,7 +92,7 @@ impl Bone {
             let mut f = |overlay| -> Result<()> {
                 mngr.set_width(overlay, self.circumference())
                     .wrap_err("Failed to set radius")?;
-                let aspect = self.circumference() / self.length;
+                let aspect = self.circumference() / self.length / OVERLAY_TEX_WIDTH as f32;
                 mngr.set_texel_aspect(overlay, aspect)
                     .wrap_err("Failed to set texture aspect ratio")?;
 
@@ -141,6 +159,14 @@ impl Bone {
                     &col_major_3x4,
                 )
                 .wrap_err("Failed to set transform")?;
+
+                mngr.set_texture_bounds(overlay, &ovr_overlay::sys::VRTextureBounds_t {
+                    uMin: 0.0 + self.rotation.fract() * 0.5,
+                    vMin: 0.0,
+                    uMax: 0.5 + self.rotation.fract() * 0.5,
+                    vMax: 0.5
+                })
+                .wrap_err("Failed to set UV coordinates")?;
                 Ok(())
             };
 
@@ -180,5 +206,9 @@ impl Bone {
 
     pub fn set_visibility(&mut self, is_visible: bool) {
         self.is_visible = is_visible;
+    }
+
+    pub fn set_rotation(&mut self, rot: f32) {
+        self.rotation = rot;
     }
 }

@@ -58,7 +58,12 @@ async fn overlay(
 
     let loop_ = async {
         let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
+        let mut rotation = 0.0f32;
         loop {
+            rotation += 0.01;
+            for (_, bone) in skeleton.bones.iter_mut() {
+                bone.set_rotation(rotation);
+            }
             recv.changed()
                 .await
                 .wrap_err("Error while attempting to watch for feed update")?;
