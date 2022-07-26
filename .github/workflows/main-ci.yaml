@@ -29,7 +29,7 @@ jobs:
           args: --all --all-features --all-targets --no-deps
 
   test:
-    name: Test
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,6 +40,12 @@ jobs:
           override: true
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v1
+
+      - name: Check that docs build
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --all --all-features --no-deps --document-private-items
 
       - name: Run tests
         uses: actions-rs/cargo@v1
