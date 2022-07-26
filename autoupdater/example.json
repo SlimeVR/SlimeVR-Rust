@@ -1,0 +1,8 @@
+{
+    "components": {
+        "hello": {
+            "url": "file://asdf",
+            "install_path": "/mnt/d"
+        }
+    }
+}
