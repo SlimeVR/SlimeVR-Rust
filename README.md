@@ -1,16 +1,17 @@
-# Ferrous SlimeVR
+# SlimeVR-Rust
 A monorepo for [SlimeVR's](https://github.com/SlimeVR) Rust code.
 
 
 ## Project Structure
-A monorepo stores mutliple librares all in one git repo. There are several applications
-and projects located in this monorepo:
+A monorepo stores mutliple librares and apps all in one git repo. This one contains:
+
 
 * [SlimeVR Overlay](overlay/): An OpenVR Overlay that displays the skeletal model of
   SlimeVR for easier debugging and tuning of body proportions
 * [Skeletal Model](skeletal_model/): A WIP implementation of a new fullbody FK/IK solver
   with the goal of being callable from several languages, including Typescript(node.js)
   and Java.
+* [Autoupdater](autoupdater/): A small utility for updating SlimeVR applications in unison.
 
 ## Motivation
 * Fulfill the Rewrite It In Rust meme
