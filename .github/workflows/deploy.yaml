@@ -100,13 +100,13 @@ jobs:
       - name: Create Linux Zip
         run: zip linux-x64.zip libopenvr_api.so slimevr_overlay
 
-      - name: Create Release
+      - name: Create Overlay Release
         uses: "marvinpinto/action-automatic-releases@d68defdd11f9dcc7f52f35c1b7c236ee7513bcc1"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          automatic_release_tag: "overlay-latest"
           prerelease: true
-          title: "Latest Build"
+          title: "Overlay - Latest Build"
           files: |
             windows-x64.zip
             linux-x64.zip

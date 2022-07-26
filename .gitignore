@@ -6,5 +6,5 @@ Cargo.lock
 .DS_Store
 
 # IDE stuff
-workspace.code-workspace
+/workspace.code-workspace
 .vscode/

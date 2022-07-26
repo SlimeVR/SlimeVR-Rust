@@ -105,11 +105,9 @@ impl Bone {
                     || y_direction == -Vector3::y_axis().into_inner()
                 {
                     // just use the existing rotation, there won't be any distortion
-                    iso.translation.vector += iso.rotation.transform_vector(&Vector3::new(
-                        0.,
-                        -self.length / 2.0,
-                        -self.radius,
-                    ));
+                    iso.translation.vector += iso.rotation.transform_vector(
+                        &Vector3::new(0., -self.length / 2.0, -self.radius),
+                    );
                     iso.to_homogeneous().remove_fixed_rows::<1>(3)
                 } else {
                     // We can freely rotate around `y_direction`, but to avoid
@@ -123,7 +121,8 @@ impl Bone {
 
                     // Now that we have the y direction and the z direction, we can
                     // form the rotation corresponding to this orientation.
-                    iso.rotation = UnitQuaternion::face_towards(&z_direction, &y_direction);
+                    iso.rotation =
+                        UnitQuaternion::face_towards(&z_direction, &y_direction);
                     // let x_basis = y_basis.cross(&z_basis).normalize();
 
                     // Fixes the "center of tube" issue and the "center of overlay"
@@ -145,8 +144,10 @@ impl Bone {
             };
 
             let flipped = {
-                let mut rotation =
-                    UnitQuaternion::from_axis_angle(&Vector3::y_axis(), std::f32::consts::PI);
+                let mut rotation = UnitQuaternion::from_axis_angle(
+                    &Vector3::y_axis(),
+                    std::f32::consts::PI,
+                );
                 rotation = self.iso.rotation * rotation;
                 Isometry3 {
                     rotation,

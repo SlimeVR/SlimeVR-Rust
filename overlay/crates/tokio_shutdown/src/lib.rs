@@ -81,8 +81,12 @@ impl<R: Clone, I> Listener<R, I> {
         }
         let reason = match self.b_receiver.recv().await {
             Ok(r) => ShutdownReason::Reason(r),
-            Err(broadcast::error::RecvError::Closed) => ShutdownReason::BroadcasterClosed,
-            Err(_) => unreachable!("we shouldn't be able to lag, only 1 shutdown is ever sent."),
+            Err(broadcast::error::RecvError::Closed) => {
+                ShutdownReason::BroadcasterClosed
+            }
+            Err(_) => unreachable!(
+                "we shouldn't be able to lag, only 1 shutdown is ever sent."
+            ),
         };
         self.shutdown_reason = Some(reason);
         self.shutdown_reason.as_ref().unwrap()
@@ -93,10 +97,14 @@ impl<R: Clone, I> Listener<R, I> {
     pub fn try_recv(&mut self) -> Option<&ShutdownReason<R>> {
         let reason = match self.b_receiver.try_recv() {
             Ok(r) => ShutdownReason::Reason(r),
-            Err(broadcast::error::TryRecvError::Closed) => ShutdownReason::BroadcasterClosed,
+            Err(broadcast::error::TryRecvError::Closed) => {
+                ShutdownReason::BroadcasterClosed
+            }
             Err(broadcast::error::TryRecvError::Empty) => return None,
             Err(broadcast::error::TryRecvError::Lagged(_)) => {
-                unreachable!("we shouldn't be able to lag, only 1 shutdown is ever sent.")
+                unreachable!(
+                    "we shouldn't be able to lag, only 1 shutdown is ever sent."
+                )
             }
         };
         self.shutdown_reason = Some(reason);

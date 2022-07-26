@@ -61,7 +61,9 @@ impl SkeletonBuilder {
         };
         let colors: BoneMap<RGBA> = colors
             .into_iter()
-            .map(|(kind, maybe_color)| (kind, maybe_color.unwrap_or_else(|| DEFAULT_COLORS[kind])))
+            .map(|(kind, maybe_color)| {
+                (kind, maybe_color.unwrap_or_else(|| DEFAULT_COLORS[kind]))
+            })
             .try_collect()
             .unwrap();
 
@@ -120,7 +122,11 @@ impl Skeleton {
         bone.set_length(len);
     }
 
-    pub fn update_render(&mut self, bone: BoneKind, mngr: &mut OverlayManager) -> eyre::Result<()> {
+    pub fn update_render(
+        &mut self,
+        bone: BoneKind,
+        mngr: &mut OverlayManager,
+    ) -> eyre::Result<()> {
         let bone = &mut self.bones[bone];
         bone.update_render(mngr)
             .wrap_err("could not update render for bone")
