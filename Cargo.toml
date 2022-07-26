@@ -1,2 +1,2 @@
 [workspace]
-members = ["app", "crates/tokio_shutdown"]
+members = ["overlay/app", "overlay/crates/tokio_shutdown"]
