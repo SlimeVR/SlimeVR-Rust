@@ -71,7 +71,8 @@ type MapIdxFnType<T> = fn((usize, T)) -> (BoneKind, T);
 
 pub type Iter<'a, T> = Map<Enumerate<std::slice::Iter<'a, T>>, MapIdxFnType<&'a T>>;
 
-pub type IterMut<'a, T> = Map<Enumerate<std::slice::IterMut<'a, T>>, MapIdxFnType<&'a mut T>>;
+pub type IterMut<'a, T> =
+    Map<Enumerate<std::slice::IterMut<'a, T>>, MapIdxFnType<&'a mut T>>;
 
 pub type IntoIter<T> =
     Map<Enumerate<std::array::IntoIter<T, { BoneKind::NUM_TYPES }>>, MapIdxFnType<T>>;

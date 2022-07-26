@@ -127,13 +127,19 @@ async fn overlay(
                 skeleton.set_length(bone_kind, length);
                 skeleton.set_visibility(bone_kind, true);
                 if let Err(e) = skeleton.update_render(bone_kind, mngr) {
-                    log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
+                    log::error!(
+                        "Error updating render for bone {bone_kind:?}: {:?}",
+                        e
+                    );
                 }
             }
             for bone_kind in hidden_bones.iter() {
                 skeleton.set_visibility(*bone_kind, false);
                 if let Err(e) = skeleton.update_render(*bone_kind, mngr) {
-                    log::error!("Error updating render for bone {bone_kind:?}: {:?}", e);
+                    log::error!(
+                        "Error updating render for bone {bone_kind:?}: {:?}",
+                        e
+                    );
                 }
             }
         }
@@ -152,8 +158,8 @@ async fn overlay(
 }
 
 async fn networking(subsys: SubsystemHandle) -> Result<()> {
-    let (client, recv) =
-        Client::new(CONNECT_STR.to_string(), subsys.clone()).wrap_err("Failed to start client")?;
+    let (client, recv) = Client::new(CONNECT_STR.to_string(), subsys.clone())
+        .wrap_err("Failed to start client")?;
     subsys.start("Overlay", |s| overlay(recv, s));
     client.join().await
 }

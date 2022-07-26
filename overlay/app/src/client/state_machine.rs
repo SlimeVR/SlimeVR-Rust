@@ -82,7 +82,9 @@ impl M<Disconnected> {
                     future::ready(Ok(Message::Binary(v)))
                 }
 
-                fn deserialize(msg: Result<Message, WsError>) -> Result<Data, DeserializeError> {
+                fn deserialize(
+                    msg: Result<Message, WsError>,
+                ) -> Result<Data, DeserializeError> {
                     log::trace!("Received websocket message");
                     use DeserializeError::*;
                     match msg {
@@ -116,14 +118,18 @@ pub struct Connected {
     fbb: FlatBufferBuilder<'static>,
 }
 impl M<Connected> {
-    pub async fn request_feed(mut self) -> Result<M<Active>, (M<Disconnected>, WsError)> {
+    pub async fn request_feed(
+        mut self,
+    ) -> Result<M<Active>, (M<Disconnected>, WsError)> {
         use solarxr_protocol::{
             data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
             MessageBundleArgs,
         };
         let fbb = &mut self.state.fbb;
         let data = {
-            use solarxr_protocol::data_feed::tracker::{TrackerDataMask, TrackerDataMaskArgs};
+            use solarxr_protocol::data_feed::tracker::{
+                TrackerDataMask, TrackerDataMaskArgs,
+            };
             use solarxr_protocol::data_feed::{
                 DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
                 StartDataFeedArgs,

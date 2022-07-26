@@ -39,7 +39,10 @@ impl Client {
         Ok((Self { socket_task }, data_recv))
     }
 
-    async fn run(connect_to: String, data_send: watch::Sender<Option<FeedUpdate>>) -> Result<()> {
+    async fn run(
+        connect_to: String,
+        data_send: watch::Sender<Option<FeedUpdate>>,
+    ) -> Result<()> {
         let mut disconnected = Some(ClientStateMachine::new(connect_to));
         loop {
             let ready = match disconnected.take().unwrap().connect().await {
@@ -83,11 +86,17 @@ impl Client {
                                 disconnected = Some(d);
                                 break;
                             }
-                            E::Deserialize(a, DeserializeError::PayloadType(_)) => active = Some(a),
+                            E::Deserialize(a, DeserializeError::PayloadType(_)) => {
+                                active = Some(a)
+                            }
                             E::Deserialize(a, d_err) => {
                                 match d_err {
-                                    DeserializeError::PayloadType(_) => log::trace!("{}", d_err),
-                                    _ => log::warn!("Deserialization error: {}", display),
+                                    DeserializeError::PayloadType(_) => {
+                                        log::trace!("{}", d_err)
+                                    }
+                                    _ => {
+                                        log::warn!("Deserialization error: {}", display)
+                                    }
                                 }
                                 active = Some(a);
                             }
