@@ -3,7 +3,7 @@ A monorepo for [SlimeVR's](https://github.com/SlimeVR) Rust code.
 
 
 ## Project Structure
-A monorepo stores mutliple librares all in one git repo. This monorepo contains:
+A monorepo stores mutliple librares and apps all in one git repo. This one contains:
 
 
 * [SlimeVR Overlay](overlay/): An OpenVR Overlay that displays the skeletal model of
