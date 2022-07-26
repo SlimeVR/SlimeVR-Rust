@@ -8,8 +8,8 @@ perspective while inside other VR apps.
 The latest builds are available in the published releases for [windows] and [linux].
 Simply give them a download, extract the files, and run the executable!
 
-[windows]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/latest/windows-x64.zip
-[linux]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/latest/linux-x64.zip
+[windows]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/overlay-latest/windows-x64.zip
+[linux]: https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/overlay-latest/linux-x64.zip
 
 
 ## Contributing
