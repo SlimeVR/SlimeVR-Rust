@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["EdgeKind","The different kinds of edges."]],"struct":[["Edge","`Edge`s represent the connections between the `Node`s of the skeleton."]]});

@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["slimevr_overlay","tokio_shutdown"];
+window.ALL_CRATES = ["skeletal_model","slimevr_overlay","tokio_shutdown"];

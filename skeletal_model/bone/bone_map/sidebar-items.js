@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["map_idx",""]],"struct":[["BoneMap","Provides a map of `BoneKind` -> `T`. Every possible `BoneKind` must have a corresponding value."]],"type":[["IntoIter",""],["Iter",""],["IterMut",""],["MapIdxFnType",""]]});

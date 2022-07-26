@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The skeleton, and its representation as a graph data structure."><meta name="keywords" content="rust, rustlang, rust-lang, skeleton"><title>skeletal_model::skeleton - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Module skeleton</a></h2><div class="sidebar-elems"><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li></ul></div></section><div id="sidebar-vars" data-name="skeleton" data-ty="mod" data-relpath="./"></div><script defer src="./sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../skeletal_model/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Module <a href="../index.html">skeletal_model</a>::<wbr><a class="mod" href="#">skeleton</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../../src/skeletal_model/skeleton/mod.rs.html#1-210">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The skeleton, and its representation as a graph data structure.</p>
+<p>The bread and butter of the skeletal model is the <a href="struct.Skeleton.html" title="Skeleton"><code>Skeleton</code></a>, which models the
+pose of a human. The skeleton is comprised of various bones and joints, and there
+are trackers that get “attached” to the skeleton that represent the trackers worn
+when using FBT.</p>
+<h2 id="inputs-and-outputs-of-the-skeleton"><a href="#inputs-and-outputs-of-the-skeleton">Inputs and Outputs of the Skeleton</a></h2>
+<p>The input trackers are what provide position and/or rotation to the skeleton.</p>
+<p>The output trackers are for providing 6DOF simulated “trackers” for use in apps that
+expect 6DOF trackers. These can be used similarly to how vive trackers are used.
+The pose of the various bones in the skeleton can also be read directly, instead of
+using the output trackers.</p>
+<h2 id="calibration"><a href="#calibration">Calibration</a></h2>
+<p>Before the skeleton can solve for the pose of the various bones and output trackers,
+it needs the user to stand in an initial calibration pose. This pose is
+pre-determined, and is necessary to compute the relative transforms of the input
+trackers to the bones they are attached to.</p>
+<p>Calibration may be necessary any time the local transform of the tracker with
+respect to its attached bone changes. This may occur in the following scenarios:</p>
+<ul>
+<li>The physical tracker was not securely mounted to the body and shifted during use.</li>
+<li>It is a 3DOF tracker experiencing IMU drift, such that the orientation
+has diverged from the true value.</li>
+<li>The lengths of the bones in the skeleton have been adjusted.</li>
+</ul>
+<h2 id="skeleton-structure"><a href="#skeleton-structure">Skeleton Structure</a></h2>
+<p>Fundamentally, the skeleton is a graph data structure. The graph is a “tree” with
+the root of the tree at the head of the skeleton. This graph consists of edges
+and nodes. Each edge has a “head” and a “tail” node. By convention, the side of the
+edge closer to the root of the tree is the head, and the side further is the tail.
+This gives a consistent directionality for the tree and makes it easier to describe
+parent/child relationships.</p>
+<h3 id="the-different-kinds-of-edges"><a href="#the-different-kinds-of-edges">The Different Kinds of Edges</a></h3>
+<p>While all edges hold the same data internally, they play slightly different
+roles depending on what the edge represents. There are really two types of edges:</p>
+<ul>
+<li>A regular bone in the human skeleton.</li>
+<li>An offset between a tracker (either input or output) and the bone it is attached
+to.</li>
+</ul>
+<p>The only difference between these two is that a tracker edge never has any children,
+and always has a bone as its parent. Also, its local transform with respect to its
+parent never changes between calibrations because unlike bones, trackers are assumed
+not to move once they are calibrated, whereas bones bend at their joints.</p>
+<h3 id="data-in-the-skeleton"><a href="#data-in-the-skeleton">Data in the Skeleton</a></h3>
+<p>The data associated with edges in the skeleton is different from the data associated
+with nodes.</p>
+<h5 id="edge"><a href="#edge">Edge</a></h5>
+<ul>
+<li><a href="../prelude/type.UnitQuat.html">Rotation</a>, both the local rotation from calibration, as well as the
+latest global rotation. If the latest global rotation is not directly provided via
+an input tracker, this will be solved for.</li>
+<li>Type of edge (either <a href="../bone/bone_kind/enum.BoneKind.html" title="BoneKind"><code>BoneKind</code></a>, input tracker, or output tracker)</li>
+<li>The length of the edge. This is defined by the user for bones, and computed at
+calibration time for tracker edges.</li>
+</ul>
+<h5 id="node"><a href="#node">Node</a></h5>
+<ul>
+<li>The latest global position. If not directly provided via an input tracker, this
+will be solved for.</li>
+</ul>
+<h2 id="the-skeletal-solver"><a href="#the-skeletal-solver">The Skeletal Solver</a></h2>
+<p>The goal of the skeletal model is to take the input data (positions and rotations),
+and compute output data (positions and rotations).</p>
+<p>To accomplish this, the solver starts at any nodes with known positions and performs
+“<a href="https://en.wikipedia.org/wiki/Graph_traversal#Breadth-first_search">breadth-first search</a>” (BFS), expanding  “outward” from the known positions.
+As the traversal proceeds, it uses any known input positions or rotations to compute
+the output positions or rotations, step by step.</p>
+<p>Here is a breakdown of exactly how the outputs are computed from the inputs, at
+each step of the traversal:</p>
+<h5 id="edge-1"><a href="#edge-1">Edge</a></h5>
+<ul>
+<li>If there is an input rotation, copy it to the output rotation</li>
+<li>If there is no input rotation, output the calibration rotation</li>
+</ul>
+<h5 id="node-1"><a href="#node-1">Node</a></h5>
+<ul>
+<li>If there is an input position, copy it to the output position</li>
+<li>If there is no input position, use the previous edge’s rotation and length to
+compute the output position</li>
+</ul>
+<h3 id="handling-equidistant-nodes"><a href="#handling-equidistant-nodes">Handling Equidistant Nodes</a></h3>
+<p>In some cases, a node that needs its output position computed, will be equidistant
+to two or more other nodes in the graph. In this case, due to small errors and
+inconsistencies of the actual global positions, this node will have a different
+output position depending on which of the nodes reaches it first. To avoid a
+scenario where the value switches between different outputs, a canonical order is
+used for the nodes. This order is unspecified, but guaranteed not to change until
+new input trackers are added/removed.</p>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="edge/index.html" title="skeletal_model::skeleton::edge mod">edge</a><span title="Restricted Visibility">&nbsp;🔒</span> </div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="node/index.html" title="skeletal_model::skeleton::node mod">node</a><span title="Restricted Visibility">&nbsp;🔒</span> </div><div class="item-right docblock-short"></div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Skeleton.html" title="skeletal_model::skeleton::Skeleton struct">Skeleton</a></div><div class="item-right docblock-short"><p>The <code>Skeleton</code> provides a way of reading, writing, and solving for the pose of
+a human wearing FBT.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.SkeletonConfig.html" title="skeletal_model::skeleton::SkeletonConfig struct">SkeletonConfig</a></div><div class="item-right docblock-short"><p>Used to initialize the <a href="struct.Skeleton.html" title="Skeleton"><code>Skeleton</code></a> with its initial parameters</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.1 (e092d0b6b 2022-07-16)" ></div>
+</body></html>

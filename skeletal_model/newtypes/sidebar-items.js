@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["impl_helper","Implements `From<T> for $ident<T>`"]],"mod":[["private",""]],"struct":[["Global","A newtype on `T` that indicates that it is a global transform."],["Local","A newtype on `T` that indicates that it is a local transform."]]});

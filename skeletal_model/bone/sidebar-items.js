@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["BoneKind","Describes the various types of bones in the skeleton."]],"mod":[["bone_kind",""],["bone_map",""]],"struct":[["BoneMap","Provides a map of `BoneKind` -> `T`. Every possible `BoneKind` must have a corresponding value."]]});
