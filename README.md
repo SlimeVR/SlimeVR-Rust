@@ -16,11 +16,11 @@ and projects located in this monorepo:
 * Fulfill the Rewrite It In Rust meme
 * Anger Java developers
 
-Jokes aside, the official Java and C++ implementations of SlimeVR are here to
-stay. Many people know Java and C++, but there is a growing interest in Rust too. By
-providing this repository, we hope to encourage people interested in rust to contribute
-to SlimeVR. This may lead to new applications and features that can either work
-alongside, or give back to, the mainline Java codebase.
+Jokes aside, the official Java and C++ implementations of SlimeVR make up most of the
+core SlimeVR codebase. Many people know Java and C++, but there is a growing interest
+in Rust too. By providing this repository, we hope to encourage people interested in
+rust to contribute to SlimeVR. This may lead to new applications and features that can
+either work alongside, or give back to, the mainline Java codebase.
 
 
 ## License
