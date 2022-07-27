@@ -1,10 +1,10 @@
-mod version;
+mod parsing;
 
 use clap::Parser;
 use eyre::{Result, WrapErr};
 use lazy_static::lazy_static;
+use parsing::Components;
 use reqwest::Url;
-use version::Components;
 
 lazy_static! {
     static ref VERSIONING_URL: Url = Url::parse(
@@ -33,8 +33,8 @@ async fn main() -> Result<()> {
         .await
         .wrap_err("Failed to decode response body")?;
 
-    let components: Components = serde_json::from_str(&body).wrap_err_with(|| {
-        format!("Could not deserialize JSON, response was:\n{body}")
+    let components: Components = serde_yaml::from_str(&body).wrap_err_with(|| {
+        format!("Could not deserialize YAML, response was:\n{body}")
     })?;
     println!("components: {components:?}");
     Ok(())
