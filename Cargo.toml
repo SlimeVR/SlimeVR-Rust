@@ -1,2 +1,9 @@
 [workspace]
-members = ["overlay/app", "overlay/tokio_shutdown", "skeletal_model"]
+members = [
+    "autoupdater",
+    "overlay/app",
+    "overlay/tokio_shutdown",
+    "skeletal_model",
+]
+
+resolver = "2"

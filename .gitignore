@@ -1,6 +1,5 @@
 # Cargo stuff
 /target
-Cargo.lock
 
 # OS-specific stuff
 .DS_Store
