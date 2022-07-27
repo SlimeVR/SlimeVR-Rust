@@ -2,7 +2,7 @@
 The SlimeVR autoupdater manages updating all the software for SlimeVR on a user's
 computer. It does not handle updates of firmware.
 
-It reads a version.yaml file from a github release to determine the versions of the
+It reads a `version.yaml` file from a github release to determine the versions of the
 software to download, then fetches them and installs them.
 
 Long term, we may use this to replace most or all of the business logic of the current
