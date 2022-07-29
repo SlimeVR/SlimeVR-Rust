@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main",""]],"mod":[["parsing","Describes the format of the versioning file"]],"struct":[["Args",""],["VERSIONING_URL",""]]});
+initSidebarItems({"mod":[["parsing","Describes the format of the versioning file"]]});
