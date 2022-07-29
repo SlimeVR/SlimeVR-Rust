@@ -13,7 +13,6 @@
 //! change/simplify it if it really confuses people.
 
 use derive_more::From;
-use eyre::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf};
 use url::Url;
@@ -23,23 +22,13 @@ use url::Url;
 /// Single files are placed in this dir, and zip files are unzipped into this dir.
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "snake_case")]
-pub enum InstallPath<T = PathBuf> {
+pub enum InstallPath {
     /// Just a regular path
-    Normal(T),
+    Normal(PathBuf),
     /// A path relative to the SlimeVR installation dir
-    RelativeToSlime(T),
+    RelativeToSlime(PathBuf),
     /// A path relative to the SteamVR installation dir
-    RelativeToSteam(T),
-}
-impl<T: Into<PathBuf>> InstallPath<T> {
-    /// Converts the inner type to a [`PathBuf`].
-    pub fn normalize(self) -> InstallPath<PathBuf> {
-        match self {
-            Self::Normal(p) => InstallPath::Normal(p.into()),
-            Self::RelativeToSlime(p) => InstallPath::RelativeToSlime(p.into()),
-            Self::RelativeToSteam(p) => InstallPath::RelativeToSteam(p.into()),
-        }
-    }
+    RelativeToSteam(PathBuf),
 }
 
 /// This enum allows us to represent a `T` that may or may not depend on the platform
@@ -51,33 +40,6 @@ pub enum MaybeCrossPlatform<T> {
     Cross(T),
     /// This `T` depends on the `Platform`
     NotCross(HashMap<Platform, T>),
-}
-impl<T> MaybeCrossPlatform<T> {
-    /// Attempts to map from `T` to `U` using the function provided. If any of
-    /// the elements fail with an `Err(E)`, the function will stop and return the error.
-    pub fn try_map<U>(
-        self,
-        mut f: impl FnMut(T) -> Result<U>,
-    ) -> Result<MaybeCrossPlatform<U>> {
-        Ok(match self {
-            Self::Cross(t) => MaybeCrossPlatform::Cross(f(t)?),
-            Self::NotCross(m) => MaybeCrossPlatform::NotCross(
-                m.into_iter()
-                    .map(|(key, val)| f(val).map(|val| (key, val)))
-                    .collect::<Result<_>>()?,
-            ),
-        })
-    }
-
-    /// Maps the `T` to `U` using the function provided.
-    pub fn map<U>(self, mut f: impl FnMut(T) -> U) -> MaybeCrossPlatform<U> {
-        match self {
-            Self::Cross(t) => MaybeCrossPlatform::Cross(f(t)),
-            Self::NotCross(m) => MaybeCrossPlatform::NotCross(
-                m.into_iter().map(|(key, value)| (key, f(value))).collect(),
-            ),
-        }
-    }
 }
 /// Type alias so we don't have long ass names
 type MCP<T> = MaybeCrossPlatform<T>;
@@ -98,22 +60,11 @@ pub enum Platform {
 
 /// Describes all the information about a component and how to install it.
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
-pub struct ComponentInfo<U = Url, P = PathBuf> {
+pub struct ComponentInfo {
     /// The URL from which this component is downloaded.
-    download_url: MCP<U>,
+    download_url: MCP<Url>,
     /// The dir to which this component is installed.
-    install_dir: MCP<InstallPath<P>>,
-}
-impl<U: TryInto<Url, Error = url::ParseError>, P: Into<PathBuf>> ComponentInfo<U, P> {
-    /// Converts the inner types into the default type arguments.
-    pub fn normalize(self) -> Result<ComponentInfo> {
-        Ok(ComponentInfo {
-            download_url: self
-                .download_url
-                .try_map(|url| url.try_into().wrap_err("Failed to parse"))?,
-            install_dir: self.install_dir.map(InstallPath::normalize),
-        })
-    }
+    install_dir: MCP<InstallPath>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Hash, Eq, PartialEq)]
@@ -141,37 +92,45 @@ mod tests {
     use super::*;
     use lazy_static::lazy_static;
 
+    // These have been split out because rustfmt shits the bed when lines exceed the
+    // max_width and can't be wrapped for it
+    const SERVER_WINDOWS: &str = "https://github.com/SlimeVR/SlimeVR-Server/releases/download/v0.2.0/slimevr.jar";
+    const OVERLAY_WINDOWS: &str = "https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/windows-x64.zip";
+    const OVERLAY_LINUX: &str = "https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/linux-x64.zip";
+
     lazy_static! {
-        static ref EXAMPLE_STRUCT: Components = Components(HashMap::from([
-            (
+        static ref EXAMPLE_STRUCT: Components = {
+            let mut components = HashMap::new();
+            components.insert(
                 ComponentName::Server,
                 ComponentInfo {
-                    download_url: "https://github.com/SlimeVR/SlimeVR-Server/releases/download/v0.2.0/slimevr.jar".into(),
-                    install_dir: InstallPath::RelativeToSlime("").into(),
-                }.normalize().unwrap()
-            ),
-            (
+                    download_url: Url::parse(SERVER_WINDOWS).unwrap().into(),
+                    install_dir: InstallPath::RelativeToSlime(PathBuf::from("")).into(),
+                },
+            );
+            components.insert(
                 ComponentName::Overlay,
                 ComponentInfo {
-                    download_url: MCP::NotCross(HashMap::from([(
-                        Platform::Windows64,
-                        "https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/windows-x64.zip",
-                    ),
-                    (
-                        Platform::Linux64,
-                        "https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/linux-x64.zip"
-                    )])),
-                    install_dir: InstallPath::RelativeToSlime("overlay").into()
-                }.normalize().unwrap()
-            ),
-            (
+                    download_url: MCP::NotCross(HashMap::from([
+                        (Platform::Windows64, Url::parse(OVERLAY_WINDOWS).unwrap()),
+                        (Platform::Linux64, Url::parse(OVERLAY_LINUX).unwrap()),
+                    ])),
+                    install_dir: InstallPath::RelativeToSlime(PathBuf::from("overlay"))
+                        .into(),
+                },
+            );
+            components.insert(
                 ComponentName::Unknown,
                 ComponentInfo {
-                    download_url: "https://github.com/SlimeVR/whatever".into(),
-                    install_dir: InstallPath::Normal(PathBuf::from(r"D:\s\nuts")).into()
-                }.normalize().unwrap()
-            ),
-        ]));
+                    download_url: Url::parse("https://github.com/SlimeVR/whatever")
+                        .unwrap()
+                        .into(),
+                    install_dir: InstallPath::Normal(PathBuf::from(r"D:\s\nuts"))
+                        .into(),
+                },
+            );
+            Components(components)
+        };
     }
 
     const EXAMPLE_STR: &str = r#"
@@ -189,7 +148,7 @@ mod tests {
             download_url: https://github.com/SlimeVR/whatever
             install_dir:
                 normal: D:\s\nuts
-        "#;
+    "#;
 
     #[test]
     fn test_round_trip() -> eyre::Result<()> {

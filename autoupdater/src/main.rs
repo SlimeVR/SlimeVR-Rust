@@ -1,9 +1,8 @@
-mod parsing;
+// mod parsing;
 
 use clap::Parser;
 use eyre::{Result, WrapErr};
 use lazy_static::lazy_static;
-use parsing::Components;
 use reqwest::Url;
 
 lazy_static! {
@@ -33,9 +32,9 @@ async fn main() -> Result<()> {
         .await
         .wrap_err("Failed to decode response body")?;
 
-    let components: Components = serde_yaml::from_str(&body).wrap_err_with(|| {
-        format!("Could not deserialize YAML, response was:\n{body}")
-    })?;
-    println!("components: {components:?}");
+    // let components: Components = serde_yaml::from_str(&body).wrap_err_with(|| {
+    // format!("Could not deserialize YAML, response was:\n{body}")
+    // })?;
+    // println!("components: {components:?}");
     Ok(())
 }
