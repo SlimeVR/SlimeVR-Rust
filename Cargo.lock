@@ -208,11 +208,13 @@ dependencies = [
  "clap 3.2.15",
  "derive_more",
  "eyre",
+ "futures",
  "lazy_static",
  "reqwest",
  "serde",
  "serde-enum-str",
  "serde_yaml",
+ "tempfile",
  "tokio",
  "url",
 ]
