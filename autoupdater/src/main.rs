@@ -20,7 +20,7 @@ struct Args {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
-    let body = reqwest::get(args.url.clone())
+    let _body = reqwest::get(args.url.clone())
         .await
         .wrap_err_with(|| {
             format!(
