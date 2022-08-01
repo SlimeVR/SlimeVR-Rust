@@ -17,6 +17,9 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf};
 use url::Url;
 
+// These give us the ability to use #[serde(other)] on string tuples
+use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
+
 /// The location to install a component.
 ///
 /// Single files are placed in this dir, and zip files are unzipped into this dir.
@@ -45,7 +48,7 @@ pub enum MaybeCrossPlatform<T> {
 type MCP<T> = MaybeCrossPlatform<T>;
 
 /// Represents a target platform for SlimeVR
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum Platform {
     Windows64,
@@ -55,7 +58,7 @@ pub enum Platform {
     /// We might get this variant if we added a new platform that we want to support,
     /// but the updater hasn't updated to understand it yet.
     #[serde(other)]
-    Unknown,
+    Unknown(String),
 }
 
 /// Describes all the information about a component and how to install it.
@@ -67,7 +70,7 @@ pub struct ComponentInfo {
     install_dir: MCP<InstallPath>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Hash, Eq, PartialEq)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Hash, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum ComponentName {
     Overlay,
@@ -81,7 +84,7 @@ pub enum ComponentName {
     /// This might happen if the autoupdater has not yet updated to know about this
     /// component.
     #[serde(other)]
-    Unknown,
+    Unknown(String),
 }
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -90,6 +93,7 @@ pub struct Components(HashMap<ComponentName, ComponentInfo>);
 #[cfg(test)]
 mod tests {
     use super::*;
+
     use lazy_static::lazy_static;
 
     // These have been split out because rustfmt shits the bed when lines exceed the
@@ -120,13 +124,25 @@ mod tests {
                 },
             );
             components.insert(
-                ComponentName::Unknown,
+                ComponentName::Unknown("a_new_component".to_string()),
                 ComponentInfo {
                     download_url: Url::parse("https://github.com/SlimeVR/whatever")
                         .unwrap()
                         .into(),
                     install_dir: InstallPath::Normal(PathBuf::from(r"D:\s\nuts"))
                         .into(),
+                },
+            );
+            components.insert(
+                ComponentName::Unknown("another_component".to_string()),
+                ComponentInfo {
+                    download_url: Url::parse("https://github.com/slimeVR/another")
+                        .unwrap()
+                        .into(),
+                    install_dir: MCP::NotCross(HashMap::from([
+                        (Platform::Windows64, InstallPath::Normal("".into())),
+                        (Platform::Linux64, InstallPath::Normal("".into())),
+                    ])),
                 },
             );
             Components(components)
@@ -148,6 +164,13 @@ mod tests {
             download_url: https://github.com/SlimeVR/whatever
             install_dir:
                 normal: D:\s\nuts
+        another_component:
+            download_url: https://github.com/slimeVR/another
+            install_dir:
+                windows64:
+                    normal: ""
+                linux64:
+                    normal: ""
     "#;
 
     #[test]
