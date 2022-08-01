@@ -23,6 +23,9 @@ in Rust too. By providing this repository, we hope to encourage people intereste
 rust to contribute to SlimeVR. This may lead to new applications and features that can
 either work alongside, or give back to, the mainline Java codebase.
 
+## Contributing
+A guide for contributors can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
+
 
 ## License
 All code in this repository is dual-licensed under either:
