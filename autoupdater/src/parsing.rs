@@ -1,18 +1,13 @@
 //! Describes the format of the versioning file
 //!
-//! The autoupdater will fetch a versioning file from a github release, which describes
-//! what the latest version of all the different pieces of SlimeVR software should be
-//! update to, in unison.
+//! The versioning file describes what the latest version of all the different pieces
+//! of SlimeVR software should be updated to, so that the update can be performed
+//! atomically.
 //!
 //! This file gets deserialized to our [`Components`] datastructure using [`serde`].
-//!
-//! Note: A lot of the types in this module are generic over `U: TryInto<Url>` and the
-//! like. This is to make creating the datatypes using strings instead of `Url`s and
-//! `PathBuf`s easier. If you are reading the code and are a rust beginner, and it
-//! really confuses you, please post in the SlimeVR discord. I might decide to
-//! change/simplify it if it really confuses people.
 
 use derive_more::From;
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf};
 use url::Url;
@@ -44,11 +39,36 @@ pub enum MaybeCrossPlatform<T> {
     /// This `T` depends on the `Platform`
     NotCross(HashMap<Platform, T>),
 }
+impl<T> MaybeCrossPlatform<T> {
+    /// Gets the `T` for the current platform.
+    pub fn get(&self) -> Option<&T> {
+        match self {
+            MaybeCrossPlatform::Cross(inner) => Some(inner),
+            MaybeCrossPlatform::NotCross(map) => map.get(Platform::current()),
+        }
+    }
+
+    pub fn get_mut(&mut self) -> Option<&mut T> {
+        match self {
+            MaybeCrossPlatform::Cross(inner) => Some(inner),
+            MaybeCrossPlatform::NotCross(map) => map.get_mut(Platform::current()),
+        }
+    }
+
+    pub fn get_owned(self) -> Option<T> {
+        match self {
+            MaybeCrossPlatform::Cross(inner) => Some(inner),
+            MaybeCrossPlatform::NotCross(mut map) => map.remove(Platform::current()),
+        }
+    }
+}
 /// Type alias so we don't have long ass names
-type MCP<T> = MaybeCrossPlatform<T>;
+pub type MCP<T> = MaybeCrossPlatform<T>;
 
 /// Represents a target platform for SlimeVR
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Eq, PartialEq, Hash)]
+#[derive(
+    Deserialize_enum_str, Serialize_enum_str, Clone, Debug, Eq, PartialEq, Hash,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum Platform {
     Windows64,
@@ -60,14 +80,26 @@ pub enum Platform {
     #[serde(other)]
     Unknown(String),
 }
+impl Platform {
+    pub fn current() -> &'static Platform {
+        #[cfg(all(target_os = "windows", target_arch = "x86_64"))]
+        return &Platform::Windows64;
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+        return &Platform::Linux64;
+        lazy_static! {
+            static ref PLATFORM: Platform = Platform::Unknown("unknown".to_string());
+        }
+        &PLATFORM
+    }
+}
 
 /// Describes all the information about a component and how to install it.
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct ComponentInfo {
     /// The URL from which this component is downloaded.
-    download_url: MCP<Url>,
+    pub download_url: MCP<Url>,
     /// The dir to which this component is installed.
-    install_dir: MCP<InstallPath>,
+    pub install_dir: MCP<InstallPath>,
 }
 
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Hash, Eq, PartialEq)]
@@ -88,7 +120,7 @@ pub enum ComponentName {
 }
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
-pub struct Components(HashMap<ComponentName, ComponentInfo>);
+pub struct Components(pub HashMap<ComponentName, ComponentInfo>);
 
 #[cfg(test)]
 mod tests {
