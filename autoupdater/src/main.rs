@@ -3,6 +3,7 @@ mod parsing;
 use parsing::Components;
 
 use clap::Parser;
+use color_eyre::eyre;
 use eyre::{Result, WrapErr};
 use futures::future::join_all;
 use lazy_static::lazy_static;
@@ -42,6 +43,9 @@ macro_rules! try_get {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
+    color_eyre::install()?; // pwetty errors UwU 👉👈
+
+    // Read yaml file from url or path
     let versioning = if let Some(p) = args.path {
         std::fs::read_to_string(p)
             .wrap_err("Failed to read versioning.yaml from file")?
@@ -59,6 +63,7 @@ async fn main() -> Result<()> {
             .wrap_err("Failed to decode response body")?
     };
 
+    // Parse/deserialize yaml
     let components: Components =
         serde_yaml::from_str(&versioning).wrap_err_with(|| {
             format!("Could not deserialize YAML, whose contents was:\n{versioning}")
@@ -66,11 +71,12 @@ async fn main() -> Result<()> {
 
     let tmp_dir = tempdir().wrap_err("Failed to create temporary directory")?;
 
-    let mut tasks = Vec::new();
+    // Download each component, storing the async tasks in `download_tasks`
+    let mut download_tasks = Vec::new();
     for (comp_name, comp_info) in components.0.into_iter() {
         println!("Downloading component: {comp_name}...");
         let url = try_get!(comp_info.download_url.get_owned());
-        let path = try_get!(comp_info.install_dir.get_owned());
+        let install_path = try_get!(comp_info.install_dir.get_owned());
 
         let mut response = reqwest::get(url.clone()).await.wrap_err_with(|| {
             format!("Failed to download `{comp_name}` from URL: {url}")
@@ -90,18 +96,37 @@ async fn main() -> Result<()> {
             while let Some(mut b) = response
                 .chunk()
                 .await
-                .wrap_err("error while drinking chunks")?
+                .wrap_err("error while slurping chunks")?
             {
                 file.write_all_buf(&mut b)
                     .await
                     .wrap_err("Error while writing to file")?
             }
-            Ok((file, path))
+            Ok((file, install_path))
         });
-        tasks.push(task);
+        download_tasks.push(task);
     }
-    let v: Vec<_> = join_all(tasks).await;
-    println!("{:?}", v);
+
+    // Check that all components downloaded successfully
+    let downloads: Result<Vec<_>> = join_all(download_tasks)
+        .await
+        .into_iter()
+        .map(|t| {
+            Ok(t.wrap_err("couldn't join task")?
+                .wrap_err("failed download of component")?)
+        })
+        .collect();
+    let downloads = downloads?;
+
+    // Back up the original files, if they exist at the target paths
+    for (file, install_path) in downloads {
+        let install_path = install_path.to_path().wrap_err_with(|| {
+            format!("Failed to convert to path. Original path: {install_path:?}")
+        });
+        println!("install_path: {install_path:?}");
+    }
+
+    println!("Press enter to quit...");
     std::io::stdin().read_line(&mut String::new()).unwrap();
     Ok(())
 }

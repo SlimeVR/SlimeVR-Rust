@@ -6,64 +6,19 @@
 //!
 //! This file gets deserialized to our [`Components`] datastructure using [`serde`].
 
+mod install_path;
+mod mcp;
+pub use install_path::InstallPath;
+pub use mcp::{MaybeCrossPlatform, MCP};
+
 use derive_more::From;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, path::PathBuf};
+use std::collections::HashMap;
 use url::Url;
 
 // These give us the ability to use #[serde(other)] on string tuples
 use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
-
-/// The location to install a component.
-///
-/// Single files are placed in this dir, and zip files are unzipped into this dir.
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
-#[serde(rename_all = "snake_case")]
-pub enum InstallPath {
-    /// Just a regular path
-    Normal(PathBuf),
-    /// A path relative to the SlimeVR installation dir
-    RelativeToSlime(PathBuf),
-    /// A path relative to the SteamVR installation dir
-    RelativeToSteam(PathBuf),
-}
-
-/// This enum allows us to represent a `T` that may or may not depend on the platform
-/// that we wish to install for.
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, From)]
-#[serde(untagged)]
-pub enum MaybeCrossPlatform<T> {
-    /// This `T` is the same across all platforms.
-    Cross(T),
-    /// This `T` depends on the `Platform`
-    NotCross(HashMap<Platform, T>),
-}
-impl<T> MaybeCrossPlatform<T> {
-    /// Gets the `T` for the current platform.
-    pub fn get(&self) -> Option<&T> {
-        match self {
-            MaybeCrossPlatform::Cross(inner) => Some(inner),
-            MaybeCrossPlatform::NotCross(map) => map.get(Platform::current()),
-        }
-    }
-
-    pub fn get_mut(&mut self) -> Option<&mut T> {
-        match self {
-            MaybeCrossPlatform::Cross(inner) => Some(inner),
-            MaybeCrossPlatform::NotCross(map) => map.get_mut(Platform::current()),
-        }
-    }
-
-    pub fn get_owned(self) -> Option<T> {
-        match self {
-            MaybeCrossPlatform::Cross(inner) => Some(inner),
-            MaybeCrossPlatform::NotCross(mut map) => map.remove(Platform::current()),
-        }
-    }
-}
-/// Type alias so we don't have long ass names
-pub type MCP<T> = MaybeCrossPlatform<T>;
 
 /// Represents a target platform for SlimeVR
 #[derive(
@@ -89,6 +44,7 @@ impl Platform {
         lazy_static! {
             static ref PLATFORM: Platform = Platform::Unknown("unknown".to_string());
         }
+        #[allow(unused)]
         &PLATFORM
     }
 }
@@ -124,6 +80,8 @@ pub struct Components(pub HashMap<ComponentName, ComponentInfo>);
 
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+
     use super::*;
 
     use lazy_static::lazy_static;
@@ -206,7 +164,7 @@ mod tests {
     "#;
 
     #[test]
-    fn test_round_trip() -> eyre::Result<()> {
+    fn test_round_trip() -> color_eyre::Result<()> {
         let deserialized: Components = serde_yaml::from_str(EXAMPLE_STR)?;
         let round_tripped: Components =
             serde_yaml::from_str(&serde_yaml::to_string(&deserialized)?)?;
