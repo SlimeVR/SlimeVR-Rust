@@ -17,6 +17,13 @@ use [this] link. For Linux, simply `sudo apt-get install -y libclang-dev`.
 
 You will also need SteamVR installed.
 
+### Steam Deck
+
+If you are building on the steam deck, be sure that you have all the necessary libraries
+for native development installed. To get them, follow [these] instructions.
+
+[these]: https://www.reddit.com/r/SteamDeck/comments/t92ozw/for_compiling_c_code/
+
 
 ## Building
 
