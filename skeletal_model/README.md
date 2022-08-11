@@ -7,7 +7,8 @@ Written in Rust, callable from Java and Typescript/Node.js.
 
 > This is *not* the official skeletal model for SlimeVR, that model is
 > [here][official model], intertwined deep in the official SlimeVR Server
-> codebase. This alternative implementation seeks to improve on the official one.
+> codebase. This alternative implementation seeks to improve on the official one
+> and experiment with some new concepts.
 
 ## 📝 How does it work?
 
@@ -38,8 +39,8 @@ out and help make this a reality!
 - [X] Everything well documented.
 - [X] Supports basic positional constraints (Vive trackers).
 - [X] Supports rotational constraints (SlimeVR trackers).
-- [ ] Align tracker inputs (IMU yaw alignment).
 - [ ] Implement solver to turn the constraints into the estimated skeleton pose.
+- [ ] Align tracker inputs (IMU yaw alignment).
 - [ ] Provide TypeScript/Node.js bindings.
 - [ ] Validate that the library works by using it in a Typescript or Rust implementation of the SlimeVR server.
 - [ ] Provide Java bindings.
@@ -52,19 +53,15 @@ out and help make this a reality!
 [nalgebra]: https://nalgebra.org/
 [java server]: https://github.com/SlimeVR/SlimeVR-Server
 
-[^1]: This is *not* the official skeletal model for SlimeVR, that model is actually 
-[here][official model] intertwined deep in the official SlimeVR Server codebase. This
-alternative implementation seeks to improve on the official one and experiment with some
-new concepts
 
 [^1]: For now, "all" means Typescript, and then later, Java. If you have a language you are
-passionate about adding support for, just file an issue! If it can talk to C, it can talk to
-Rust.
+passionate about using this in, just file an issue!
 
 [^2]: This is both unlikely and also not strictly necessary. Unlikely because 
 [Eiren](https://github.com/Eirenliel), the creator slime behind SlimeVR, has stated that
 they have no interest in rewriting the skeletal model in Rust or making it use anything other
 than Java. There may still be a chance that this can be integrated into the official server
-behind some compilation/feature flags. It might instead get ported by others to Java. Either
-this library adds some features that don't exist in the official model, and has a different
-tech stack and goals. We plan on making a TypeScript version of the SlimeVR server regardless.
+behind some compilation/feature flags. It might instead get ported by others to Java. Regardless,
+this library adds some features that don't exist in the official model and has a different
+tech stack and goals. Also, we plan on making a TypeScript version of the SlimeVR server that will
+directly build on our work here.
