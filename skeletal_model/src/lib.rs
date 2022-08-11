@@ -4,7 +4,7 @@
 //! For documentation without internal implementation details, please run
 //! `cargo doc --all --no-deps --open`
 //!
-//! [internal rustdoc]: https://thebutlah.github.io/ferrous_slimevr/skeletal_model
+//! [internal rustdoc]: https://slimevr.github.io/SlimeVR-Rust/skeletal_model
 //!
 //!
 //! # Overview
