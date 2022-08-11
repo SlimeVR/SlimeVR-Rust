@@ -46,21 +46,21 @@ reach out and help make this a reality!
 - [ ] Integration with official SlimeVR [Server][java server]. [^2]
 
 
+[^1]: For now, "all" means Typescript, and then later, Java. If you have a language
+you are passionate about using this in, just file an issue!
+
+[^2]: This is both unlikely and also not strictly necessary. The [creator][eiren] of
+SlimeVR has stated that they have no interest in using anything other than Java for the
+SlimeVR server. This doesn't satisfy the goals outlined above, so we will instead implement
+a version of the SlimeVR server in TypeScript to directly build on our work here. There may
+still be a chance that this can be integrated into the official server behind some
+compilation or feature flags. It might instead get ported by others to Java directly, instead
+of using FFI bindings.
+
+
 [docs]: https://slimevr.github.io/SlimeVR-Rust/skeletal_model/
 [official model]: https://github.com/SlimeVR/SlimeVR-Server/blob/8adf3fe5912481f3f1d8658f917292617bd308dc/src/main/java/dev/slimevr/vr/processor/skeleton/HumanSkeleton.java
 [daggy]: https://docs.rs/daggy/latest/daggy/
 [nalgebra]: https://nalgebra.org/
 [java server]: https://github.com/SlimeVR/SlimeVR-Server
-
-
-[^1]: For now, "all" means Typescript, and then later, Java. If you have a language
-you are passionate about using this in, just file an issue!
-
-[^2]: This is both unlikely and also not strictly necessary. Unlikely because the
-[creator](https://github.com/eirenliel) of SlimeVR, has stated
-that they have no interest in using anything other than Java for the SlimeVR server.
-This doesn't satisfy the goals outlined above, so we will instead implement a version
-of the SlimeVR server in TypeScript to directly build on our work here. There may still
-be a chance that this can be integrated into the official server behind some compilation
-or feature flags. It might instead get ported by others to Java directly, instead of
-using FFI bindings.
+[eiren]: https://github.com/eirenliel
