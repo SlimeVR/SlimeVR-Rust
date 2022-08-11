@@ -25,12 +25,13 @@ explain how it works.
   spread affordable full-body tracking to as many people as possible.
 * Extensive [documentation][docs], easily understood by non-rustaceans. This will
   ensure that even non-experts can help contribute and improve things for the community.
-* Leverage good [math][nalgebra] and [graph][daggy] libraries to make the math and algorithims easy.
+* Leverage good [math][nalgebra] and [graph][daggy] libraries to make the math and 
+  algorithims easy.
 
 
 ## 🚧 Implementation Status
-We are under active development. If you love Rust, math, or full-body tracking, please reach
-out and help make this a reality!
+We are under active development. If you love Rust, math, or full-body tracking, please
+reach out and help make this a reality!
 
 - [X] Graph datastructure and associated data implemented.
 - [X] Everything well documented.
@@ -39,7 +40,8 @@ out and help make this a reality!
 - [ ] Implement solver to turn the constraints into the estimated skeleton pose.
 - [ ] Align tracker inputs (IMU yaw alignment).
 - [ ] Provide TypeScript/Node.js bindings.
-- [ ] Validate that the library works by using it in a Typescript or Rust implementation of the SlimeVR server.
+- [ ] Validate that the library works by using it in a Typescript or Rust implementation
+  of the SlimeVR server.
 - [ ] Provide Java bindings.
 - [ ] Integration with official SlimeVR [Server][java server]. [^2]
 
@@ -51,14 +53,14 @@ out and help make this a reality!
 [java server]: https://github.com/SlimeVR/SlimeVR-Server
 
 
-[^1]: For now, "all" means Typescript, and then later, Java. If you have a language you are
-passionate about using this in, just file an issue!
+[^1]: For now, "all" means Typescript, and then later, Java. If you have a language
+you are passionate about using this in, just file an issue!
 
 [^2]: This is both unlikely and also not strictly necessary. Unlikely because 
-[Eiren](https://github.com/Eirenliel), the creator slime behind SlimeVR, has stated that
-they have no interest in rewriting the skeletal model in Rust or making it use anything other
-than Java. There may still be a chance that this can be integrated into the official server
-behind some compilation/feature flags. It might instead get ported by others to Java. Regardless,
-this library adds some features that don't exist in the official model and has a different
-tech stack and goals. Also, we plan on making a TypeScript version of the SlimeVR server that will
-directly build on our work here.
+[Eiren](https://github.com/Eirenliel), the creator slime behind SlimeVR, has stated
+that they have no interest in using anything other than Java for the SlimeVR server.
+There may still be a chance that this can be integrated into the official server
+behind some compilation/feature flags. It might instead get ported by others to Java.
+Regardless, we add some features that don't exist in the official model and hope that
+this will help the VR community as a whole. Also, we plan on making a TypeScript
+version of the SlimeVR server that will directly build on our work here.
