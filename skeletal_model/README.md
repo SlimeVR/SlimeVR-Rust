@@ -13,4 +13,4 @@ lots of time has been spent to make it easy to understand.
 The basic graph structure is completed, and documented. The model solver is not
 yet written.
 
-[docs]: https://slimevr.github.io/SlimeVR-Overlay/skeletal_model/
+[docs]: https://slimevr.github.io/SlimeVR-Rust/skeletal_model/
