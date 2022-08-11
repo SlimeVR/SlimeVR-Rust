@@ -1,13 +1,18 @@
 # 🦀 Ferrous SimeVR Skeletal Model
-A WIP implementation of a new fullbody FK/IK solver for use in Virtual Reality.
+A WIP implementation of a new full-body tracking skeletal model & solver, for use
+in Virtual Reality.
+
 Written in Rust, callable from Java and Typescript/Node.js.
 
-Its worth reading the documentation [here][docs], lots of time has been spent to
-explain how the math works.
 
-> This is *not* the official skeletal model for SlimeVR, that model is actually
-> [here][official model] intertwined deep in the official SlimeVR Server
+> This is *not* the official skeletal model for SlimeVR, that model is
+> [here][official model], intertwined deep in the official SlimeVR Server
 > codebase. This alternative implementation seeks to improve on the official one.
+
+## 📝 How does it work?
+
+Its worth reading the documentation [here][docs], lots of time has been spent to
+explain how it works.
 
 
 ## 🔭 Goals
@@ -58,9 +63,8 @@ Rust.
 
 [^2]: This is both unlikely and also not strictly necessary. Unlikely because 
 [Eiren](https://github.com/Eirenliel), the creator slime behind SlimeVR, has stated that
-they have no interest in rewriting the skeletal model in rust or making it use anything other
+they have no interest in rewriting the skeletal model in Rust or making it use anything other
 than Java. There may still be a chance that this can be integrated into the official server
-via some compilation/feature flags, but only time will tell. It might instead get ported
-by others to Java. Either way, we view it as a win, because this library adds some features
-that don't exist in the official model. We plan on
-implementing alternatives to the official SlimeVR server in typescript anyway.
+behind some compilation/feature flags. It might instead get ported by others to Java. Either
+this library adds some features that don't exist in the official model, and has a different
+tech stack and goals. We plan on making a TypeScript version of the SlimeVR server regardless.
