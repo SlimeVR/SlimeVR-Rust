@@ -25,7 +25,7 @@ explain how it works.
   spread affordable full-body tracking to as many people as possible.
 * Extensive [documentation][docs], easily understood by non-rustaceans. This will
   ensure that even non-experts can help contribute and improve things for the community.
-* Leverage good [math][nalgebra] and [graph][daggy] libraries to simplify implementation.
+* Leverage good [math][nalgebra] and [graph][daggy] libraries to make the math and algorithims easy.
 
 
 ## 🚧 Implementation Status
