@@ -62,5 +62,6 @@ that they have no interest in using anything other than Java for the SlimeVR ser
 There may still be a chance that this can be integrated into the official server
 behind some compilation/feature flags. It might instead get ported by others to Java.
 Regardless, we add some features that don't exist in the official model and hope that
-this will help the VR community as a whole. Also, we plan on making a TypeScript
-version of the SlimeVR server that will directly build on our work here.
+this will help the VR community as a whole. Also, integration with the official server
+is not necessary for this code to be useful, as we plan on implementing a version of
+the SlimeVR server in TypeScript that will directly build on our work here.
