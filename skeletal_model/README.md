@@ -2,16 +2,13 @@
 A WIP implementation of a new full-body tracking skeletal model & solver, for use
 in Virtual Reality.
 
-Written in Rust, callable from Typescript/Node.js and Java.
-
-
 > This is *not* the official skeletal model for SlimeVR, that model is
 > [here][official model], intertwined deep in the official SlimeVR Server
 > codebase. This alternative implementation seeks to improve on the official one
 > and experiment with some new concepts.
 
-## 📝 How does it work?
 
+## 📝 How does it work?
 Its worth reading the documentation [here][docs], lots of time has been spent to
 explain how it works.
 
