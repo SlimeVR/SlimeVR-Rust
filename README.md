@@ -20,7 +20,7 @@ A monorepo stores mutliple librares and apps all in one git repo. This one conta
 Jokes aside, the official Java and C++ implementations of SlimeVR make up most of the
 core SlimeVR codebase. Many people know Java and C++, but there is a growing interest
 in Rust too. By providing this repository, we hope to encourage people interested in
-rust to contribute to SlimeVR. This may lead to new applications and features that can
+Rust to contribute to SlimeVR. This may lead to new applications and features that can
 either work alongside, or give back to, the mainline Java codebase.
 
 ## Contributing
