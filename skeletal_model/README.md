@@ -40,7 +40,7 @@ reach out and help make this a reality!
 - [ ] Implement solver to turn the constraints into the estimated skeleton pose.
 - [ ] Align tracker inputs (IMU yaw alignment).
 - [ ] Provide TypeScript/Node.js bindings.
-- [ ] Validate that the library works by using it in a Typescript or Rust implementation
+- [ ] Validate that the library works by using it in a TypeScript or Rust implementation
   of the SlimeVR server.
 - [ ] Provide Java bindings.
 - [ ] Integration with official SlimeVR [Server][java server]. [^2]
@@ -56,12 +56,11 @@ reach out and help make this a reality!
 [^1]: For now, "all" means Typescript, and then later, Java. If you have a language
 you are passionate about using this in, just file an issue!
 
-[^2]: This is both unlikely and also not strictly necessary. Unlikely because 
-[Eiren](https://github.com/Eirenliel), the creator slime behind SlimeVR, has stated
+[^2]: This is both unlikely and also not strictly necessary. Unlikely because the
+[creator](https://github.com/eirenliel) of SlimeVR, has stated
 that they have no interest in using anything other than Java for the SlimeVR server.
-There may still be a chance that this can be integrated into the official server
-behind some compilation/feature flags. It might instead get ported by others to Java.
-Regardless, we add some features that don't exist in the official model and hope that
-this will help the VR community as a whole. Also, integration with the official server
-is not necessary for this code to be useful, as we plan on implementing a version of
-the SlimeVR server in TypeScript that will directly build on our work here.
+This doesn't satisfy the goals outlined above, so we will instead implement a version
+of the SlimeVR server in TypeScript to directly build on our work here. There may still
+be a chance that this can be integrated into the official server behind some compilation
+or feature flags. It might instead get ported by others to Java directly, instead of
+using FFI bindings.
