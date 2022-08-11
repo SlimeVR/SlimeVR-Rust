@@ -1,6 +1,6 @@
 # 🦀 Ferrous SimeVR Skeletal Model
-A WIP implementation of a new full-body tracking skeletal model & solver, for use
-in Virtual Reality.
+A WIP implementation of a new full-body tracking skeletal model & solver in Rust,
+for use in Virtual Reality.
 
 > This is *not* the official skeletal model for SlimeVR, that model is
 > [here][official model], intertwined deep in the official SlimeVR Server
