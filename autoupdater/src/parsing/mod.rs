@@ -11,7 +11,6 @@ mod mcp;
 pub use install_path::InstallPath;
 pub use mcp::{MaybeCrossPlatform, MCP};
 
-use derive_more::From;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
