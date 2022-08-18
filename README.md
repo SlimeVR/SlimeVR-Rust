@@ -12,6 +12,8 @@ A monorepo stores mutliple librares and apps all in one git repo. This one conta
   with the goal of being callable from several languages, including Typescript(node.js)
   and Java.
 * [Autoupdater](autoupdater/): A small utility for updating SlimeVR applications in unison.
+* [Firmware](firmware/): A rust implementation of the firmware, built on `embedded-hal`
+  instead of Arduino. Targets the ESP32-C3.
 
 ## Motivation
 * Fulfill the Rewrite It In Rust meme

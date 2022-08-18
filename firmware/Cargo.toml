@@ -1,0 +1,19 @@
+[package]
+name = "firmware"
+version = "0.0.0"
+authors = ["Ryan Butler <thebutlah@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+esp32c3-hal = { package = "esp32c3-hal", git = "https://github.com/esp-rs/esp-hal", rev = "ede5007f71fdeeb7369a6ddbee6a202e2f4c8837" }
+esp-backtrace = { version = "0.1.0", features = [
+    "esp32c3",
+    "panic-handler",
+    "print-uart",
+] }
+riscv-rt = { version = "0.9", optional = true }
+
+[features]
+default = ["rt"]
+rt = ["riscv-rt"]

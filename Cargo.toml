@@ -4,6 +4,7 @@ members = [
     "overlay/app",
     "overlay/tokio_shutdown",
     "skeletal_model",
+    "firmware",
 ]
 
 resolver = "2"
