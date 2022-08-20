@@ -13,7 +13,7 @@ esp-backtrace = { version = "0.1.0", features = [
     "print-uart",
 ] }
 riscv-rt = { version = "0.9", optional = true }
-esp-alloc = "0.1"
+esp-alloc = { version = "0.1", features = ["oom-handler"] }
 
 [features]
 default = ["rt"]

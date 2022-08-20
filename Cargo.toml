@@ -4,7 +4,9 @@ members = [
     "overlay/app",
     "overlay/tokio_shutdown",
     "skeletal_model",
-    "firmware",
+    # "firmware",
 ]
+exclude = ["firmware"]
+
 
 resolver = "2"
