@@ -1,1 +1,1 @@
-initSidebarItems({"macro":[["def_color",""]],"struct":[["RGBA",""]]});
+window.SIDEBAR_ITEMS = {"macro":[["def_color",""]],"struct":[["RGBA",""]]};

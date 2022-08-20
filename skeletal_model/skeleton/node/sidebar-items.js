@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Node","`Node`s represent the connections between `Edge`s in the skeleton. `Node`s have positions, but not rotations."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Node","`Node`s represent the connections between `Edge`s in the skeleton. `Node`s have positions, but not rotations."]]};

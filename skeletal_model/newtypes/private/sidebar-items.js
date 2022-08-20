@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["Sealed","Private helper trait to limit the types that can go in [`Global`] or [`Local`]."]]});
+window.SIDEBAR_ITEMS = {"trait":[["Sealed","Private helper trait to limit the types that can go in [`Global`] or [`Local`]."]]};

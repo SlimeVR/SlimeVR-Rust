@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["DecodeError",""]],"mod":[["ouroboros_impl_data","Encapsulates implementation details for a self-referencing struct. This module is only visible when using –document-private-items."]],"struct":[["FeedUpdate",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["DecodeError",""]],"mod":[["ouroboros_impl_data","Encapsulates implementation details for a self-referencing struct. This module is only visible when using –document-private-items."]],"struct":[["FeedUpdate",""]]};

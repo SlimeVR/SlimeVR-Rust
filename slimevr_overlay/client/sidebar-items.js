@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["data",""],["state_machine",""]],"struct":[["Client",""]],"type":[["Wss",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["data",""],["state_machine",""]],"struct":[["Client",""]],"type":[["Wss",""]]};

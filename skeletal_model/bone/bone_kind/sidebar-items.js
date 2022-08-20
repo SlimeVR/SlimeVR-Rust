@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["_IMPL_NUM_FromPrimitive_FOR_BoneKind",""],["_IMPL_NUM_ToPrimitive_FOR_BoneKind",""]],"enum":[["BoneKind","Describes the various types of bones in the skeleton."]]});
+window.SIDEBAR_ITEMS = {"constant":[["_IMPL_NUM_FromPrimitive_FOR_BoneKind",""],["_IMPL_NUM_ToPrimitive_FOR_BoneKind",""]],"enum":[["BoneKind","Describes the various types of bones in the skeleton."]]};

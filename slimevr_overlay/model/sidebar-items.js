@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["bone",""],["bone_kind",""],["bone_map",""],["skeleton",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["bone",""],["bone_kind",""],["bone_map",""],["skeleton",""]]};

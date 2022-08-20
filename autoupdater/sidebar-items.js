@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main",""]],"macro":[["try_get","Helper macro to unpack Option and continue with a helpful error if None."]],"mod":[["parsing","Describes the format of the versioning file"]],"struct":[["Args",""],["VERSIONING_URL",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["main",""]],"macro":[["try_get","Helper macro to unpack Option and continue with a helpful error if None."]],"mod":[["parsing","Describes the format of the versioning file"]],"struct":[["Args",""],["VERSIONING_URL",""]]};

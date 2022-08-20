@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["InstallPath","The location to install a component."]],"struct":[["SLIME_DIR",""],["STEAM_DIR",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["InstallPath","The location to install a component."]],"struct":[["SLIME_DIR",""],["STEAM_DIR",""]]};
