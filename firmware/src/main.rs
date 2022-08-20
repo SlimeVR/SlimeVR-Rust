@@ -1,8 +1,18 @@
 #![no_std]
 #![no_main]
+extern crate alloc;
 
-use esp32c3_hal::{clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc};
+// Set up global heap allocator
+#[global_allocator]
+static GLOBAL: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
+
+// Set up backtraces
 use esp_backtrace as _;
+
+use core::fmt::Write;
+use esp32c3_hal::{
+    clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc,
+};
 use riscv_rt::entry;
 
 #[entry]
@@ -23,5 +33,11 @@ fn main() -> ! {
     wdt0.disable();
     wdt1.disable();
 
-    loop {}
+    let mut usb = esp32c3_hal::UsbSerialJtag;
+    let mut i = 0;
+    let arc = alloc::sync::Arc::new(10);
+    loop {
+        writeln!(&mut usb, "ayyyyy {i} {arc}");
+        i += 1;
+    }
 }
