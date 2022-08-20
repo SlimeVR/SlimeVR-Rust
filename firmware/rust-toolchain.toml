@@ -1,0 +1,3 @@
+[toolchain]
+channel = "nightly"
+targets = ["riscv32imac-unknown-none-elf"]
