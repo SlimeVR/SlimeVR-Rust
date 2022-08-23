@@ -6,7 +6,9 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "ede5007f71fdeeb7369a6ddbee6a202e2f4c8837" }
+# Hardware runtime
+# Embassy branch
+esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "014e35b9700e1dc54eaf2526493e8550d9689486" }
 esp-backtrace = { version = "0.1.0", features = [
     "esp32c3",
     "panic-handler",
@@ -14,4 +16,19 @@ esp-backtrace = { version = "0.1.0", features = [
 ] }
 riscv-rt = "0.9"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
-embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
+
+# Embassy stuff
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
+    "nightly",
+    "integrated-timers",
+] }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
+    "tick-16mhz",
+    "nightly",
+    "unstable-traits",
+] }
+embedded-hal-async = "=0.1.0-alpha.1"
+embedded-hal = "=1.0.0-alpha.8"
+
+# Misc crates
+static_cell = "1"
