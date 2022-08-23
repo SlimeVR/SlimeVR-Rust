@@ -11,7 +11,6 @@ static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 use esp_backtrace as _;
 
 use core::fmt::Write;
-use core::mem::MaybeUninit;
 use esp32c3_hal::{
     clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc,
 };
@@ -47,7 +46,7 @@ fn main() -> ! {
     let arc = alloc::sync::Arc::new(10u8);
     // let arc = 1;
     loop {
-        writeln!(&mut usb, "ayyyyy {i} {arc:?}");
+        writeln!(&mut usb, "ayyyyy {i} {arc:?}").unwrap();
         i += 1;
     }
 }

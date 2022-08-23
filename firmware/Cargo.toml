@@ -6,15 +6,12 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-esp32c3-hal = { package = "esp32c3-hal", git = "https://github.com/esp-rs/esp-hal", rev = "ede5007f71fdeeb7369a6ddbee6a202e2f4c8837" }
+esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "ede5007f71fdeeb7369a6ddbee6a202e2f4c8837" }
 esp-backtrace = { version = "0.1.0", features = [
     "esp32c3",
     "panic-handler",
     "print-uart",
 ] }
-riscv-rt = { version = "0.9", optional = true }
+riscv-rt = "0.9"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
-
-[features]
-default = ["rt"]
-rt = ["riscv-rt"]
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
