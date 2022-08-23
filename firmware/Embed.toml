@@ -1,0 +1,20 @@
+# Default config
+[default.probe]
+protocol = "Jtag"
+
+[default.general]
+chip = "esp32c3"
+
+[default.rtt]
+enabled = true
+channels = [
+    { up = 0, down = 0, name = "Firmware logs via defmt", up_mode = "BlockIfFull", format = "Defmt" },
+]
+
+[default.gdb]
+enabled = true
+gdb_connection_string = "127.0.0.1:1337"
+
+# Monitor config (doesn't flash)
+[monitor.flashing]
+enabled = false
