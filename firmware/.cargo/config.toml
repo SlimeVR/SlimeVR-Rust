@@ -1,5 +1,6 @@
 [target.riscv32imac-unknown-none-elf]
-runner = "espflash --monitor"
+# runner = "espflash --monitor"
+runner = "probe-run --chip esp32c3"
 
 [build]
 rustflags = [
@@ -10,6 +11,10 @@ rustflags = [
 
   "-C",
   "link-arg=-Tlinkall.x",
+
+  # For defmt
+  # "-C",
+  # "link-arg=-Tdefmt.x",
 ]
 target = "riscv32imac-unknown-none-elf"
 

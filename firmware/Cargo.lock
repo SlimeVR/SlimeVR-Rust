@@ -54,6 +54,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "46afbd2983a5d5a7bd740ccb198caf5b82f45c40c09c0eed36052d91cb92e719"
 
 [[package]]
+name = "bitflags"
+version = "1.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -160,6 +166,45 @@ dependencies = [
 ]
 
 [[package]]
+name = "defmt"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3a0ae7494d9bff013d7b89471f4c424356a71e9752e0c78abe7e6c608a16bb3"
+dependencies = [
+ "bitflags",
+ "defmt-macros",
+]
+
+[[package]]
+name = "defmt-macros"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d944432e281084511691b36e5e9c794c19c33675822c9019e3b64f5b89e10da"
+dependencies = [
+ "defmt-parser",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "defmt-parser"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0db23d29972d99baa3de2ee2ae3f104c10564a6d05a346eb3f4c4f2c0525a06e"
+
+[[package]]
+name = "defmt-rtt"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d2cbbbd58847d508d97629b32cd9730a2d28532f71e219714614406029f18b1"
+dependencies = [
+ "critical-section 0.2.7",
+ "defmt",
+]
+
+[[package]]
 name = "embassy-executor"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
@@ -168,7 +213,6 @@ dependencies = [
  "cfg-if",
  "critical-section 1.1.0",
  "embassy-macros",
- "embassy-time",
  "futures-util",
  "static_cell",
 ]
@@ -182,21 +226,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "embassy-time"
-version = "0.1.0"
-source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
-dependencies = [
- "atomic-polyfill",
- "cfg-if",
- "critical-section 1.1.0",
- "embassy-macros",
- "embedded-hal 0.2.7",
- "embedded-hal 1.0.0-alpha.8",
- "embedded-hal-async",
- "futures-util",
 ]
 
 [[package]]
@@ -216,15 +245,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3babfc7fd332142a0b11aebf592992f211f4e01b6222fb04b03aba1bd80018d"
 dependencies = [
  "nb 1.0.0",
-]
-
-[[package]]
-name = "embedded-hal-async"
-version = "0.1.0-alpha.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "022249738afde9b2b755a28a367ae20c9367e8e9c24b9aaf60bcc9255a255ec5"
-dependencies = [
- "embedded-hal 1.0.0-alpha.8",
 ]
 
 [[package]]
@@ -252,10 +272,11 @@ dependencies = [
 [[package]]
 name = "esp-hal-common"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-hal?rev=014e35b9700e1dc54eaf2526493e8550d9689486#014e35b9700e1dc54eaf2526493e8550d9689486"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "143122333f2b9575cc78020c00e65e3690de2e9545d7f2c9b04f97fb31156138"
 dependencies = [
  "cfg-if",
- "critical-section 0.2.7",
+ "critical-section 1.1.0",
  "embedded-hal 0.2.7",
  "esp-hal-procmacros",
  "esp32c3",
@@ -270,7 +291,8 @@ dependencies = [
 [[package]]
 name = "esp-hal-procmacros"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-hal?rev=014e35b9700e1dc54eaf2526493e8550d9689486#014e35b9700e1dc54eaf2526493e8550d9689486"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7dd1fb5018ef2c57daadf84e9bbff1c9e48c04958d32bc1469f781a96ec82e8e"
 dependencies = [
  "darling 0.14.1",
  "proc-macro-error",
@@ -287,8 +309,9 @@ checksum = "dab33baae57ce7c0869c32885ff136f9c8405e0c201d039ccd767c3e7f79502b"
 
 [[package]]
 name = "esp32c3"
-version = "0.4.0"
-source = "git+https://github.com/esp-rs/esp-pacs.git?branch=with_source#23f9f7626867c98c98bac45f93109a8b794dbb66"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79e9b4b4c623a6567e3282ec5df2daf38f1da7631b41da5be8c94432db8e11aa"
 dependencies = [
  "bare-metal 1.0.0",
  "riscv 0.8.0",
@@ -299,10 +322,9 @@ dependencies = [
 [[package]]
 name = "esp32c3-hal"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-hal?rev=014e35b9700e1dc54eaf2526493e8550d9689486#014e35b9700e1dc54eaf2526493e8550d9689486"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36da9c1c78d274d1d0240698282ee9ad4a71ff01e3440dfc496a7231b9ecc7e3"
 dependencies = [
- "bare-metal 1.0.0",
- "critical-section 0.2.7",
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0-alpha.8",
  "esp-hal-common",
@@ -315,10 +337,9 @@ dependencies = [
 name = "firmware"
 version = "0.0.0"
 dependencies = [
+ "defmt",
+ "defmt-rtt",
  "embassy-executor",
- "embassy-time",
- "embedded-hal 1.0.0-alpha.8",
- "embedded-hal-async",
  "esp-alloc",
  "esp-backtrace",
  "esp32c3-hal",
