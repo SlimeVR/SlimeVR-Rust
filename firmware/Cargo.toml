@@ -8,7 +8,8 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 # Hardware runtime
 # Embassy branch
-esp32c3-hal = "0.1"
+esp32c3-hal = { version = "0.1", features = ["direct-boot"] }
+# esp32c3-hal = { version = "0.1" }
 # esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "014e35b9700e1dc54eaf2526493e8550d9689486" }
 # esp32c3-hal = { path = "../../../../P/External/esp-hal/esp32c3-hal" }
 # esp-hal-async = { path = "../../../../P/External/esp-hal/esp-hal-async", features = [
@@ -36,4 +37,4 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 # Misc crates
 static_cell = "1"
 defmt = "0.3"
-defmt-rtt = "0.3"
+# defmt-rtt = "0.3"
