@@ -13,8 +13,8 @@ rustflags = [
   "link-arg=-Tlinkall.x",
 
   # For defmt
-  # "-C",
-  # "link-arg=-Tdefmt.x",
+  "-C",
+  "link-arg=-Tdefmt.x",
 ]
 target = "riscv32imac-unknown-none-elf"
 

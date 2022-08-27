@@ -37,4 +37,4 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 # Misc crates
 static_cell = "1"
 defmt = "0.3"
-# defmt-rtt = "0.3"
+defmt-rtt = "0.3"

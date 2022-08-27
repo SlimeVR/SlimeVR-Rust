@@ -1,0 +1,8 @@
+[default.probe]
+protocol = "Jtag"
+
+[default.general]
+chip = "esp32c3"
+
+[default.rtt]
+enabled = true

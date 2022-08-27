@@ -13,7 +13,7 @@ static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 use esp_backtrace as _;
 
 // Set up global defmt logger
-// use defmt_rtt as _;
+use defmt_rtt as _;
 
 use core::fmt::Write;
 use defmt::{debug, error, info};
