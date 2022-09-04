@@ -1,6 +1,6 @@
 [target.riscv32imac-unknown-none-elf]
 # runner = "espflash --monitor"
-runner = "probe-run --chip esp32c3"
+# runner = "cargo embed"
 
 [build]
 rustflags = [

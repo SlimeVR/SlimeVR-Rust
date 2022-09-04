@@ -218,6 +218,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "embassy-futures"
+version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
+
+[[package]]
 name = "embassy-macros"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
@@ -272,8 +277,6 @@ dependencies = [
 [[package]]
 name = "esp-hal-common"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "143122333f2b9575cc78020c00e65e3690de2e9545d7f2c9b04f97fb31156138"
 dependencies = [
  "cfg-if",
  "critical-section 1.1.0",
@@ -291,8 +294,6 @@ dependencies = [
 [[package]]
 name = "esp-hal-procmacros"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7dd1fb5018ef2c57daadf84e9bbff1c9e48c04958d32bc1469f781a96ec82e8e"
 dependencies = [
  "darling 0.14.1",
  "proc-macro-error",
@@ -322,8 +323,6 @@ dependencies = [
 [[package]]
 name = "esp32c3-hal"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36da9c1c78d274d1d0240698282ee9ad4a71ff01e3440dfc496a7231b9ecc7e3"
 dependencies = [
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0-alpha.8",
@@ -340,9 +339,11 @@ dependencies = [
  "defmt",
  "defmt-rtt",
  "embassy-executor",
+ "embassy-futures",
  "esp-alloc",
  "esp-backtrace",
  "esp32c3-hal",
+ "nb 1.0.0",
  "riscv-rt",
  "static_cell",
 ]
@@ -418,9 +419,9 @@ dependencies = [
 
 [[package]]
 name = "lock_api"
-version = "0.4.7"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "327fa5b6a6940e4699ec49a9beae1ea4845c6bab9314e4f84ac68742139d8c53"
+checksum = "9f80bf5aacaf25cbfc8210d1cfb718f2bf3b11c4c54e5afe36c236853a8ec390"
 dependencies = [
  "autocfg",
  "scopeguard",

@@ -24,6 +24,8 @@ riscv-rt = "0.9"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 
 # Embassy stuff
+embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
+
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
     "nightly",
     # "integrated-timers",
@@ -38,3 +40,8 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 static_cell = "1"
 defmt = "0.3"
 defmt-rtt = "0.3"
+nb = "1"
+# defmt-serial = "0.5"
+
+[patch.crates-io]
+esp32c3-hal = { path = "../../../External/esp-hal/esp32c3-hal" }

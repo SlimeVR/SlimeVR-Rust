@@ -3,6 +3,8 @@
 // Needed for embassy macros
 #![feature(type_alias_impl_trait)]
 
+mod logging;
+
 extern crate alloc;
 
 // Set up global heap allocator
@@ -14,10 +16,12 @@ use esp_backtrace as _;
 
 // Set up global defmt logger
 use defmt_rtt as _;
+// use defmt_serial as _;
 
 use core::fmt::Write;
 use defmt::{debug, error, info};
 use embassy_executor::{task, Executor};
+use embassy_futures::yield_now;
 use esp32c3_hal::{
     clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc,
     UsbSerialJtag,
@@ -29,21 +33,26 @@ use static_cell::StaticCell;
 fn main() -> ! {
     // Initialize the global allocator BEFORE you use it
     {
-        const HEAP_SIZE: usize = 1024;
+        const HEAP_SIZE: usize = 10240;
         static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
         unsafe { ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE) }
     }
 
+    // defmt_serial::defmt_serial(crate::logging::BufferedSerial::take().unwrap());
+
     let peripherals = Peripherals::take().unwrap();
 
     static EXECUTOR: StaticCell<Executor> = StaticCell::new();
-    EXECUTOR
-        .init(Executor::new())
-        .run(move |spawner| spawner.spawn(async_main(peripherals)).unwrap());
+    EXECUTOR.init(Executor::new()).run(move |spawner| {
+        spawner.spawn(async_main(peripherals)).unwrap();
+        spawner.spawn(sensor_data()).unwrap();
+    });
 }
 
 #[task]
 async fn async_main(p: Peripherals) {
+    // defmt_serial::defmt_serial(crate::logging::BufferedSerial::take().unwrap());
+
     let system = p.SYSTEM.split();
     let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
 
@@ -63,11 +72,13 @@ async fn async_main(p: Peripherals) {
         wdt1.disable();
     }
 
-    let mut usb = esp32c3_hal::UsbSerialJtag;
+    // let mut usb = esp32c3_hal::UsbSerialJtag;
     let mut i = 0;
     loop {
-        writeln!(&mut usb, "hello world, i is {i}").unwrap();
+        // writeln!(&mut usb, "in main(), i is {i}").unwrap();
+        error!("In main(), i was {}", i);
         i += 1;
+        yield_now().await
     }
 }
 
@@ -75,11 +86,13 @@ async fn async_main(p: Peripherals) {
 async fn sensor_data() {
     let mut i = 0;
     // let mut delay = embassy_time::Delay;
-    let mut usb = UsbSerialJtag;
+    // let mut usb = esp32c3_hal::UsbSerialJtag;
     loop {
+        error!("In data(), i was {}", i);
         // DelayUs::delay_ms(&mut delay, 1000).await.unwrap();
-        error!("hello");
-        writeln!(&mut usb, "hello world, i is {i}").unwrap();
+        // error!("hello");
+        // writeln!(&mut usb, "in data(), i is {i}").unwrap();
         i += 1;
+        yield_now().await
     }
 }

@@ -1,3 +1,4 @@
+# Default config
 [default.probe]
 protocol = "Jtag"
 
@@ -6,3 +7,24 @@ chip = "esp32c3"
 
 [default.rtt]
 enabled = true
+
+[default.gdb]
+enabled = true
+gdb_connection_string = "127.0.0.1:1337"
+
+# Monitor config (doesn't flash)
+[monitor.probe]
+protocol = "Jtag"
+
+[monitor.general]
+chip = "esp32c3"
+
+[monitor.rtt]
+enabled = true
+
+[monitor.gdb]
+enabled = true
+gdb_connection_string = "127.0.0.1:1337"
+
+[monitor.flashing]
+enabled = false
