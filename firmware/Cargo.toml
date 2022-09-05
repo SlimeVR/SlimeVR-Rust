@@ -6,15 +6,8 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-# Hardware runtime
-# Embassy branch
+# Platform support
 esp32c3-hal = { version = "0.1", features = ["direct-boot"] }
-# esp32c3-hal = { version = "0.1" }
-# esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "014e35b9700e1dc54eaf2526493e8550d9689486" }
-# esp32c3-hal = { path = "../../../../P/External/esp-hal/esp32c3-hal" }
-# esp-hal-async = { path = "../../../../P/External/esp-hal/esp-hal-async", features = [
-#     "esp32c3",
-# ] }
 esp-backtrace = { version = "0.1.0", features = [
     "esp32c3",
     "panic-handler",
@@ -25,7 +18,6 @@ esp-alloc = { version = "0.1", features = ["oom-handler"] }
 
 # Embassy stuff
 embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
-
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
     "nightly",
     # "integrated-timers",
@@ -36,12 +28,14 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 #     "unstable-traits",
 # ] }
 
-# Misc crates
-static_cell = "1"
+# Logging
 defmt = "0.3"
 defmt-rtt = "0.3"
+
+# Misc crates
+static_cell = "1"
 nb = "1"
-# defmt-serial = "0.5"
 
 [patch.crates-io]
-esp32c3-hal = { path = "../../../External/esp-hal/esp32c3-hal" }
+# Currently patching esp32c3-hal with a change to the linker script that makes defmt work.
+esp32c3-hal = { git = "https://github.com/TheButlah/esp-hal", branch = "defmt_fix" }

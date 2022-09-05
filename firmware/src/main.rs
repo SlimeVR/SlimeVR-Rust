@@ -3,8 +3,6 @@
 // Needed for embassy macros
 #![feature(type_alias_impl_trait)]
 
-mod logging;
-
 extern crate alloc;
 
 // Set up global heap allocator
@@ -16,18 +14,17 @@ use esp_backtrace as _;
 
 // Set up global defmt logger
 use defmt_rtt as _;
-// use defmt_serial as _;
 
-use core::fmt::Write;
-use defmt::{debug, error, info};
 use embassy_executor::{task, Executor};
 use embassy_futures::yield_now;
 use esp32c3_hal::{
     clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc,
-    UsbSerialJtag,
 };
 use riscv_rt::entry;
 use static_cell::StaticCell;
+
+// use rtt_target::{rtt_init_print, rprintln};
+use defmt::error;
 
 #[entry]
 fn main() -> ! {
@@ -39,6 +36,7 @@ fn main() -> ! {
     }
 
     // defmt_serial::defmt_serial(crate::logging::BufferedSerial::take().unwrap());
+    // rtt_init_print!();
 
     let peripherals = Peripherals::take().unwrap();
 
@@ -75,8 +73,9 @@ async fn async_main(p: Peripherals) {
     // let mut usb = esp32c3_hal::UsbSerialJtag;
     let mut i = 0;
     loop {
-        // writeln!(&mut usb, "in main(), i is {i}").unwrap();
         error!("In main(), i was {}", i);
+        // rprintln!("In main(), i was {}", i);
+        // writeln!(&mut usb, "in main(), i is {i}").unwrap();
         i += 1;
         yield_now().await
     }
@@ -89,9 +88,10 @@ async fn sensor_data() {
     // let mut usb = esp32c3_hal::UsbSerialJtag;
     loop {
         error!("In data(), i was {}", i);
-        // DelayUs::delay_ms(&mut delay, 1000).await.unwrap();
-        // error!("hello");
+        // rprintln!("In data(), i was {}", i);
         // writeln!(&mut usb, "in data(), i is {i}").unwrap();
+
+        // DelayUs::delay_ms(&mut delay, 1000).await.unwrap();
         i += 1;
         yield_now().await
     }
