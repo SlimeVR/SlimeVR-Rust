@@ -2,7 +2,7 @@
 This guide is for people interested in contributing to or tinkering with the firmware.
 
 First of all, thank you for your interest! If you need help, feel free to message me on
-the [SlimeVR Discord][Discord] or file an issue on github. I'm
+the [SlimeVR Discord][Discord] or file an issue on github.
 
 ## The Development tools
 We use several tools and crates (libraries) that provide a good development experience
