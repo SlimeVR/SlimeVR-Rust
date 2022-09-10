@@ -23,20 +23,16 @@ use esp32c3_hal::{
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
-// use rtt_target::{rtt_init_print, rprintln};
 use defmt::error;
 
 #[entry]
 fn main() -> ! {
     // Initialize the global allocator BEFORE you use it
     {
-        const HEAP_SIZE: usize = 10240;
+        const HEAP_SIZE: usize = 10 * 1024;
         static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
         unsafe { ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE) }
     }
-
-    // defmt_serial::defmt_serial(crate::logging::BufferedSerial::take().unwrap());
-    // rtt_init_print!();
 
     let peripherals = Peripherals::take().unwrap();
 
@@ -49,8 +45,6 @@ fn main() -> ! {
 
 #[task]
 async fn async_main(p: Peripherals) {
-    // defmt_serial::defmt_serial(crate::logging::BufferedSerial::take().unwrap());
-
     let system = p.SYSTEM.split();
     let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
 
@@ -64,18 +58,13 @@ async fn async_main(p: Peripherals) {
 
         rtc.rwdt.disable();
         rtc.swd.disable();
-        // rtc.set_super_wdt_enable(false);
-        // rtc.set_wdt_enable(false);
         wdt0.disable();
         wdt1.disable();
     }
 
-    // let mut usb = esp32c3_hal::UsbSerialJtag;
     let mut i = 0;
     loop {
         error!("In main(), i was {}", i);
-        // rprintln!("In main(), i was {}", i);
-        // writeln!(&mut usb, "in main(), i is {i}").unwrap();
         i += 1;
         yield_now().await
     }
@@ -84,14 +73,8 @@ async fn async_main(p: Peripherals) {
 #[task]
 async fn sensor_data() {
     let mut i = 0;
-    // let mut delay = embassy_time::Delay;
-    // let mut usb = esp32c3_hal::UsbSerialJtag;
     loop {
         error!("In data(), i was {}", i);
-        // rprintln!("In data(), i was {}", i);
-        // writeln!(&mut usb, "in data(), i is {i}").unwrap();
-
-        // DelayUs::delay_ms(&mut delay, 1000).await.unwrap();
         i += 1;
         yield_now().await
     }

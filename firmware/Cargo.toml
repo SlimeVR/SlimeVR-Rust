@@ -36,6 +36,15 @@ defmt-rtt = "0.3"
 static_cell = "1"
 nb = "1"
 
+# Peripherals
+mpu6050 = "0.1"
+
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "1fb0a1562a7faccb5a624fcff5a51806f9c14b09", features = [
+    "esp32c3",
+    "wifi",
+] }
+
+# Wifi
 [patch.crates-io]
 # Currently patching esp32c3-hal with a change to the linker script that makes defmt work.
 esp32c3-hal = { git = "https://github.com/TheButlah/esp-hal", branch = "defmt_fix" }
