@@ -4,7 +4,7 @@ This guide is for people interested in contributing to or tinkering with the fir
 First of all, thank you for your interest! If you need help, feel free to message me on
 the [SlimeVR Discord][Discord] or file an issue on github.
 
-## The Development tools
+## 🔨 The Development tools
 We use several tools and crates (libraries) that provide a good development experience
 (even better than arduino!). This section explains how to use them and what they do.
 
@@ -75,7 +75,7 @@ If that doesn't work, make sure that gdb is in your PATH and do some googling. I
 to this too!
 
 
-## Contribution guidelines
+## 📝 Contribution guidelines
 * Please run `cargo fmt` to autoformat your code. Pro tip: try setting it up to format
   on save in your IDE :)
 * Don't use any dependencies that are GPL or viral or closed-source licenses (ask me if
