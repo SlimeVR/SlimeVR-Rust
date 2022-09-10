@@ -1,0 +1,19 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug esp32c3",
+            "type": "gdb",
+            "request": "attach",
+            "executable": "${workspaceFolder}/target/riscv32imac-unknown-none-elf/debug/firmware",
+            "target": "127.0.0.1:1337",
+            "remote": true,
+            "cwd": "${workspaceRoot}",
+            "stopAtConnect": true,
+            "valuesFormatting": "parseText"
+        }
+    ]
+}
