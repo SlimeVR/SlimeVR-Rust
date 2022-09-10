@@ -10,7 +10,11 @@ use lazy_static::lazy_static;
 use reqwest::Url;
 use std::path::PathBuf;
 use tempfile::tempdir;
-use tokio::{fs::File, io::AsyncWriteExt, task::JoinHandle};
+use tokio::{
+    fs::{File, OpenOptions},
+    io::AsyncWriteExt,
+    task::JoinHandle,
+};
 
 lazy_static! {
     static ref VERSIONING_URL: Url = Url::parse(
@@ -69,6 +73,7 @@ async fn main() -> Result<()> {
             format!("Could not deserialize YAML, whose contents was:\n{versioning}")
         })?;
 
+    // We will delete the temporary dir upon drop.
     let tmp_dir = tempdir().wrap_err("Failed to create temporary directory")?;
 
     // Download each component, storing the async tasks in `download_tasks`
@@ -87,7 +92,8 @@ async fn main() -> Result<()> {
         let filename = url
             .path_segments()
             .map_or(comp_name.to_string(), |v| v.last().unwrap().to_string());
-        let mut file = File::create(tmp_dir.path().join(filename))
+        let download_path = tmp_dir.path().join(filename);
+        let mut download_file = File::create(&download_path)
             .await
             .wrap_err("Failed to create temporary file")?;
 
@@ -98,11 +104,12 @@ async fn main() -> Result<()> {
                 .await
                 .wrap_err("error while slurping chunks")?
             {
-                file.write_all_buf(&mut b)
+                download_file
+                    .write_all_buf(&mut b)
                     .await
                     .wrap_err("Error while writing to file")?
             }
-            Ok((file, install_path))
+            Ok((download_file, download_path, install_path.to_path()?))
         });
         download_tasks.push(task);
     }
@@ -118,12 +125,29 @@ async fn main() -> Result<()> {
         .collect();
     let downloads = downloads?;
 
-    // Back up the original files, if they exist at the target paths
-    for (file, install_path) in downloads {
-        let install_path = install_path.to_path().wrap_err_with(|| {
-            format!("Failed to convert to path. Original path: {install_path:?}")
-        });
-        println!("install_path: {install_path:?}");
+    // Check that all files are writeable *before* attempting to move.
+    join_all(downloads.iter().map(|(_, _, install_path)| async move {
+        OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(install_path)
+            .await
+            .wrap_err_with(|| format!("{install_path:?} was not writeable"))
+    }))
+    .await
+    .into_iter()
+    .collect::<Result<Vec<_>>>()?; // returns if errors
+
+    // Move all the components to overwrite the old ones.
+    // This is suceptible to race conditions after the writable check, but its fine 😅
+    for (download_file, download_path, ref install_path) in downloads {
+        drop(download_file);
+        // Truncates if the file already exists.
+        tokio::fs::rename(download_path, install_path)
+            .await
+            .wrap_err_with(|| {
+                format!("Failed to move temporary file to {install_path:?}")
+            })?;
     }
 
     println!("Press enter to quit...");
