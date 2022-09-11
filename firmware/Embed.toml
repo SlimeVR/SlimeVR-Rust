@@ -6,7 +6,7 @@ protocol = "Jtag"
 chip = "esp32c3"
 
 [default.rtt]
-enabled = true
+# enabled = true
 channels = [
     { up = 0, down = 0, name = "Firmware logs via defmt", up_mode = "BlockIfFull", format = "Defmt" },
 ]
