@@ -307,7 +307,7 @@ dependencies = [
 [[package]]
 name = "esp-hal-common"
 version = "0.1.0"
-source = "git+https://github.com/TheButlah/esp-hal?branch=defmt_fix#6cd2b90d998fe88add8cdd59976818c9493c78db"
+source = "git+https://github.com/esp-rs/esp-hal?rev=c896e6c8d2062dd9222508b55e23197c29f8e98f#c896e6c8d2062dd9222508b55e23197c29f8e98f"
 dependencies = [
  "cfg-if",
  "critical-section 1.1.0",
@@ -325,7 +325,7 @@ dependencies = [
 [[package]]
 name = "esp-hal-procmacros"
 version = "0.1.0"
-source = "git+https://github.com/TheButlah/esp-hal?branch=defmt_fix#6cd2b90d998fe88add8cdd59976818c9493c78db"
+source = "git+https://github.com/esp-rs/esp-hal?rev=c896e6c8d2062dd9222508b55e23197c29f8e98f#c896e6c8d2062dd9222508b55e23197c29f8e98f"
 dependencies = [
  "darling 0.14.1",
  "proc-macro-error",
@@ -377,7 +377,7 @@ dependencies = [
 [[package]]
 name = "esp32c3-hal"
 version = "0.1.0"
-source = "git+https://github.com/TheButlah/esp-hal?branch=defmt_fix#6cd2b90d998fe88add8cdd59976818c9493c78db"
+source = "git+https://github.com/esp-rs/esp-hal?rev=c896e6c8d2062dd9222508b55e23197c29f8e98f#c896e6c8d2062dd9222508b55e23197c29f8e98f"
 dependencies = [
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0-alpha.8",

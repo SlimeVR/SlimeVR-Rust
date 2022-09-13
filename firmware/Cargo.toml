@@ -47,4 +47,4 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "1fb0a1562a7faccb
 # Wifi
 [patch.crates-io]
 # Currently patching esp32c3-hal with a change to the linker script that makes defmt work.
-esp32c3-hal = { git = "https://github.com/TheButlah/esp-hal", branch = "defmt_fix" }
+esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "c896e6c8d2062dd9222508b55e23197c29f8e98f" }
