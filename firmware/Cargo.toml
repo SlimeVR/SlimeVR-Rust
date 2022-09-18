@@ -5,6 +5,11 @@ authors = ["Ryan Butler <thebutlah@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
+[features]
+default = ["esp32c3"]
+# In the future, we will support other platforms, selected via feature
+esp32c3 = []
+
 [dependencies]
 # Platform support
 esp32c3-hal = { version = "0.2", features = ["direct-boot"] }

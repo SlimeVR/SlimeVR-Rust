@@ -6,16 +6,14 @@
 mod aliases;
 mod globals;
 mod imu;
-pub use self::globals::ehal;
+mod peripherals;
 
+use crate::imu::Imu;
 use crate::imu::Mpu6050;
-use crate::{aliases::I2cConcrete, imu::Imu};
 
 use defmt::error;
-use ehal::{clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc};
 use embassy_executor::{task, Executor};
 use embassy_futures::yield_now;
-use fugit::RateExtU32;
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
@@ -23,43 +21,12 @@ use static_cell::StaticCell;
 fn main() -> ! {
     self::globals::setup();
 
-    let p = Peripherals::take().unwrap();
-
-    let mut system = p.SYSTEM.split();
-    let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
-
-    // Disable the RTC and TIMG watchdog timers
-    {
-        let mut rtc = Rtc::new(p.RTC_CNTL);
-        let timer_group0 = TimerGroup::new(p.TIMG0, &clocks);
-        let mut wdt0 = timer_group0.wdt;
-        let timer_group1 = TimerGroup::new(p.TIMG1, &clocks);
-        let mut wdt1 = timer_group1.wdt;
-
-        rtc.rwdt.disable();
-        rtc.swd.disable();
-        wdt0.disable();
-        wdt1.disable();
-    }
-
-    let io = ehal::IO::new(p.GPIO, p.IO_MUX);
-    // let hz =
-    let i2c = ehal::i2c::I2C::new(
-        p.I2C0,
-        io.pins.gpio10,
-        io.pins.gpio8,
-        400u32.kHz(),
-        &mut system.peripheral_clock_control,
-        &clocks,
-    )
-    .expect("Failed to set up i2c");
+    let p = self::peripherals::get_peripherals();
 
     static EXECUTOR: StaticCell<Executor> = StaticCell::new();
     EXECUTOR.init(Executor::new()).run(move |spawner| {
         spawner.spawn(async_main()).unwrap();
-        spawner
-            .spawn(sensor_data(i2c, ehal::Delay::new(&clocks)))
-            .unwrap();
+        spawner.spawn(sensor_data(p.i2c, p.delay)).unwrap();
     });
 }
 
@@ -74,7 +41,10 @@ async fn async_main() {
 }
 
 #[task]
-async fn sensor_data(i2c: I2cConcrete, mut delay: ehal::Delay) {
+async fn sensor_data(
+    i2c: crate::aliases::I2cConcrete,
+    mut delay: crate::aliases::DelayConcrete,
+) {
     let mut imu = Mpu6050::new(i2c, &mut delay).expect("Failed to initialize MPU");
     let mut i = 0;
     loop {
