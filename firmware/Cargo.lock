@@ -274,16 +274,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "esp-backtrace"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cc04e4a62fe7905eab18e12715feaded6cb51a5a878a0c067bbe29436bad96a"
-dependencies = [
- "esp-println",
- "riscv 0.8.0",
-]
-
-[[package]]
 name = "esp-hal-common"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -314,12 +304,6 @@ dependencies = [
  "quote",
  "syn",
 ]
-
-[[package]]
-name = "esp-println"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dab33baae57ce7c0869c32885ff136f9c8405e0c201d039ccd767c3e7f79502b"
 
 [[package]]
 name = "esp32c3"
@@ -356,12 +340,12 @@ dependencies = [
  "embassy-executor",
  "embassy-futures",
  "esp-alloc",
- "esp-backtrace",
  "esp32c3-hal",
  "fugit",
  "mpu6050-dmp",
  "nalgebra",
  "nb 1.0.0",
+ "panic_defmt",
  "riscv-rt",
  "static_cell",
 ]
@@ -552,6 +536,13 @@ checksum = "578ede34cf02f8924ab9447f50c28075b4d3e5b269972345e7e0372b38c6cdcd"
 dependencies = [
  "autocfg",
  "libm",
+]
+
+[[package]]
+name = "panic_defmt"
+version = "0.0.0"
+dependencies = [
+ "defmt",
 ]
 
 [[package]]

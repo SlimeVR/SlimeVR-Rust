@@ -1,6 +1,7 @@
 use super::{Imu, ImuKind, Quat};
 use crate::aliases::{ehal, I2c};
 
+use defmt::debug;
 use ehal::blocking::delay::DelayMs;
 use mpu6050_dmp::address::Address;
 use mpu6050_dmp::sensor::Mpu6050 as LibMpu;
@@ -14,8 +15,11 @@ impl<I: I2c> Mpu6050<I> {
         i2c: I,
         delay: &mut impl DelayMs<u32>,
     ) -> Result<Self, mpu6050_dmp::error::Error<I>> {
+        debug!("Constructing MPU...");
         let mut mpu = LibMpu::new(i2c, Address::default())?;
+        debug!("Constructed MPU");
         mpu.initialize_dmp(delay)?;
+        debug!("Initialized dmp");
         Ok(Self {
             mpu,
             fifo_buf: [0; 28],

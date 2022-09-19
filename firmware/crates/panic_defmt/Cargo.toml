@@ -1,0 +1,7 @@
+[package]
+name = "panic_defmt"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+defmt = "0.3"

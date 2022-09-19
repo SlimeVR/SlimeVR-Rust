@@ -5,15 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug esp32c3",
-            "type": "gdb",
-            "request": "attach",
-            "executable": "${workspaceFolder}/target/riscv32imac-unknown-none-elf/debug/firmware",
-            "target": "127.0.0.1:1337",
-            "remote": true,
-            "cwd": "${workspaceRoot}",
-            "stopAtConnect": true,
-            // "valuesFormatting": "parseText"
+            // "preLaunchTask": "${defaultBuildTask}",
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "flashingConfig": {
+                "flashingEnabled": false,
+                "resetAfterFlashing": true,
+                "haltAfterReset": true,
+            },
+            "consoleLogLevel": "Debug",
+            "name": "probe_rs Executable Test",
+            "chip": "esp32c3", //!MODIFY
+            "wireProtocol": "Jtag",
+            "cwd": "${workspaceFolder}",
+            "coreConfigs": [
+                {
+                    "programBinary": "${workspaceFolder}/target/riscv32imac-unknown-none-elf/debug/firmware", //!MODIFY
+                    "rttEnabled": true,
+                }
+            ]
         }
     ]
 }

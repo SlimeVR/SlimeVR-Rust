@@ -5,7 +5,8 @@ extern crate alloc;
 static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 
 // Set up backtraces
-use esp_backtrace as _;
+// use esp_backtrace as _;
+use panic_defmt as _;
 
 // Set up global defmt logger
 use defmt_rtt as _;

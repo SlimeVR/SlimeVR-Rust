@@ -11,7 +11,7 @@ mod peripherals;
 use crate::imu::Imu;
 use crate::imu::Mpu6050;
 
-use defmt::error;
+use defmt::{debug, trace};
 use embassy_executor::{task, Executor};
 use embassy_futures::yield_now;
 use riscv_rt::entry;
@@ -20,8 +20,10 @@ use static_cell::StaticCell;
 #[entry]
 fn main() -> ! {
     self::globals::setup();
+    debug!("Booted");
 
     let p = self::peripherals::get_peripherals();
+    debug!("Initialized peripherals");
 
     static EXECUTOR: StaticCell<Executor> = StaticCell::new();
     EXECUTOR.init(Executor::new()).run(move |spawner| {
@@ -32,9 +34,10 @@ fn main() -> ! {
 
 #[task]
 async fn async_main() {
+    debug!("Started async_main task");
     let mut i = 0;
     loop {
-        error!("In main(), i was {}", i);
+        trace!("In main(), i was {}", i);
         i += 1;
         yield_now().await // Yield to ensure fairness
     }
@@ -45,15 +48,21 @@ async fn sensor_data(
     i2c: crate::aliases::I2cConcrete,
     mut delay: crate::aliases::DelayConcrete,
 ) {
+    debug!("Started sensor_data task");
     let mut imu = Mpu6050::new(i2c, &mut delay).expect("Failed to initialize MPU");
+    debug!("Initialized IMU!");
+
     let mut i = 0;
     loop {
-        error!("In data(), i was {}", i);
+        trace!("In data(), i was {}", i);
         i += 1;
         let q = nb2a(|| imu.quat()).await.expect("Fatal IMU Error");
-        error!(
+        trace!(
             "Quat values: x: {}, y: {}, z: {}, w: {}",
-            q.coords.x, q.coords.y, q.coords.z, q.coords.w
+            q.coords.x,
+            q.coords.y,
+            q.coords.z,
+            q.coords.w
         );
         yield_now().await // Yield to ensure fairness
     }

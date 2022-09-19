@@ -1,3 +1,6 @@
+[workspace]
+members = ["crates/panic_defmt"]
+
 [package]
 name = "firmware"
 version = "0.0.0"
@@ -13,11 +16,6 @@ esp32c3 = []
 [dependencies]
 # Platform support
 esp32c3-hal = { version = "0.2", features = ["direct-boot"] }
-esp-backtrace = { version = "0.2.0", features = [
-    "esp32c3",
-    "panic-handler",
-    "print-uart",
-] }
 riscv-rt = "0.9"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 
@@ -36,6 +34,7 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 # Logging
 defmt = "0.3"
 defmt-rtt = "0.3"
+panic_defmt = { path = "crates/panic_defmt" }
 
 # Peripherals
 mpu6050-dmp = "0.2"
@@ -53,4 +52,3 @@ nalgebra = { version = "0.31", default-features = false, features = [
     "libm",
 ] }
 fugit = "0.3"
-# eyre = "0.6"

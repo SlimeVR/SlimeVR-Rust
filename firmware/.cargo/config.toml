@@ -19,3 +19,7 @@ target = "riscv32imac-unknown-none-elf"
 
 [unstable]
 build-std = ["core", "alloc"]
+
+[env]
+# You can override this via environment variable when building or by changing it here
+DEFMT_LOG = "info"
