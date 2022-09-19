@@ -3,79 +3,80 @@
 // Needed for embassy macros
 #![feature(type_alias_impl_trait)]
 
-extern crate alloc;
+mod aliases;
+mod globals;
+mod imu;
+mod peripherals;
 
-// Set up global heap allocator
-#[global_allocator]
-static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
+use crate::imu::Imu;
+use crate::imu::Mpu6050;
 
-// Set up backtraces
-use esp_backtrace as _;
-
-// Set up global defmt logger
-use defmt_rtt as _;
-
+use defmt::{debug, trace};
 use embassy_executor::{task, Executor};
 use embassy_futures::yield_now;
-use esp32c3_hal::{
-    clock::ClockControl, pac::Peripherals, prelude::*, timer::TimerGroup, Rtc,
-};
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
-use defmt::error;
-
 #[entry]
 fn main() -> ! {
-    // Initialize the global allocator BEFORE you use it
-    {
-        const HEAP_SIZE: usize = 10 * 1024;
-        static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
-        unsafe { ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE) }
-    }
+    self::globals::setup();
+    debug!("Booted");
 
-    let peripherals = Peripherals::take().unwrap();
+    let p = self::peripherals::get_peripherals();
+    debug!("Initialized peripherals");
 
     static EXECUTOR: StaticCell<Executor> = StaticCell::new();
     EXECUTOR.init(Executor::new()).run(move |spawner| {
-        spawner.spawn(async_main(peripherals)).unwrap();
-        spawner.spawn(sensor_data()).unwrap();
+        spawner.spawn(async_main()).unwrap();
+        spawner.spawn(sensor_data(p.i2c, p.delay)).unwrap();
     });
 }
 
 #[task]
-async fn async_main(p: Peripherals) {
-    let system = p.SYSTEM.split();
-    let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
-
-    // Disable the RTC and TIMG watchdog timers
-    {
-        let mut rtc = Rtc::new(p.RTC_CNTL);
-        let timer_group0 = TimerGroup::new(p.TIMG0, &clocks);
-        let mut wdt0 = timer_group0.wdt;
-        let timer_group1 = TimerGroup::new(p.TIMG1, &clocks);
-        let mut wdt1 = timer_group1.wdt;
-
-        rtc.rwdt.disable();
-        rtc.swd.disable();
-        wdt0.disable();
-        wdt1.disable();
-    }
-
+async fn async_main() {
+    debug!("Started async_main task");
     let mut i = 0;
     loop {
-        error!("In main(), i was {}", i);
+        trace!("In main(), i was {}", i);
         i += 1;
-        yield_now().await
+        yield_now().await // Yield to ensure fairness
     }
 }
 
 #[task]
-async fn sensor_data() {
+async fn sensor_data(
+    i2c: crate::aliases::I2cConcrete,
+    mut delay: crate::aliases::DelayConcrete,
+) {
+    debug!("Started sensor_data task");
+    let mut imu = Mpu6050::new(i2c, &mut delay).expect("Failed to initialize MPU");
+    debug!("Initialized IMU!");
+
     let mut i = 0;
     loop {
-        error!("In data(), i was {}", i);
+        trace!("In data(), i was {}", i);
         i += 1;
-        yield_now().await
+        let q = nb2a(|| imu.quat()).await.expect("Fatal IMU Error");
+        trace!(
+            "Quat values: x: {}, y: {}, z: {}, w: {}",
+            q.coords.x,
+            q.coords.y,
+            q.coords.z,
+            q.coords.w
+        );
+        yield_now().await // Yield to ensure fairness
+    }
+}
+
+/// Converts a nb::Result to an async function by looping and yielding to the async
+/// executor.
+async fn nb2a<T, E>(mut f: impl FnMut() -> nb::Result<T, E>) -> Result<T, E> {
+    loop {
+        let v = f();
+        match v {
+            Ok(t) => return Ok(t),
+            Err(nb::Error::Other(e)) => return Err(e),
+            Err(nb::Error::WouldBlock) => yield_now().await,
+        }
     }
 }

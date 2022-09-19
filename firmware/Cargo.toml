@@ -1,3 +1,6 @@
+[workspace]
+members = ["crates/panic_defmt"]
+
 [package]
 name = "firmware"
 version = "0.0.0"
@@ -5,14 +8,14 @@ authors = ["Ryan Butler <thebutlah@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
+[features]
+default = ["esp32c3"]
+# In the future, we will support other platforms, selected via feature
+esp32c3 = []
+
 [dependencies]
 # Platform support
-esp32c3-hal = { version = "0.1", features = ["direct-boot"] }
-esp-backtrace = { version = "0.1.0", features = [
-    "esp32c3",
-    "panic-handler",
-    "print-uart",
-] }
+esp32c3-hal = { version = "0.2", features = ["direct-boot"] }
 riscv-rt = "0.9"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 
@@ -31,20 +34,21 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 # Logging
 defmt = "0.3"
 defmt-rtt = "0.3"
-
-# Misc crates
-static_cell = "1"
-nb = "1"
+panic_defmt = { path = "crates/panic_defmt" }
 
 # Peripherals
-mpu6050 = "0.1"
+mpu6050-dmp = "0.2"
+# esp-wifi doesn't seem to be updated for the latest ecosystem crates
+# esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "69956d42d2ddf00dd7021e429ed815f982e35319", features = [
+#     "esp32c3",
+#     "wifi",
+# ] }
 
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "1fb0a1562a7faccb5a624fcff5a51806f9c14b09", features = [
-    "esp32c3",
-    "wifi",
+# Other crates
+static_cell = "1"
+nb = "1"
+nalgebra = { version = "0.31", default-features = false, features = [
+    "macros",
+    "libm",
 ] }
-
-# Wifi
-[patch.crates-io]
-# Currently patching esp32c3-hal with a change to the linker script that makes defmt work.
-esp32c3-hal = { git = "https://github.com/TheButlah/esp-hal", branch = "defmt_fix" }
+fugit = "0.3"
