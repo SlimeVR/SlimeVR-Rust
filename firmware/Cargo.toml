@@ -40,9 +40,10 @@ panic_defmt = { path = "crates/panic_defmt" }
 mpu6050-dmp = "0.2"
 # esp-wifi doesn't seem to be updated for the latest ecosystem crates
 # esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "69956d42d2ddf00dd7021e429ed815f982e35319", features = [
-#     "esp32c3",
-#     "wifi",
-# ] }
+esp-wifi = { git = "https://github.com/TheButlah/esp-wifi", rev = "1c8e1a18adbedcdbe190dd55e2956699842c5aaf", features = [
+    "esp32c3",
+    "wifi",
+] }
 
 # Other crates
 static_cell = "1"
