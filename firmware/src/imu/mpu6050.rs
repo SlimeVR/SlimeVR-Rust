@@ -1,9 +1,11 @@
 use super::{Imu, ImuKind, Quat};
 use crate::aliases::{ehal, I2c};
+use crate::utils;
 
-use defmt::debug;
+use defmt::{debug, trace};
 use ehal::blocking::delay::DelayMs;
 use mpu6050_dmp::address::Address;
+use mpu6050_dmp::error::InitError;
 use mpu6050_dmp::sensor::Mpu6050 as LibMpu;
 
 pub struct Mpu6050<I: I2c> {
@@ -11,19 +13,38 @@ pub struct Mpu6050<I: I2c> {
     fifo_buf: [u8; 28],
 }
 impl<I: I2c> Mpu6050<I> {
-    pub fn new(
-        i2c: I,
-        delay: &mut impl DelayMs<u32>,
-    ) -> Result<Self, mpu6050_dmp::error::Error<I>> {
+    pub fn new(i2c: I, delay: &mut impl DelayMs<u32>) -> Result<Self, InitError<I>> {
         debug!("Constructing MPU...");
-        let mut mpu = LibMpu::new(i2c, Address::default())?;
-        debug!("Constructed MPU");
-        mpu.initialize_dmp(delay)?;
-        debug!("Initialized dmp");
-        Ok(Self {
-            mpu,
-            fifo_buf: [0; 28],
-        })
+        let addr = Address::from(0x68);
+        debug!("I2C address: {:x}", addr.0);
+
+        utils::retry(
+            4,
+            i2c,
+            |mut i2c| {
+                delay.delay_ms(1000);
+                trace!("Flushing I2C with bogus data");
+                let _ = i2c.write(addr.0, &[0]);
+                delay.delay_ms(1000);
+                trace!("Constructing IMU");
+                let mut mpu = LibMpu::new(i2c, addr)
+                    // Map converts from struct -> tuple
+                    .map_err(|InitError { i2c, error }| (i2c, error))?;
+                debug!("Constructed MPU");
+                delay.delay_ms(1000);
+                if let Err(error) = mpu.initialize_dmp(delay) {
+                    return Err((mpu.release(), error));
+                }
+                debug!("Initialized DMP");
+                Ok(Self {
+                    mpu,
+                    fifo_buf: [0; 28],
+                })
+            },
+            |i| debug!("Retrying IMU connection (attempts so far: {})", i + 1),
+        )
+        // Map converts from tuple -> struct
+        .map_err(|(i2c, error)| InitError { i2c, error })
     }
 }
 
