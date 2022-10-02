@@ -1,6 +1,7 @@
-var sourcesIndex = {};
-sourcesIndex["autoupdater"] = {"name":"","dirs":[{"name":"parsing","files":["install_path.rs","mcp.rs","mod.rs"]}],"files":["main.rs"]};
-sourcesIndex["skeletal_model"] = {"name":"","dirs":[{"name":"bone","files":["bone_kind.rs","bone_map.rs","mod.rs"]},{"name":"skeleton","files":["edge.rs","mod.rs","node.rs"]}],"files":["conventions.rs","lib.rs","newtypes.rs","prelude.rs"]};
-sourcesIndex["slimevr_overlay"] = {"name":"","dirs":[{"name":"client","files":["data.rs","mod.rs","state_machine.rs"]},{"name":"model","files":["bone.rs","bone_kind.rs","bone_map.rs","mod.rs","skeleton.rs"]}],"files":["color.rs","lib.rs"]};
-sourcesIndex["tokio_shutdown"] = {"name":"","files":["lib.rs"]};
+var sourcesIndex = JSON.parse('{\
+"autoupdater":["",[["parsing",[],["install_path.rs","mcp.rs","mod.rs"]]],["main.rs"]],\
+"skeletal_model":["",[["bone",[],["bone_kind.rs","bone_map.rs","mod.rs"]],["skeleton",[],["edge.rs","mod.rs","node.rs"]]],["conventions.rs","lib.rs","newtypes.rs","prelude.rs"]],\
+"slimevr_overlay":["",[["client",[],["data.rs","mod.rs","state_machine.rs"]],["model",[],["bone.rs","bone_kind.rs","bone_map.rs","mod.rs","skeleton.rs"]]],["color.rs","lib.rs"]],\
+"tokio_shutdown":["",[],["lib.rs"]]\
+}');
 createSourceSidebar();
