@@ -52,3 +52,6 @@ nalgebra = { version = "0.31", default-features = false, features = [
     "libm",
 ] }
 fugit = "0.3"
+
+[patch.crates-io]
+mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "4bd466b8298443bb1100ec5d63b575cd83e70df6" }
