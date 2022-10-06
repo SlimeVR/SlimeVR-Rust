@@ -22,16 +22,16 @@ impl<I: I2c> Mpu6050<I> {
             4,
             i2c,
             |mut i2c| {
-                delay.delay_ms(1000);
+                delay.delay_ms(100);
                 trace!("Flushing I2C with bogus data");
                 let _ = i2c.write(addr.0, &[0]);
-                delay.delay_ms(1000);
+                delay.delay_ms(100);
                 trace!("Constructing IMU");
                 let mut mpu = LibMpu::new(i2c, addr)
                     // Map converts from struct -> tuple
                     .map_err(|InitError { i2c, error }| (i2c, error))?;
                 debug!("Constructed MPU");
-                delay.delay_ms(1000);
+                delay.delay_ms(100);
                 if let Err(error) = mpu.initialize_dmp(delay) {
                     return Err((mpu.release(), error));
                 }

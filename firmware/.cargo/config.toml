@@ -1,6 +1,3 @@
-[target.riscv32imac-unknown-none-elf]
-# runner = "espflash --monitor"
-
 [build]
 rustflags = [
   "-C",
@@ -10,11 +7,12 @@ rustflags = [
   "-C",
   "link-arg=-Tdefmt.x",
 ]
-target = "riscv32imac-unknown-none-elf"
+# We compile without atomics, because its faster than using atomic trap handler
+target = "riscv32imc-unknown-none-elf"
 
 [unstable]
 build-std = ["core", "alloc"]
 
 [env]
 # You can override this via environment variable when building or by changing it here
-DEFMT_LOG = "debug"
+DEFMT_LOG = "trace"

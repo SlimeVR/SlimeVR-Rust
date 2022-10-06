@@ -17,6 +17,7 @@ esp32c3 = []
 # Platform support
 esp32c3-hal = { version = "0.2", features = ["direct-boot"] }
 riscv-rt = "0.9"
+riscv = "0.8"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 
 # Embassy stuff
@@ -33,7 +34,7 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0
 
 # Logging
 defmt = "0.3"
-defmt-rtt = "0.3"
+defmt-rtt = "0.3.2"
 panic_defmt = { path = "crates/panic_defmt" }
 
 # Peripherals
@@ -54,4 +55,12 @@ nalgebra = { version = "0.31", default-features = false, features = [
 fugit = "0.3"
 
 [patch.crates-io]
-mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "4bd466b8298443bb1100ec5d63b575cd83e70df6" }
+# Enable non-default I2C addresses and InitError
+mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
+
+# Works on non atomic targets
+defmt-rtt = { git = "https://github.com/knurling-rs/defmt", rev = "8f465a0db78a8f7759452ecba5d1ad3d7d171098" }
+defmt = { git = "https://github.com/knurling-rs/defmt", rev = "8f465a0db78a8f7759452ecba5d1ad3d7d171098" }
+
+# Fixes atomic trap handler (only necessary on `-imac` target)
+esp32c3-hal = { git = "https://github.com/esp-rs/esp-hal", rev = "af745ac7b0799752260e13573895b97153d85639" }
