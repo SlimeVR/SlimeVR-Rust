@@ -22,11 +22,20 @@ dependencies = [
 
 [[package]]
 name = "atomic-polyfill"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c041a8d9751a520ee19656232a18971f18946a7900f1520ee4400002244dd89"
+dependencies = [
+ "critical-section 0.2.7",
+]
+
+[[package]]
+name = "atomic-polyfill"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d299f547288d6db8d5c3a2916f7b2f66134b15b8c1ac1c4357dd3b8752af7bb2"
 dependencies = [
- "critical-section",
+ "critical-section 1.1.1",
 ]
 
 [[package]]
@@ -34,6 +43,15 @@ name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
+
+[[package]]
+name = "bare-metal"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5deb64efa5bd81e31fcd1938615a6d98c82eafcbcd787162b6f63b91d6bac5b3"
+dependencies = [
+ "rustc_version 0.2.3",
+]
 
 [[package]]
 name = "bare-metal"
@@ -48,16 +66,52 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dcb6dd1c2376d2e096796e234a70e17e94cc2d5d54ff8ce42b28cef1d0d359a4"
 
 [[package]]
+name = "bitfield"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46afbd2983a5d5a7bd740ccb198caf5b82f45c40c09c0eed36052d91cb92e719"
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
+name = "byteorder"
+version = "1.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "cortex-m"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70858629a458fdfd39f9675c4dc309411f2a3f83bede76988d81bf1a0ecee9e0"
+dependencies = [
+ "bare-metal 0.2.5",
+ "bitfield",
+ "embedded-hal",
+ "volatile-register",
+]
+
+[[package]]
+name = "critical-section"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95da181745b56d4bd339530ec393508910c909c784e8962d15d722bacf0bcbcd"
+dependencies = [
+ "bare-metal 1.0.0",
+ "cfg-if",
+ "cortex-m",
+ "riscv 0.7.0",
+]
 
 [[package]]
 name = "critical-section"
@@ -166,8 +220,8 @@ name = "defmt-rtt"
 version = "0.3.2"
 source = "git+https://github.com/knurling-rs/defmt?rev=8f465a0db78a8f7759452ecba5d1ad3d7d171098#8f465a0db78a8f7759452ecba5d1ad3d7d171098"
 dependencies = [
- "atomic-polyfill",
- "critical-section",
+ "atomic-polyfill 1.0.1",
+ "critical-section 1.1.1",
  "defmt",
 ]
 
@@ -176,9 +230,9 @@ name = "embassy-executor"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
 dependencies = [
- "atomic-polyfill",
+ "atomic-polyfill 1.0.1",
  "cfg-if",
- "critical-section",
+ "critical-section 1.1.1",
  "embassy-macros",
  "futures-util",
  "static_cell",
@@ -211,14 +265,55 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-io"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36673b79844ff4ec0e3f00aeca0b2cfff564ff6739ab9801d13f45a8ec6cc1c7"
+
+[[package]]
+name = "embedded-svc"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "85fb2cc875d8cb13978429beb5af7dea5f7f84d5d41187ff9593b83374d3fe77"
+dependencies = [
+ "embedded-io",
+ "enumset",
+ "heapless",
+ "log",
+ "no-std-net",
+ "serde",
+]
+
+[[package]]
+name = "enumset"
+version = "1.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19be8061a06ab6f3a6cf21106c873578bf01bd42ad15e0311a9c76161cb1c753"
+dependencies = [
+ "enumset_derive",
+]
+
+[[package]]
+name = "enumset_derive"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03e7b551eba279bf0fa88b83a46330168c1560a52a94f5126f892f0b364ab3e0"
+dependencies = [
+ "darling 0.14.1",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "esp-alloc"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "747141836aa66f690bb8434f7044781b629c686fa699581aa3940f1b8ffee4ea"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "linked_list_allocator",
- "riscv",
+ "riscv 0.8.0",
  "xtensa-lx",
 ]
 
@@ -228,14 +323,14 @@ version = "0.2.0"
 source = "git+https://github.com/esp-rs/esp-hal?rev=af745ac7b0799752260e13573895b97153d85639#af745ac7b0799752260e13573895b97153d85639"
 dependencies = [
  "cfg-if",
- "critical-section",
+ "critical-section 1.1.1",
  "embedded-hal",
  "esp-hal-procmacros",
  "esp32c3",
  "fugit",
  "nb 1.0.0",
  "paste",
- "riscv",
+ "riscv 0.8.0",
  "riscv-atomic-emulation-trap",
  "void",
 ]
@@ -253,13 +348,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "esp-wifi"
+version = "0.1.0"
+source = "git+https://github.com/esp-rs/esp-wifi?rev=9bae034f9db66b8cd31ab5ce788ffaeb8bc8e2dc#9bae034f9db66b8cd31ab5ce788ffaeb8bc8e2dc"
+dependencies = [
+ "atomic-polyfill 1.0.1",
+ "critical-section 1.1.1",
+ "embedded-hal",
+ "embedded-io",
+ "embedded-svc",
+ "enumset",
+ "esp-alloc",
+ "esp32c3-hal",
+ "fugit",
+ "heapless",
+ "log",
+ "nb 1.0.0",
+ "riscv 0.8.0",
+ "riscv-rt",
+ "riscv-target",
+ "smoltcp",
+ "void",
+]
+
+[[package]]
 name = "esp32c3"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cc0e61897c90cfc713243af3d7fab2a7615669faf1652bd3718a1172012b1a02"
 dependencies = [
- "bare-metal",
- "riscv",
+ "bare-metal 1.0.0",
+ "riscv 0.8.0",
  "riscv-rt",
  "vcell",
 ]
@@ -272,7 +391,7 @@ dependencies = [
  "embedded-hal",
  "esp-hal-common",
  "r0",
- "riscv",
+ "riscv 0.8.0",
  "riscv-rt",
 ]
 
@@ -285,15 +404,19 @@ dependencies = [
  "embassy-executor",
  "embassy-futures",
  "embedded-hal",
+ "embedded-svc",
  "esp-alloc",
+ "esp-wifi",
  "esp32c3-hal",
  "fugit",
+ "managed",
  "mpu6050-dmp",
  "nalgebra",
  "nb 1.0.0",
  "panic_defmt",
- "riscv",
+ "riscv 0.8.0",
  "riscv-rt",
+ "smoltcp",
  "static_cell",
 ]
 
@@ -346,6 +469,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "hash32"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0c35f58762feb77d74ebe43bdbc3210f09be9fe6742234d573bacc26ed92b67"
+dependencies = [
+ "byteorder",
+]
+
+[[package]]
+name = "heapless"
+version = "0.7.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db04bc24a18b9ea980628ecf00e6c0264f3c1426dac36c00cb49b6fbad8b0743"
+dependencies = [
+ "atomic-polyfill 0.1.10",
+ "hash32",
+ "rustc_version 0.4.0",
+ "spin",
+ "stable_deref_trait",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -381,6 +526,21 @@ dependencies = [
  "autocfg",
  "scopeguard",
 ]
+
+[[package]]
+name = "log"
+version = "0.4.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
+name = "managed"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ca88d725a0a943b096803bd34e73a4437208b6077654cc4ecb2947a5f91618d"
 
 [[package]]
 name = "memchr"
@@ -445,6 +605,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "546c37ac5d9e56f55e73b677106873d9d9f5190605e41a856503623648488cae"
 
 [[package]]
+name = "no-std-net"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1bcece43b12349917e096cddfa66107277f123e6c96a5aea78711dc601a47152"
+
+[[package]]
 name = "num-complex"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -488,7 +654,7 @@ dependencies = [
 name = "panic_defmt"
 version = "0.0.0"
 dependencies = [
- "atomic-polyfill",
+ "atomic-polyfill 1.0.1",
  "defmt",
 ]
 
@@ -577,11 +743,22 @@ checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
 
 [[package]]
 name = "riscv"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6907ccdd7a31012b70faf2af85cd9e5ba97657cc3987c4f13f8e4d2c2a088aba"
+dependencies = [
+ "bare-metal 1.0.0",
+ "bit_field",
+ "riscv-target",
+]
+
+[[package]]
+name = "riscv"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e2856a701069e2d262b264750d382407d272d5527f7a51d3777d1805b4e2d3c"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "bit_field",
  "embedded-hal",
 ]
@@ -592,7 +769,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c14f171f5b52a5608b55b027aa5557e190b1bb47764a293cd7d48bfb418ab009"
 dependencies = [
- "riscv",
+ "riscv 0.8.0",
  "riscv-rt",
  "riscv-target",
 ]
@@ -604,7 +781,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "527ddfacbbfeed89256163c2655b0392c4aa76dd95c0189dc05044bf2c47c3f8"
 dependencies = [
  "r0",
- "riscv",
+ "riscv 0.8.0",
  "riscv-rt-macros",
  "riscv-target",
 ]
@@ -631,10 +808,69 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustc_version"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
+dependencies = [
+ "semver 0.9.0",
+]
+
+[[package]]
+name = "rustc_version"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
+dependencies = [
+ "semver 1.0.14",
+]
+
+[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "semver"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
+dependencies = [
+ "semver-parser",
+]
+
+[[package]]
+name = "semver"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e25dfac463d778e353db5be2449d1cce89bd6fd23c9f1ea21310ce6e5a1b29c4"
+
+[[package]]
+name = "semver-parser"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
+
+[[package]]
+name = "serde"
+version = "1.0.145"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "728eb6351430bccb993660dfffc5a72f91ccc1295abaa8ce19b27ebe4f75568b"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.145"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81fa1584d3d1bcacd84c277a0dfe21f5b0f6accf4a23d04d4c6d61f1af522b4c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "simba"
@@ -646,6 +882,18 @@ dependencies = [
  "num-complex",
  "num-traits",
  "paste",
+]
+
+[[package]]
+name = "smoltcp"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72165c4af59f5f19c7fb774b88b95660591b612380305b5f4503157341a9f7ee"
+dependencies = [
+ "bitflags",
+ "byteorder",
+ "defmt",
+ "managed",
 ]
 
 [[package]]
@@ -667,12 +915,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "stable_deref_trait"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
+
+[[package]]
 name = "static_cell"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4c37c250d21f53fa7165e76e5401d7e6539c211a8d2cf449e3962956a5cc2ce"
 dependencies = [
- "atomic-polyfill",
+ "atomic-polyfill 1.0.1",
 ]
 
 [[package]]
@@ -723,12 +977,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 
 [[package]]
+name = "volatile-register"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ee8f19f9d74293faf70901bc20ad067dc1ad390d2cbf1e3f75f721ffee908b6"
+dependencies = [
+ "vcell",
+]
+
+[[package]]
 name = "xtensa-lx"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b874b2b60f9c25682e0961fd53a802053e6950f7567bc6f2d6c734fb6d93f45a"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "mutex-trait",
  "r0",
  "spin",

@@ -26,6 +26,21 @@ riscv = "0.8"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 embedded-hal = "0.2"
 
+# Wifi stuff
+embedded-svc = { version = "0.22", default-features = false, features = [
+    # "nightly",
+] }
+smoltcp = { version = "0.8", default-features = false, features = [
+    "defmt",
+    "socket-udp",
+] }
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "9bae034f9db66b8cd31ab5ce788ffaeb8bc8e2dc", features = [
+    "esp32c3",
+    "wifi",
+    "embedded-svc",
+] }
+managed = { version = "0.8", default-features = false }
+
 # Embassy stuff
 embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
@@ -45,12 +60,6 @@ panic_defmt = { path = "crates/panic_defmt" }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
-# esp-wifi doesn't seem to be updated for the latest ecosystem crates
-# esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "e8adb3153f9757986b2a6af09cbfb622c485dcfc", features = [
-# esp-wifi = { path = "../../../External/esp-wifi", features = [
-#     "esp32c3",
-#     "wifi",
-# ] }
 
 # Other crates
 static_cell = "1"

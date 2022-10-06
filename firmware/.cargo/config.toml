@@ -16,3 +16,7 @@ build-std = ["core", "alloc"]
 [env]
 # You can override this via environment variable when building or by changing it here
 DEFMT_LOG = "trace"
+
+# You should override these with environment variables
+FERROUS_SLIME_WIFI_SSID = "my_ssid"
+FERROUS_SLIME_WIFI_PASS = "my_pass"

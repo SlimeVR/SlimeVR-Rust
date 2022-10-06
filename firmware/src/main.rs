@@ -6,19 +6,19 @@
 mod aliases;
 mod globals;
 mod imu;
+mod networking;
 mod peripherals;
 mod utils;
 
-use defmt::{debug, trace};
+use defmt::{debug, info};
 use embassy_executor::{task, Executor};
-use embassy_futures::yield_now;
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
 #[entry]
 fn main() -> ! {
     self::globals::setup();
-    debug!("Booted");
+    info!("Booted");
 
     let p = self::peripherals::get_peripherals();
     debug!("Initialized peripherals");
@@ -33,13 +33,7 @@ fn main() -> ! {
 
 #[task]
 async fn network_task() {
-    debug!("Started network_task");
-    let mut i = 0;
-    loop {
-        trace!("In main(), i was {}", i);
-        i += 1;
-        yield_now().await // Yield to ensure fairness
-    }
+    crate::networking::wifi::network_task().await
 }
 
 #[task]
