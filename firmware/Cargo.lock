@@ -284,6 +284,7 @@ dependencies = [
  "defmt-rtt",
  "embassy-executor",
  "embassy-futures",
+ "embedded-hal",
  "esp-alloc",
  "esp32c3-hal",
  "fugit",

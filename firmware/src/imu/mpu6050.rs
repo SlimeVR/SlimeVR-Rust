@@ -1,9 +1,9 @@
 use super::{Imu, ImuKind, Quat};
-use crate::aliases::{ehal, I2c};
+use crate::aliases::I2c;
 use crate::utils;
 
 use defmt::{debug, trace};
-use ehal::blocking::delay::DelayMs;
+use embedded_hal::blocking::delay::DelayMs;
 use mpu6050_dmp::address::Address;
 use mpu6050_dmp::error::InitError;
 use mpu6050_dmp::sensor::Mpu6050 as LibMpu;
@@ -66,4 +66,11 @@ impl<I: I2c> Imu for Mpu6050<I> {
             Err(nb::Error::WouldBlock)
         }
     }
+}
+
+pub fn new_imu(
+    i2c: impl crate::aliases::I2c,
+    delay: &mut impl DelayMs<u32>,
+) -> impl crate::imu::Imu {
+    Mpu6050::new(i2c, delay).expect("Failed to initialize MPU6050")
 }
