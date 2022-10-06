@@ -9,10 +9,6 @@ mod imu;
 mod peripherals;
 mod utils;
 
-use crate::imu::Imu;
-use crate::imu::Mpu6050;
-use crate::utils::nb2a;
-
 use defmt::{debug, trace};
 use embassy_executor::{task, Executor};
 use embassy_futures::yield_now;
@@ -31,7 +27,7 @@ fn main() -> ! {
     static EXECUTOR: StaticCell<Executor> = StaticCell::new();
     EXECUTOR.init(Executor::new()).run(move |spawner| {
         spawner.spawn(network_task()).unwrap();
-        spawner.spawn(sensor_task(p.i2c, p.delay)).unwrap();
+        spawner.spawn(imu_task(p.i2c, p.delay)).unwrap();
     });
 }
 
@@ -47,26 +43,9 @@ async fn network_task() {
 }
 
 #[task]
-async fn sensor_task(
+async fn imu_task(
     i2c: crate::aliases::I2cConcrete,
-    mut delay: crate::aliases::DelayConcrete,
+    delay: crate::aliases::DelayConcrete,
 ) {
-    debug!("Started sensor_task");
-    let mut imu = Mpu6050::new(i2c, &mut delay).expect("Failed to initialize MPU6050");
-    debug!("Initialized IMU!");
-
-    let mut i = 0;
-    loop {
-        trace!("In data(), i was {}", i);
-        i += 1;
-        let q = nb2a(|| imu.quat()).await.expect("Fatal IMU Error");
-        trace!(
-            "Quat values: x: {}, y: {}, z: {}, w: {}",
-            q.coords.x,
-            q.coords.y,
-            q.coords.z,
-            q.coords.w
-        );
-        yield_now().await // Yield to ensure fairness
-    }
+    crate::imu::imu_task(i2c, delay).await
 }

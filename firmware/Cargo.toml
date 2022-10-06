@@ -9,9 +9,14 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [features]
-default = ["esp32c3"]
-# In the future, we will support other platforms, selected via feature
-esp32c3 = []
+default = ["mcu-esp32c3", "imu-mpu6050"]
+
+# todo: actually support another microcontroller
+# Supported microcontrollers
+mcu-esp32c3 = []
+
+# Supported IMUs
+imu-mpu6050 = ["mpu6050-dmp"]
 
 [dependencies]
 # Platform support
@@ -19,6 +24,7 @@ esp32c3-hal = { version = "0.2", features = ["direct-boot"] }
 riscv-rt = "0.9"
 riscv = "0.8"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
+embedded-hal = "0.2"
 
 # Embassy stuff
 embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
@@ -38,9 +44,10 @@ defmt-rtt = "0.3.2"
 panic_defmt = { path = "crates/panic_defmt" }
 
 # Peripherals
-mpu6050-dmp = "0.2"
+mpu6050-dmp = { version = "0.2", optional = true }
 # esp-wifi doesn't seem to be updated for the latest ecosystem crates
-# esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "69956d42d2ddf00dd7021e429ed815f982e35319", features = [
+# esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "e8adb3153f9757986b2a6af09cbfb622c485dcfc", features = [
+# esp-wifi = { path = "../../../External/esp-wifi", features = [
 #     "esp32c3",
 #     "wifi",
 # ] }
