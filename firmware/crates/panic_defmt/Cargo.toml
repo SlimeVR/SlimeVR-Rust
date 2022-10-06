@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 defmt = "0.3"
+atomic-polyfill = "1"

@@ -11,6 +11,7 @@ mod utils;
 
 use crate::imu::Imu;
 use crate::imu::Mpu6050;
+use crate::utils::nb2a;
 
 use defmt::{debug, trace};
 use embassy_executor::{task, Executor};
@@ -67,18 +68,5 @@ async fn sensor_task(
             q.coords.w
         );
         yield_now().await // Yield to ensure fairness
-    }
-}
-
-/// Converts a nb::Result to an async function by looping and yielding to the async
-/// executor.
-async fn nb2a<T, E>(mut f: impl FnMut() -> nb::Result<T, E>) -> Result<T, E> {
-    loop {
-        let v = f();
-        match v {
-            Ok(t) => return Ok(t),
-            Err(nb::Error::Other(e)) => return Err(e),
-            Err(nb::Error::WouldBlock) => yield_now().await,
-        }
     }
 }

@@ -23,3 +23,16 @@ pub fn setup() {
         unsafe { ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE) }
     }
 }
+
+/// This will be called when a hardware exception occurs
+#[export_name = "ExceptionHandler"]
+pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) {
+    let mepc = riscv::register::mepc::read();
+    let mcause = riscv::register::mcause::read();
+    panic!(
+        "Unexpected hardware exception. MCAUSE: {:?}, RA: {:#x}, MEPC: {:#b}",
+        mcause.cause(),
+        trap_frame.ra,
+        mepc,
+    )
+}

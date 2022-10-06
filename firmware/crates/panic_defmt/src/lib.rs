@@ -1,6 +1,6 @@
 #![no_std]
 
-use core::sync::atomic::{AtomicBool, Ordering};
+use atomic_polyfill::{AtomicBool, Ordering};
 
 use defmt::error;
 
