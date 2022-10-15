@@ -350,7 +350,7 @@ dependencies = [
 [[package]]
 name = "esp-wifi"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-wifi?rev=9bae034f9db66b8cd31ab5ce788ffaeb8bc8e2dc#9bae034f9db66b8cd31ab5ce788ffaeb8bc8e2dc"
+source = "git+https://github.com/esp-rs/esp-wifi?rev=a137d67bd37b73553a81714ca3ddf8a2a9b09671#a137d67bd37b73553a81714ca3ddf8a2a9b09671"
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section 1.1.1",
@@ -358,10 +358,10 @@ dependencies = [
  "embedded-io",
  "embedded-svc",
  "enumset",
- "esp-alloc",
  "esp32c3-hal",
  "fugit",
  "heapless",
+ "linked_list_allocator",
  "log",
  "nb 1.0.0",
  "riscv 0.8.0",

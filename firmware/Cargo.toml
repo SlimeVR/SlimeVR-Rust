@@ -34,7 +34,7 @@ smoltcp = { version = "0.8", default-features = false, features = [
     "defmt",
     "socket-udp",
 ] }
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "9bae034f9db66b8cd31ab5ce788ffaeb8bc8e2dc", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "a137d67bd37b73553a81714ca3ddf8a2a9b09671", features = [
     "esp32c3",
     "wifi",
     "embedded-svc",
