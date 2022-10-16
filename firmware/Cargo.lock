@@ -350,7 +350,7 @@ dependencies = [
 [[package]]
 name = "esp-wifi"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-wifi?rev=a137d67bd37b73553a81714ca3ddf8a2a9b09671#a137d67bd37b73553a81714ca3ddf8a2a9b09671"
+source = "git+https://github.com/esp-rs/esp-wifi?rev=ebc21bbf57b17f6ce0afbe7fc67285a7a0a05570#ebc21bbf57b17f6ce0afbe7fc67285a7a0a05570"
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section 1.1.1",
@@ -892,7 +892,6 @@ checksum = "72165c4af59f5f19c7fb774b88b95660591b612380305b5f4503157341a9f7ee"
 dependencies = [
  "bitflags",
  "byteorder",
- "defmt",
  "managed",
 ]
 

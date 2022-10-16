@@ -31,10 +31,10 @@ embedded-svc = { version = "0.22", default-features = false, features = [
     # "nightly",
 ] }
 smoltcp = { version = "0.8", default-features = false, features = [
-    "defmt",
+    # "defmt",
     "socket-udp",
 ] }
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "a137d67bd37b73553a81714ca3ddf8a2a9b09671", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "ebc21bbf57b17f6ce0afbe7fc67285a7a0a05570", features = [
     "esp32c3",
     "wifi",
     "embedded-svc",

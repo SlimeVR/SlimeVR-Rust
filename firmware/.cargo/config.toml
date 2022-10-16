@@ -3,9 +3,15 @@ rustflags = [
   "-C",
   "link-arg=-Tlinkall.x",
 
+  # For esp-wifi
+  "-C",
+  "link-arg=-Tesp32c3_rom_functions.x",
+
   # For defmt
   "-C",
   "link-arg=-Tdefmt.x",
+
+
 ]
 # We compile without atomics, because its faster than using atomic trap handler
 target = "riscv32imc-unknown-none-elf"
