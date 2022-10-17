@@ -4,6 +4,7 @@ members = [
     "overlay/app",
     "overlay/tokio_shutdown",
     "skeletal_model",
+    "testing-jig",
     # "firmware",
 ]
 exclude = ["firmware"]
