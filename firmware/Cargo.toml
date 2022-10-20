@@ -60,6 +60,7 @@ panic_defmt = { path = "crates/panic_defmt" }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
+bno080 = "0.1"
 
 # Other crates
 static_cell = "1"

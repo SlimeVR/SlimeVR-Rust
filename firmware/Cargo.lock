@@ -78,6 +78,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
+name = "bno080"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7af87ae494283a6f94c671392f221b55f22676fa1f5ce55b9f9a840bdf5b135f"
+dependencies = [
+ "embedded-hal",
+]
+
+[[package]]
 name = "byteorder"
 version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -399,6 +408,7 @@ dependencies = [
 name = "firmware"
 version = "0.0.0"
 dependencies = [
+ "bno080",
  "defmt",
  "defmt-rtt",
  "embassy-executor",
