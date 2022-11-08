@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `overlay/app/src/model/bone_kind.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>bone_kind.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../slimevr_overlay/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../slimevr_overlay/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../slimevr_overlay/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `overlay/app/src/model/bone_kind.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>bone_kind.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../slimevr_overlay/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../slimevr_overlay/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../slimevr_overlay/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -156,163 +156,163 @@
 <span id="156">156</span>
 <span id="157">157</span>
 <span id="158">158</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">num_derive</span>::{<span class="ident">FromPrimitive</span>, <span class="ident">ToPrimitive</span>};
-<span class="kw">use</span> <span class="ident">num_traits::FromPrimitive</span>;
-<span class="kw">use</span> <span class="ident">solarxr_protocol::datatypes::BodyPart</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>num_derive::{FromPrimitive, ToPrimitive};
+<span class="kw">use </span>num_traits::FromPrimitive;
+<span class="kw">use </span>solarxr_protocol::datatypes::BodyPart;
 
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u8</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">FromPrimitive</span>, <span class="ident">ToPrimitive</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BoneKind</span> {
-    <span class="ident">Head</span> <span class="op">=</span> <span class="number">0</span>,
-    <span class="ident">Neck</span>,
-    <span class="ident">Chest</span>,
-    <span class="ident">Waist</span>,
-    <span class="ident">Hip</span>,
-    <span class="ident">ThighL</span>,
-    <span class="ident">ThighR</span>,
-    <span class="ident">AnkleL</span>,
-    <span class="ident">AnkleR</span>,
-    <span class="ident">FootL</span>,
-    <span class="ident">FootR</span>,
+<span class="attribute">#[repr(u8)]
+#[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]
+#[allow(dead_code)]
+</span><span class="kw">pub enum </span>BoneKind {
+    Head = <span class="number">0</span>,
+    Neck,
+    Chest,
+    Waist,
+    Hip,
+    ThighL,
+    ThighR,
+    AnkleL,
+    AnkleR,
+    FootL,
+    FootR,
 
-    <span class="ident">UpperArmL</span>,
-    <span class="ident">UpperArmR</span>,
-    <span class="ident">ForearmL</span>,
-    <span class="ident">ForearmR</span>,
-    <span class="ident">WristL</span>,
-    <span class="ident">WristR</span>,
+    UpperArmL,
+    UpperArmR,
+    ForearmL,
+    ForearmR,
+    WristL,
+    WristR,
 }
-<span class="kw">impl</span> <span class="ident">BoneKind</span> {
-    <span class="doccomment">/// The `BoneKind` with the largest integer value</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">max</span>() -&gt; <span class="ident">BoneKind</span> {
-        <span class="ident">BoneKind::WristR</span>
+<span class="kw">impl </span>BoneKind {
+    <span class="doccomment">/// The `BoneKind` with the largest integer value
+    </span><span class="kw">pub const fn </span>max() -&gt; BoneKind {
+        BoneKind::WristR
     }
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX</span>: <span class="ident">BoneKind</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::max</span>();
+    <span class="kw">pub const </span>MAX: BoneKind = <span class="self">Self</span>::max();
 
-    <span class="doccomment">/// The `BoneKind` with the smallest integer value</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">min</span>() -&gt; <span class="ident">BoneKind</span> {
-        <span class="ident">BoneKind::root</span>()
+    <span class="doccomment">/// The `BoneKind` with the smallest integer value
+    </span><span class="kw">pub const fn </span>min() -&gt; BoneKind {
+        BoneKind::root()
     }
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MIN</span>: <span class="ident">BoneKind</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::min</span>();
+    <span class="kw">pub const </span>MIN: BoneKind = <span class="self">Self</span>::min();
 
-    <span class="doccomment">/// The root bone type.</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">root</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::Head</span>
+    <span class="doccomment">/// The root bone type.
+    </span><span class="kw">pub const fn </span>root() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Head
     }
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ROOT</span>: <span class="ident">BoneKind</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::root</span>();
+    <span class="kw">pub const </span>ROOT: BoneKind = <span class="self">Self</span>::root();
 
-    <span class="doccomment">/// Returns the number of different types of bones.</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">num_types</span>() -&gt; <span class="ident">usize</span> {
-        <span class="ident">BoneKind::max</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>
-    }
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_TYPES</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::num_types</span>();
+    <span class="doccomment">/// Returns the number of different types of bones.
+    </span><span class="kw">pub const fn </span>num_types() -&gt; usize {
+        BoneKind::max() <span class="kw">as </span>usize + <span class="number">1
+    </span>}
+    <span class="kw">pub const </span>NUM_TYPES: usize = <span class="self">Self</span>::num_types();
 
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="self">Self</span>] {
-        <span class="kw">use</span> <span class="ident">BoneKind</span>::<span class="kw-2">*</span>;
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Head</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">Neck</span>],
-            <span class="ident">Neck</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">Chest</span>, <span class="ident">UpperArmL</span>, <span class="ident">UpperArmR</span>],
-            <span class="ident">Chest</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">Waist</span>],
-            <span class="ident">Waist</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">Hip</span>],
-            <span class="ident">Hip</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">ThighL</span>, <span class="ident">ThighR</span>],
-            <span class="ident">ThighL</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">AnkleL</span>],
-            <span class="ident">ThighR</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">AnkleR</span>],
-            <span class="ident">AnkleL</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">FootL</span>],
-            <span class="ident">AnkleR</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">FootR</span>],
-            <span class="ident">FootL</span> =&gt; <span class="kw-2">&amp;</span>[],
-            <span class="ident">FootR</span> =&gt; <span class="kw-2">&amp;</span>[],
+    <span class="kw">pub const fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="self">Self</span>] {
+        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+        <span class="kw">match </span><span class="self">self </span>{
+            Head =&gt; <span class="kw-2">&amp;</span>[Neck],
+            Neck =&gt; <span class="kw-2">&amp;</span>[Chest, UpperArmL, UpperArmR],
+            Chest =&gt; <span class="kw-2">&amp;</span>[Waist],
+            Waist =&gt; <span class="kw-2">&amp;</span>[Hip],
+            Hip =&gt; <span class="kw-2">&amp;</span>[ThighL, ThighR],
+            ThighL =&gt; <span class="kw-2">&amp;</span>[AnkleL],
+            ThighR =&gt; <span class="kw-2">&amp;</span>[AnkleR],
+            AnkleL =&gt; <span class="kw-2">&amp;</span>[FootL],
+            AnkleR =&gt; <span class="kw-2">&amp;</span>[FootR],
+            FootL =&gt; <span class="kw-2">&amp;</span>[],
+            FootR =&gt; <span class="kw-2">&amp;</span>[],
 
-            <span class="ident">UpperArmL</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">ForearmL</span>],
-            <span class="ident">UpperArmR</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">ForearmR</span>],
-            <span class="ident">ForearmL</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">WristL</span>],
-            <span class="ident">ForearmR</span> =&gt; <span class="kw-2">&amp;</span>[<span class="ident">WristR</span>],
-            <span class="ident">WristR</span> =&gt; <span class="kw-2">&amp;</span>[],
-            <span class="ident">WristL</span> =&gt; <span class="kw-2">&amp;</span>[],
+            UpperArmL =&gt; <span class="kw-2">&amp;</span>[ForearmL],
+            UpperArmR =&gt; <span class="kw-2">&amp;</span>[ForearmR],
+            ForearmL =&gt; <span class="kw-2">&amp;</span>[WristL],
+            ForearmR =&gt; <span class="kw-2">&amp;</span>[WristR],
+            WristR =&gt; <span class="kw-2">&amp;</span>[],
+            WristL =&gt; <span class="kw-2">&amp;</span>[],
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">parent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BoneKind</span><span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="ident">BoneKind</span>::<span class="kw-2">*</span>;
-        <span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Head</span> =&gt; <span class="kw">return</span> <span class="prelude-val">None</span>,
-            <span class="ident">Neck</span> =&gt; <span class="ident">Head</span>,
-            <span class="ident">Chest</span> =&gt; <span class="ident">Neck</span>,
-            <span class="ident">Waist</span> =&gt; <span class="ident">Chest</span>,
-            <span class="ident">Hip</span> =&gt; <span class="ident">Waist</span>,
-            <span class="ident">ThighL</span> =&gt; <span class="ident">Hip</span>,
-            <span class="ident">ThighR</span> =&gt; <span class="ident">Hip</span>,
-            <span class="ident">AnkleL</span> =&gt; <span class="ident">ThighL</span>,
-            <span class="ident">AnkleR</span> =&gt; <span class="ident">ThighR</span>,
-            <span class="ident">FootL</span> =&gt; <span class="ident">AnkleL</span>,
-            <span class="ident">FootR</span> =&gt; <span class="ident">AnkleR</span>,
+    <span class="kw">pub const fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BoneKind&gt; {
+        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+        <span class="prelude-val">Some</span>(<span class="kw">match </span><span class="self">self </span>{
+            Head =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
+            Neck =&gt; Head,
+            Chest =&gt; Neck,
+            Waist =&gt; Chest,
+            Hip =&gt; Waist,
+            ThighL =&gt; Hip,
+            ThighR =&gt; Hip,
+            AnkleL =&gt; ThighL,
+            AnkleR =&gt; ThighR,
+            FootL =&gt; AnkleL,
+            FootR =&gt; AnkleR,
 
-            <span class="ident">UpperArmL</span> =&gt; <span class="ident">Neck</span>,
-            <span class="ident">UpperArmR</span> =&gt; <span class="ident">Neck</span>,
-            <span class="ident">ForearmL</span> =&gt; <span class="ident">UpperArmL</span>,
-            <span class="ident">ForearmR</span> =&gt; <span class="ident">UpperArmR</span>,
-            <span class="ident">WristL</span> =&gt; <span class="ident">ForearmL</span>,
-            <span class="ident">WristR</span> =&gt; <span class="ident">ForearmR</span>,
+            UpperArmL =&gt; Neck,
+            UpperArmR =&gt; Neck,
+            ForearmL =&gt; UpperArmL,
+            ForearmR =&gt; UpperArmR,
+            WristL =&gt; ForearmL,
+            WristR =&gt; ForearmR,
         })
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>() -&gt; <span class="ident">std::iter::Map</span><span class="op">&lt;</span><span class="ident">std::ops::RangeInclusive</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="kw">fn</span>(<span class="ident">u8</span>) -&gt; <span class="ident">BoneKind</span><span class="op">&gt;</span> {
-        (<span class="ident"><span class="self">Self</span>::MIN</span> <span class="kw">as</span> <span class="ident">u8</span>..<span class="op">=</span><span class="ident"><span class="self">Self</span>::MAX</span> <span class="kw">as</span> <span class="ident">u8</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())
+    <span class="kw">pub fn </span>iter() -&gt; std::iter::Map&lt;std::ops::RangeInclusive&lt;u8&gt;, <span class="kw">fn</span>(u8) -&gt; BoneKind&gt; {
+        (<span class="self">Self</span>::MIN <span class="kw">as </span>u8..=<span class="self">Self</span>::MAX <span class="kw">as </span>u8).map(|x| x.try_into().unwrap())
     }
 }
-<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BoneKind</span> {
-    <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
+<span class="kw">impl </span>TryFrom&lt;u8&gt; <span class="kw">for </span>BoneKind {
+    <span class="kw">type </span>Error = ();
 
-    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">value</span>: <span class="ident">u8</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-        <span class="ident">FromPrimitive::from_u8</span>(<span class="ident">value</span>).<span class="ident">ok_or</span>(())
+    <span class="kw">fn </span>try_from(value: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        FromPrimitive::from_u8(value).ok_or(())
     }
 }
-<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BoneKind</span> {
-    <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">value</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-        <span class="ident">FromPrimitive::from_usize</span>(<span class="ident">value</span>).<span class="ident">ok_or</span>(())
+<span class="kw">impl </span>TryFrom&lt;usize&gt; <span class="kw">for </span>BoneKind {
+    <span class="kw">type </span>Error = ();
+    <span class="kw">fn </span>try_from(value: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        FromPrimitive::from_usize(value).ok_or(())
     }
 }
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BoneKind</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">u8</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">other</span>: <span class="ident">BoneKind</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">other</span> <span class="kw">as</span> <span class="kw">_</span>
-    }
+<span class="kw">impl </span>From&lt;BoneKind&gt; <span class="kw">for </span>u8 {
+    <span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
+        other <span class="kw">as _
+    </span>}
 }
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BoneKind</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">usize</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">other</span>: <span class="ident">BoneKind</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">other</span> <span class="kw">as</span> <span class="kw">_</span>
-    }
+<span class="kw">impl </span>From&lt;BoneKind&gt; <span class="kw">for </span>usize {
+    <span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
+        other <span class="kw">as _
+    </span>}
 }
-<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">BodyPart</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BoneKind</span> {
-    <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">BodyPart</span>;
-    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">other</span>: <span class="ident">BodyPart</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="ident">BodyPart</span> <span class="kw">as</span> <span class="ident">O</span>;
-        <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">other</span> {
-            <span class="ident">O::NONE</span> <span class="op">|</span> <span class="ident">O::HMD</span> <span class="op">|</span> <span class="ident">O::LEFT_CONTROLLER</span> <span class="op">|</span> <span class="ident">O::RIGHT_CONTROLLER</span> =&gt; {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">other</span>)
+<span class="kw">impl </span>TryFrom&lt;BodyPart&gt; <span class="kw">for </span>BoneKind {
+    <span class="kw">type </span>Error = BodyPart;
+    <span class="kw">fn </span>try_from(other: BodyPart) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">use </span>BodyPart <span class="kw">as </span>O;
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span>other {
+            O::NONE | O::HMD | O::LEFT_CONTROLLER | O::RIGHT_CONTROLLER =&gt; {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(other)
             }
 
-            <span class="ident">O::NECK</span> =&gt; <span class="ident"><span class="self">Self</span>::Neck</span>,
-            <span class="ident">O::CHEST</span> =&gt; <span class="ident"><span class="self">Self</span>::Chest</span>,
-            <span class="ident">O::WAIST</span> =&gt; <span class="ident"><span class="self">Self</span>::Waist</span>,
-            <span class="ident">O::HIP</span> =&gt; <span class="ident"><span class="self">Self</span>::Hip</span>,
-            <span class="ident">O::LEFT_UPPER_LEG</span> =&gt; <span class="ident"><span class="self">Self</span>::ThighL</span>,
-            <span class="ident">O::RIGHT_UPPER_LEG</span> =&gt; <span class="ident"><span class="self">Self</span>::ThighR</span>,
-            <span class="ident">O::LEFT_LOWER_LEG</span> =&gt; <span class="ident"><span class="self">Self</span>::AnkleL</span>,
-            <span class="ident">O::RIGHT_LOWER_LEG</span> =&gt; <span class="ident"><span class="self">Self</span>::AnkleR</span>,
-            <span class="ident">O::LEFT_FOOT</span> =&gt; <span class="ident"><span class="self">Self</span>::FootL</span>,
-            <span class="ident">O::RIGHT_FOOT</span> =&gt; <span class="ident"><span class="self">Self</span>::FootR</span>,
+            O::NECK =&gt; <span class="self">Self</span>::Neck,
+            O::CHEST =&gt; <span class="self">Self</span>::Chest,
+            O::WAIST =&gt; <span class="self">Self</span>::Waist,
+            O::HIP =&gt; <span class="self">Self</span>::Hip,
+            O::LEFT_UPPER_LEG =&gt; <span class="self">Self</span>::ThighL,
+            O::RIGHT_UPPER_LEG =&gt; <span class="self">Self</span>::ThighR,
+            O::LEFT_LOWER_LEG =&gt; <span class="self">Self</span>::AnkleL,
+            O::RIGHT_LOWER_LEG =&gt; <span class="self">Self</span>::AnkleR,
+            O::LEFT_FOOT =&gt; <span class="self">Self</span>::FootL,
+            O::RIGHT_FOOT =&gt; <span class="self">Self</span>::FootR,
 
-            <span class="ident">O::LEFT_UPPER_ARM</span> =&gt; <span class="ident"><span class="self">Self</span>::UpperArmL</span>,
-            <span class="ident">O::RIGHT_UPPER_ARM</span> =&gt; <span class="ident"><span class="self">Self</span>::UpperArmR</span>,
-            <span class="ident">O::LEFT_LOWER_ARM</span> =&gt; <span class="ident"><span class="self">Self</span>::ForearmL</span>,
-            <span class="ident">O::RIGHT_LOWER_ARM</span> =&gt; <span class="ident"><span class="self">Self</span>::ForearmR</span>,
-            <span class="ident">O::LEFT_HAND</span> =&gt; <span class="ident"><span class="self">Self</span>::WristL</span>,
-            <span class="ident">O::RIGHT_HAND</span> =&gt; <span class="ident"><span class="self">Self</span>::WristR</span>,
+            O::LEFT_UPPER_ARM =&gt; <span class="self">Self</span>::UpperArmL,
+            O::RIGHT_UPPER_ARM =&gt; <span class="self">Self</span>::UpperArmR,
+            O::LEFT_LOWER_ARM =&gt; <span class="self">Self</span>::ForearmL,
+            O::RIGHT_LOWER_ARM =&gt; <span class="self">Self</span>::ForearmR,
+            O::LEFT_HAND =&gt; <span class="self">Self</span>::WristL,
+            O::RIGHT_HAND =&gt; <span class="self">Self</span>::WristR,
 
-            <span class="ident">O</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">other</span>),
+            O(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(other),
         })
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

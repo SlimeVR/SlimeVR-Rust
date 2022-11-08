@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `skeletal_model/src/skeleton/edge.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>edge.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../skeletal_model/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `skeletal_model/src/skeleton/edge.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>edge.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../skeletal_model/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -82,89 +82,89 @@
 <span id="82">82</span>
 <span id="83">83</span>
 <span id="84">84</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">derive_more::From</span>;
+<span class="kw">use </span>derive_more::From;
 
-<span class="doccomment">/// The different kinds of edges.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>, <span class="ident">From</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">EdgeKind</span> {
-    <span class="doccomment">/// Represents a regular bone in the skeleton.</span>
-    <span class="ident">Bone</span>(<span class="ident">BoneKind</span>),
-    <span class="doccomment">/// Represents a tracker that is providing pose information as an input to the</span>
-    <span class="doccomment">/// skeleton.</span>
-    <span class="ident">InputTracker</span>,
-    <span class="doccomment">/// Represents a computed/synthetic tracker that will act as an output tracker for</span>
-    <span class="doccomment">/// the skeleton.</span>
-    <span class="ident">OutputTracker</span>,
+<span class="doccomment">/// The different kinds of edges.
+</span><span class="attribute">#[derive(Debug, Eq, PartialEq, Hash, From, Copy, Clone)]
+</span><span class="kw">pub enum </span>EdgeKind {
+    <span class="doccomment">/// Represents a regular bone in the skeleton.
+    </span>Bone(BoneKind),
+    <span class="doccomment">/// Represents a tracker that is providing pose information as an input to the
+    /// skeleton.
+    </span>InputTracker,
+    <span class="doccomment">/// Represents a computed/synthetic tracker that will act as an output tracker for
+    /// the skeleton.
+    </span>OutputTracker,
 }
 
-<span class="doccomment">/// `Edge`s represent the connections between the [`Node`]s of the</span>
-<span class="doccomment">/// skeleton.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Edges have a global rotation, represented as a unit quaternion. To</span>
-<span class="doccomment">/// get an edge&#39;s position, you can get the position of either of its two attached</span>
-<span class="doccomment">/// `Node`s.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Note that by convention, the directionality of edges points towards the top of the</span>
-<span class="doccomment">/// skeleton. So the head of the edge would also be the tail of an edge closer to the</span>
-<span class="doccomment">/// top of the skeleton. This is simply to give the parent and child of an edge a</span>
-<span class="doccomment">/// consistent meaning.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// For more information, see the [`skeleton`](crate::skeleton) module.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// [`Node`]: crate::skeleton::Node</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Edge</span> {
-    <span class="ident">kind</span>: <span class="ident">EdgeKind</span>,
-    <span class="doccomment">/// Input rotation in global space. If it is unconstrained, it is `None`.</span>
-    <span class="ident">input_rot_g</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Global</span><span class="op">&lt;</span><span class="ident">UnitQuat</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Local rotation of the edge with respect to the parent edge at calibration time.</span>
-    <span class="doccomment">/// Maps from parent frame to child frame.</span>
-    <span class="ident">calib_rot_l</span>: <span class="ident">Local</span><span class="op">&lt;</span><span class="ident">UnitQuat</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Length of the edge. May be set by the user, or may be computed at calibration.</span>
-    <span class="ident">length</span>: <span class="ident">f32</span>,
-    <span class="doccomment">/// The output rotation of the edge. Solving the skeleton updates this.</span>
-    <span class="ident">output_rot_g</span>: <span class="ident">Global</span><span class="op">&lt;</span><span class="ident">UnitQuat</span><span class="op">&gt;</span>,
+<span class="doccomment">/// `Edge`s represent the connections between the [`Node`]s of the
+/// skeleton.
+///
+/// Edges have a global rotation, represented as a unit quaternion. To
+/// get an edge&#39;s position, you can get the position of either of its two attached
+/// `Node`s.
+///
+/// Note that by convention, the directionality of edges points towards the top of the
+/// skeleton. So the head of the edge would also be the tail of an edge closer to the
+/// top of the skeleton. This is simply to give the parent and child of an edge a
+/// consistent meaning.
+///
+/// For more information, see the [`skeleton`](crate::skeleton) module.
+///
+/// [`Node`]: crate::skeleton::Node
+</span><span class="kw">pub struct </span>Edge {
+    kind: EdgeKind,
+    <span class="doccomment">/// Input rotation in global space. If it is unconstrained, it is `None`.
+    </span>input_rot_g: <span class="prelude-ty">Option</span>&lt;Global&lt;UnitQuat&gt;&gt;,
+    <span class="doccomment">/// Local rotation of the edge with respect to the parent edge at calibration time.
+    /// Maps from parent frame to child frame.
+    </span>calib_rot_l: Local&lt;UnitQuat&gt;,
+    <span class="doccomment">/// Length of the edge. May be set by the user, or may be computed at calibration.
+    </span>length: f32,
+    <span class="doccomment">/// The output rotation of the edge. Solving the skeleton updates this.
+    </span>output_rot_g: Global&lt;UnitQuat&gt;,
 }
-<span class="kw">impl</span> <span class="ident">Edge</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kind</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">EdgeKind</span><span class="op">&gt;</span>, <span class="ident">length</span>: <span class="ident">f32</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="ident">kind</span>.<span class="ident">into</span>();
-        <span class="kw">let</span> <span class="ident">calib_rot_l</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">EdgeKind::Bone</span>(<span class="ident">k</span>) =&gt; <span class="ident">k</span>.<span class="ident">calibration_rotation_local</span>(),
-            <span class="kw">_</span> =&gt; <span class="ident">UnitQuat::identity</span>().<span class="ident">into</span>(),
+<span class="kw">impl </span>Edge {
+    <span class="kw">pub fn </span>new(kind: <span class="kw">impl </span>Into&lt;EdgeKind&gt;, length: f32) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>kind = kind.into();
+        <span class="kw">let </span>calib_rot_l = <span class="kw">match </span>kind {
+            EdgeKind::Bone(k) =&gt; k.calibration_rotation_local(),
+            <span class="kw">_ </span>=&gt; UnitQuat::identity().into(),
         };
-        <span class="self">Self</span> {
-            <span class="ident">kind</span>,
-            <span class="ident">input_rot_g</span>: <span class="prelude-val">None</span>,
-            <span class="ident">calib_rot_l</span>,
-            <span class="ident">length</span>,
-            <span class="ident">output_rot_g</span>: <span class="ident">Default::default</span>(),
+        <span class="self">Self </span>{
+            kind,
+            input_rot_g: <span class="prelude-val">None</span>,
+            calib_rot_l,
+            length,
+            output_rot_g: Default::default(),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">input_rotation_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">Global</span><span class="op">&lt;</span><span class="ident">UnitQuat</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">input_rot_g</span>.<span class="ident">as_mut</span>()
+    <span class="kw">pub fn </span>input_rotation_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Global&lt;UnitQuat&gt;&gt; {
+        <span class="self">self</span>.input_rot_g.as_mut()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output_rotation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Global</span><span class="op">&lt;</span><span class="ident">UnitQuat</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">output_rot_g</span>
+    <span class="kw">pub fn </span>output_rotation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Global&lt;UnitQuat&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.output_rot_g
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">f32</span> {
-        <span class="self">self</span>.<span class="ident">length</span>
+    <span class="kw">pub fn </span>length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
+        <span class="self">self</span>.length
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">f32</span> {
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">length</span>
+    <span class="kw">pub fn </span>length_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>f32 {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.length
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">calibration_rotation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Local</span><span class="op">&lt;</span><span class="ident">UnitQuat</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">calib_rot_l</span>
+    <span class="kw">pub fn </span>calibration_rotation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Local&lt;UnitQuat&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.calib_rot_l
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">EdgeKind</span> {
-        <span class="self">self</span>.<span class="ident">kind</span>
+    <span class="kw">pub fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; EdgeKind {
+        <span class="self">self</span>.kind
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

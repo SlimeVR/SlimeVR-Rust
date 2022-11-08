@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `skeletal_model/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../skeletal_model/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `skeletal_model/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../skeletal_model/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../skeletal_model/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -75,82 +75,82 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
-</pre><pre class="rust"><code><span class="doccomment">//! An experimental skeletal model for full body tracking (FBT) in VR.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Documentation for contributors is available [here][internal rustdoc].</span>
-<span class="doccomment">//! For documentation without internal implementation details, please run</span>
-<span class="doccomment">//! `cargo doc --all --no-deps --open`</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! [internal rustdoc]: https://slimevr.github.io/SlimeVR-Rust/skeletal_model</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Overview</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate provides a well documented, high performance, and very robust model of</span>
-<span class="doccomment">//! a human&#39;s pose for the purpose of full body tracking in VR. The role of this crate</span>
-<span class="doccomment">//! is to take in partially complete human pose data, often from SlimeVR or Vive</span>
-<span class="doccomment">//! trackers, and compute the missing pose data. This gives applications a way of</span>
-<span class="doccomment">//! accessing that pose data.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This is accomplished via a simple [forward-kinematics][fk] solver, which also</span>
-<span class="doccomment">//! accounts for positional constraints from positional trackers, if any are present.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate was both inspired by and written for use in [SlimeVR], and hopes to be a</span>
-<span class="doccomment">//! better version of the current skeletal model implemented in the [Java server].</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! [Java server]: https://github.com/SlimeVR/SlimeVR-Server/</span>
-<span class="doccomment">//! [SlimeVR]: https://github.com/SlimeVR/</span>
-<span class="doccomment">//! [fk]: https://wulverblade.com/advanced-animation-techniques-fk-ik/</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Tracker support</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Typically, there are two types of full body trackers:</span>
-<span class="doccomment">//! - **&quot;3DoF&quot;**: Any tracker with only rotational data. Example: [SlimeVR] trackers</span>
-<span class="doccomment">//! - **&quot;6DoF&quot;**: Any tracker with both positional and rotational data. Example: [Vive</span>
-<span class="doccomment">//!   trackers](https://www.vive.com/us/accessory/tracker3/).</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! As long as you can provide position and/or rotation for some trackers, this crate</span>
-<span class="doccomment">//! should do the rest.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Scope</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate is *only* the skeletal model, and does not handle networking or anything</span>
-<span class="doccomment">//! else necessary for actually reading tracker data. It also does not expose any</span>
-<span class="doccomment">//! networked way of accessing the outputs of the skeleton.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This enables applications to then build on top of this crate, either through a Rust</span>
-<span class="doccomment">//! implementation of the SlimeVR server, or by calling this library via any of the</span>
-<span class="doccomment">//! various language bindings we hope to add soon.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! We hope that this will enable the SlimeVR community, as well as other full body</span>
-<span class="doccomment">//! tracking solutions, to build on our work.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Documentation on Internals</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! For an explanation of the design and mathematics of the skeletal model, see</span>
-<span class="doccomment">//! the [`skeleton`] module.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! For an explanation of the mathematical conventions adopted in the codebase,</span>
-<span class="doccomment">//! see the [`conventions`] module.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! An experimental skeletal model for full body tracking (FBT) in VR.
+//!
+//! Documentation for contributors is available [here][internal rustdoc].
+//! For documentation without internal implementation details, please run
+//! `cargo doc --all --no-deps --open`
+//!
+//! [internal rustdoc]: https://slimevr.github.io/SlimeVR-Rust/skeletal_model
+//!
+//!
+//! # Overview
+//!
+//! This crate provides a well documented, high performance, and very robust model of
+//! a human&#39;s pose for the purpose of full body tracking in VR. The role of this crate
+//! is to take in partially complete human pose data, often from SlimeVR or Vive
+//! trackers, and compute the missing pose data. This gives applications a way of
+//! accessing that pose data.
+//!
+//! This is accomplished via a simple [forward-kinematics][fk] solver, which also
+//! accounts for positional constraints from positional trackers, if any are present.
+//!
+//! This crate was both inspired by and written for use in [SlimeVR], and hopes to be a
+//! better version of the current skeletal model implemented in the [Java server].
+//!
+//! [Java server]: https://github.com/SlimeVR/SlimeVR-Server/
+//! [SlimeVR]: https://github.com/SlimeVR/
+//! [fk]: https://wulverblade.com/advanced-animation-techniques-fk-ik/
+//!
+//!
+//! # Tracker support
+//!
+//! Typically, there are two types of full body trackers:
+//! - **&quot;3DoF&quot;**: Any tracker with only rotational data. Example: [SlimeVR] trackers
+//! - **&quot;6DoF&quot;**: Any tracker with both positional and rotational data. Example: [Vive
+//!   trackers](https://www.vive.com/us/accessory/tracker3/).
+//!
+//! As long as you can provide position and/or rotation for some trackers, this crate
+//! should do the rest.
+//!
+//!
+//! # Scope
+//!
+//! This crate is *only* the skeletal model, and does not handle networking or anything
+//! else necessary for actually reading tracker data. It also does not expose any
+//! networked way of accessing the outputs of the skeleton.
+//!
+//! This enables applications to then build on top of this crate, either through a Rust
+//! implementation of the SlimeVR server, or by calling this library via any of the
+//! various language bindings we hope to add soon.
+//!
+//! We hope that this will enable the SlimeVR community, as well as other full body
+//! tracking solutions, to build on our work.
+//!
+//!
+//! # Documentation on Internals
+//!
+//! For an explanation of the design and mathematics of the skeletal model, see
+//! the [`skeleton`] module.
+//!
+//! For an explanation of the mathematical conventions adopted in the codebase,
+//! see the [`conventions`] module.
 
-<span class="comment">// These set linter options</span>
-<span class="attribute">#![<span class="ident">deny</span>(
-    <span class="ident">invalid_doc_attributes</span>,
-    <span class="ident">rustdoc::broken_intra_doc_links</span>,
-    <span class="ident">rustdoc::private_intra_doc_links</span>,
-    <span class="ident">unused_import_braces</span>,
-    <span class="ident">unused</span>
-)]</span>
+</span><span class="comment">// These set linter options
+</span><span class="attribute">#![deny(
+    invalid_doc_attributes,
+    rustdoc::broken_intra_doc_links,
+    rustdoc::private_intra_doc_links,
+    unused_import_braces,
+    unused
+)]
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">bone</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">conventions</span>;
-<span class="kw">mod</span> <span class="ident">newtypes</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">skeleton</span>;
+</span><span class="kw">pub mod </span>bone;
+<span class="kw">pub mod </span>conventions;
+<span class="kw">mod </span>newtypes;
+<span class="kw">pub mod </span>prelude;
+<span class="kw">pub mod </span>skeleton;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::skeleton::Skeleton</span>;
+<span class="kw">pub use </span><span class="kw">crate</span>::skeleton::Skeleton;
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

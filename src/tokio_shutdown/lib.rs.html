@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `overlay/tokio_shutdown/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../tokio_shutdown/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../tokio_shutdown/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../tokio_shutdown/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `overlay/tokio_shutdown/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../tokio_shutdown/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../tokio_shutdown/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../tokio_shutdown/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -132,139 +132,139 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">tokio::sync</span>::{<span class="ident">broadcast</span>, <span class="ident">mpsc</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>tokio::sync::{broadcast, mpsc};
 
-<span class="doccomment">/// Allows signalling a shutdown, with a particular reason `ShutdownReason&lt;R&gt;`</span>
-<span class="doccomment">/// for the shutdown. Also allows for listening to an acknowledgement `A` of</span>
-<span class="doccomment">/// the shutdown from the various listeners.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// If dropped, a shutdown of type [`ShutdownReason::BroadcasterClosed`] will</span>
-<span class="doccomment">/// occur.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Generics</span>
-<span class="doccomment">/// - `R`: The reason for initiating the shutdown. Can be helpful when there</span>
-<span class="doccomment">///   are multiple causes of a shutdown, and the listeners will clean up</span>
-<span class="doccomment">///   differently depending on the shutdown reason.</span>
-<span class="doccomment">/// - `A`: An acknowledgement of the shutdown, possibly containing any useful</span>
-<span class="doccomment">///   information that can be sent back to the `ShutdownBroadcaster`.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Broadcaster</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Clone</span> <span class="op">=</span> (), <span class="ident">A</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
-    <span class="ident">broadcaster</span>: <span class="ident">broadcast::Sender</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-    <span class="ident">shutdown_watcher</span>: <span class="ident">mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>,
-    <span class="comment">// we hang on to this to be able to create new listeners.</span>
-    <span class="ident">mpsc_copy</span>: <span class="ident">mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Allows signalling a shutdown, with a particular reason `ShutdownReason&lt;R&gt;`
+/// for the shutdown. Also allows for listening to an acknowledgement `A` of
+/// the shutdown from the various listeners.
+///
+/// If dropped, a shutdown of type [`ShutdownReason::BroadcasterClosed`] will
+/// occur.
+///
+/// # Generics
+/// - `R`: The reason for initiating the shutdown. Can be helpful when there
+///   are multiple causes of a shutdown, and the listeners will clean up
+///   differently depending on the shutdown reason.
+/// - `A`: An acknowledgement of the shutdown, possibly containing any useful
+///   information that can be sent back to the `ShutdownBroadcaster`.
+</span><span class="kw">pub struct </span>Broadcaster&lt;R: Clone = (), A = ()&gt; {
+    broadcaster: broadcast::Sender&lt;R&gt;,
+    shutdown_watcher: mpsc::UnboundedReceiver&lt;A&gt;,
+    <span class="comment">// we hang on to this to be able to create new listeners.
+    </span>mpsc_copy: mpsc::UnboundedSender&lt;A&gt;,
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Clone</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">Broadcaster</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> (<span class="ident">b_sender</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">broadcast::channel</span>(<span class="number">1</span>);
-        <span class="kw">let</span> (<span class="ident">mpsc_sender</span>, <span class="ident">mpsc_receiver</span>) <span class="op">=</span> <span class="ident">mpsc::unbounded_channel</span>();
+<span class="kw">impl</span>&lt;R: Clone, A&gt; Broadcaster&lt;R, A&gt; {
+    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>(b_sender, <span class="kw">_</span>) = broadcast::channel(<span class="number">1</span>);
+        <span class="kw">let </span>(mpsc_sender, mpsc_receiver) = mpsc::unbounded_channel();
 
-        <span class="self">Self</span> {
-            <span class="ident">broadcaster</span>: <span class="ident">b_sender</span>,
-            <span class="ident">shutdown_watcher</span>: <span class="ident">mpsc_receiver</span>,
-            <span class="ident">mpsc_copy</span>: <span class="ident">mpsc_sender</span>,
+        <span class="self">Self </span>{
+            broadcaster: b_sender,
+            shutdown_watcher: mpsc_receiver,
+            mpsc_copy: mpsc_sender,
         }
     }
 
-    <span class="doccomment">/// Creates a new `Listener` to the `Broadcaster`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_listener</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Listener</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">b_receiver</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">broadcaster</span>.<span class="ident">subscribe</span>();
-        <span class="kw">let</span> <span class="ident">mpsc_sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mpsc_copy</span>.<span class="ident">clone</span>();
+    <span class="doccomment">/// Creates a new `Listener` to the `Broadcaster`.
+    </span><span class="kw">pub fn </span>new_listener(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Listener&lt;R, A&gt; {
+        <span class="kw">let </span>b_receiver = <span class="self">self</span>.broadcaster.subscribe();
+        <span class="kw">let </span>mpsc_sender = <span class="self">self</span>.mpsc_copy.clone();
 
-        <span class="ident">Listener</span> {
-            <span class="ident">b_receiver</span>,
-            <span class="ident">mpsc_sender</span>,
-            <span class="ident">shutdown_reason</span>: <span class="prelude-val">None</span>,
+        Listener {
+            b_receiver,
+            mpsc_sender,
+            shutdown_reason: <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">num_listeners</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">broadcaster</span>.<span class="ident">receiver_count</span>()
+    <span class="kw">pub fn </span>num_listeners(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.broadcaster.receiver_count()
     }
 
-    <span class="doccomment">/// Signals shutdown, with an optional reason. If no reason is provided, the</span>
-    <span class="doccomment">/// listeners will get [`ShutdownReason::BroadcasterClosed`].</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Returns</span>
-    <span class="doccomment">/// Returns a channel to be used for receiving the shutdown acknowledgements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">signal_shutdown</span>(<span class="self">self</span>, <span class="ident">reason</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>) -&gt; <span class="ident">mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span> <span class="ident">reason</span> {
-            <span class="comment">// We don&#39;t care if all recipients are closed</span>
-            <span class="self">self</span>.<span class="ident">broadcaster</span>.<span class="ident">send</span>(<span class="ident">r</span>).<span class="ident">ok</span>();
+    <span class="doccomment">/// Signals shutdown, with an optional reason. If no reason is provided, the
+    /// listeners will get [`ShutdownReason::BroadcasterClosed`].
+    ///
+    /// # Returns
+    /// Returns a channel to be used for receiving the shutdown acknowledgements.
+    </span><span class="kw">pub fn </span>signal_shutdown(<span class="self">self</span>, reason: <span class="prelude-ty">Option</span>&lt;R&gt;) -&gt; mpsc::UnboundedReceiver&lt;A&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = reason {
+            <span class="comment">// We don&#39;t care if all recipients are closed
+            </span><span class="self">self</span>.broadcaster.send(r).ok();
         }
-        <span class="self">self</span>.<span class="ident">shutdown_watcher</span>
+        <span class="self">self</span>.shutdown_watcher
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Clone</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Broadcaster</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>()
+<span class="kw">impl</span>&lt;R: Clone, A&gt; Default <span class="kw">for </span>Broadcaster&lt;R, A&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new()
     }
 }
 
-<span class="doccomment">/// # Generics</span>
-<span class="doccomment">/// See [`Broadcaster`] for documentation on the generic args.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Listener</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Clone</span> <span class="op">=</span> (), <span class="ident">A</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
-    <span class="ident">b_receiver</span>: <span class="ident">broadcast::Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-    <span class="ident">mpsc_sender</span>: <span class="ident">mpsc::UnboundedSender</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>,
-    <span class="ident">shutdown_reason</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShutdownReason</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="doccomment">/// # Generics
+/// See [`Broadcaster`] for documentation on the generic args.
+</span><span class="kw">pub struct </span>Listener&lt;R: Clone = (), A = ()&gt; {
+    b_receiver: broadcast::Receiver&lt;R&gt;,
+    mpsc_sender: mpsc::UnboundedSender&lt;A&gt;,
+    shutdown_reason: <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt;,
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Clone</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="ident">Listener</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">I</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Doesn&#39;t return until a shutdown occurs.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">ShutdownReason</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">r</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">shutdown_reason</span> {
-            <span class="kw">return</span> <span class="ident">r</span>;
+<span class="kw">impl</span>&lt;R: Clone, I&gt; Listener&lt;R, I&gt; {
+    <span class="doccomment">/// Doesn&#39;t return until a shutdown occurs.
+    </span><span class="kw">pub async fn </span>recv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ShutdownReason&lt;R&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>r) = <span class="self">self</span>.shutdown_reason {
+            <span class="kw">return </span>r;
         }
-        <span class="kw">let</span> <span class="ident">reason</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">b_receiver</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">r</span>) =&gt; <span class="ident">ShutdownReason::Reason</span>(<span class="ident">r</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">broadcast::error::RecvError::Closed</span>) =&gt; {
-                <span class="ident">ShutdownReason::BroadcasterClosed</span>
+        <span class="kw">let </span>reason = <span class="kw">match </span><span class="self">self</span>.b_receiver.recv().<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(r) =&gt; ShutdownReason::Reason(r),
+            <span class="prelude-val">Err</span>(broadcast::error::RecvError::Closed) =&gt; {
+                ShutdownReason::BroadcasterClosed
             }
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(
-                <span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;</span>
-            ),
+                <span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;
+            </span>),
         };
-        <span class="self">self</span>.<span class="ident">shutdown_reason</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">reason</span>);
-        <span class="self">self</span>.<span class="ident">shutdown_reason</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>()
+        <span class="self">self</span>.shutdown_reason = <span class="prelude-val">Some</span>(reason);
+        <span class="self">self</span>.shutdown_reason.as_ref().unwrap()
     }
 
-    <span class="doccomment">/// Returns `None` if no shutdown has occurred, otherwise returns the shutdown</span>
-    <span class="doccomment">/// reason.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_recv</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ShutdownReason</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">reason</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">b_receiver</span>.<span class="ident">try_recv</span>() {
-            <span class="prelude-val">Ok</span>(<span class="ident">r</span>) =&gt; <span class="ident">ShutdownReason::Reason</span>(<span class="ident">r</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">broadcast::error::TryRecvError::Closed</span>) =&gt; {
-                <span class="ident">ShutdownReason::BroadcasterClosed</span>
+    <span class="doccomment">/// Returns `None` if no shutdown has occurred, otherwise returns the shutdown
+    /// reason.
+    </span><span class="kw">pub fn </span>try_recv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ShutdownReason&lt;R&gt;&gt; {
+        <span class="kw">let </span>reason = <span class="kw">match </span><span class="self">self</span>.b_receiver.try_recv() {
+            <span class="prelude-val">Ok</span>(r) =&gt; ShutdownReason::Reason(r),
+            <span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Closed) =&gt; {
+                ShutdownReason::BroadcasterClosed
             }
-            <span class="prelude-val">Err</span>(<span class="ident">broadcast::error::TryRecvError::Empty</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">None</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">broadcast::error::TryRecvError::Lagged</span>(<span class="kw">_</span>)) =&gt; {
+            <span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Empty) =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
+            <span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Lagged(<span class="kw">_</span>)) =&gt; {
                 <span class="macro">unreachable!</span>(
-                    <span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;</span>
-                )
+                    <span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;
+                </span>)
             }
         };
-        <span class="self">self</span>.<span class="ident">shutdown_reason</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">reason</span>);
-        <span class="self">self</span>.<span class="ident">shutdown_reason</span>.<span class="ident">as_ref</span>()
+        <span class="self">self</span>.shutdown_reason = <span class="prelude-val">Some</span>(reason);
+        <span class="self">self</span>.shutdown_reason.as_ref()
     }
 
-    <span class="doccomment">/// Get the underlying shutdown reason, if present. Does not send any shut</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_reason</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShutdownReason</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">shutdown_reason</span>
+    <span class="doccomment">/// Get the underlying shutdown reason, if present. Does not send any shut
+    </span><span class="kw">pub fn </span>into_reason(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt; {
+        <span class="self">self</span>.shutdown_reason
     }
 
-    <span class="doccomment">/// Block until an acknowledgement of the shutdown is sent. It is possible</span>
-    <span class="doccomment">/// for the `Broadcaster` to have already closed.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Returns</span>
-    <span class="doccomment">/// Returns the original shutdown reason, if any.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">acknowledge</span>(<span class="self">self</span>, <span class="ident">info</span>: <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ShutdownReason</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">mpsc_sender</span>.<span class="ident">send</span>(<span class="ident">info</span>).<span class="ident">ok</span>();
-        <span class="self">self</span>.<span class="ident">shutdown_reason</span>
+    <span class="doccomment">/// Block until an acknowledgement of the shutdown is sent. It is possible
+    /// for the `Broadcaster` to have already closed.
+    ///
+    /// # Returns
+    /// Returns the original shutdown reason, if any.
+    </span><span class="kw">pub fn </span>acknowledge(<span class="self">self</span>, info: I) -&gt; <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt; {
+        <span class="self">self</span>.mpsc_sender.send(info).ok();
+        <span class="self">self</span>.shutdown_reason
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ShutdownReason</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Clone</span><span class="op">&gt;</span> {
-    <span class="ident">BroadcasterClosed</span>,
-    <span class="ident">Reason</span>(<span class="ident">R</span>),
+<span class="attribute">#[derive(Clone)]
+</span><span class="kw">pub enum </span>ShutdownReason&lt;R: Clone&gt; {
+    BroadcasterClosed,
+    Reason(R),
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="tokio_shutdown" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="tokio_shutdown" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
