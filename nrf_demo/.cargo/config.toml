@@ -1,0 +1,15 @@
+[target.thumbv7em-none-eabihf]
+
+rustflags = [
+  "-C",
+  "link-arg=--nmagic",
+  "-C",
+  "link-arg=-Tlink.x",
+  "-C",
+  "link-arg=-Tdefmt.x",
+  "-C",
+  "linker=flip-link",   # Requires you to `cargo install flip-link`
+]
+
+[build]
+target = "thumbv7em-none-eabihf"

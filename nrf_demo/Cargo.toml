@@ -1,0 +1,16 @@
+[package]
+name = "nrf_demo"
+version = "0.1.0"
+authors = ["Ryan Butler <thebutlah@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cortex-m = "0.7.6"
+cortex-m-rt = { version = "0.7.1" }
+nrf52840-hal = { version = "0.16.0", default-features = false }
+panic-halt = "0.2.0"
+defmt = "0.3"
+embedded-hal = "0.2"
