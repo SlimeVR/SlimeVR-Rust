@@ -1,13 +1,12 @@
 [workspace]
 members = [
-    "autoupdater",
-    "overlay/app",
-    "overlay/tokio_shutdown",
-    "skeletal_model",
-    "testing-jig",
-    # "firmware",
+  "autoupdater",
+  "overlay/app",
+  "overlay/tokio_shutdown",
+  "skeletal_model",
+  "testing-jig",
+  # "firmware",
 ]
-exclude = ["firmware"]
-
+exclude = ["nrf_demo", "firmware"]
 
 resolver = "2"

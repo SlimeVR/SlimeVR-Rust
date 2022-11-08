@@ -1,5 +1,5 @@
 # Cargo stuff
-/target
+**/target
 
 # OS-specific stuff
 .DS_Store
