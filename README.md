@@ -14,6 +14,8 @@ A monorepo stores mutliple librares and apps all in one git repo. This one conta
 * [Autoupdater](autoupdater/): A small utility for updating SlimeVR applications in unison.
 * [Firmware](firmware/): A rust implementation of the firmware, built on `embedded-hal`
   instead of Arduino. Targets the ESP32-C3.
+* [NRF Demo](nrf_demo/): A small blinky program to demonstrate use of the nrf52840 in
+  embedded rust.
 
 ## Motivation
 * Fulfill the Rewrite It In Rust meme
