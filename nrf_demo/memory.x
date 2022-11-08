@@ -2,7 +2,7 @@
 MEMORY
 {
   /* NOTE K = KiBi = 1024 bytes */
-  FLASH : ORIGIN = 0x00026000, LENGTH = 1024K // Change to 0x1000 if you don't have softdevice
+  FLASH : ORIGIN = 0x00026000, LENGTH = 1024K /* Change to 0x1000 if you don't have softdevice */
   RAM : ORIGIN = 0x20000000, LENGTH = 256K
 }
 
