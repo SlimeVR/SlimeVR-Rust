@@ -11,12 +11,16 @@ use crate::model::{BoneKind, Isometry};
 use eyre::{Result, WrapErr};
 use nalgebra::{Translation3, UnitQuaternion};
 use ovr_overlay as ovr;
+use solarxr_protocol::pub_sub::Message;
 use std::collections::HashSet;
 use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
 
 const CONNECT_STR: &str = "ws://localhost:21110";
+const TOPIC_ORG: &str = "slimevr.dev";
+const TOPIC_APP: &str = "overlay";
+const TOPIC_DISPLAY_SETTINGS: &str = "display_settings";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ShutdownReason {
@@ -58,6 +62,7 @@ async fn overlay(
 
 	let loop_ = async {
 		let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
+		let mut is_skeleton_visible = true;
 		loop {
 			recv.changed()
 				.await
@@ -68,12 +73,60 @@ async fn overlay(
 			// Mark all bones as "need to hide"
 			hidden_bones.extend(BoneKind::iter());
 
-			let bones: Vec<_> = {
+			#[derive(Debug)]
+			struct BoneInfo {
+				kind: BoneKind,
+				pos: Translation3<f32>,
+				rot: UnitQuaternion<f32>,
+				length: f32,
+			}
+			// Extract relevant data about bones from flatbuffers
+			let bones: Vec<BoneInfo> = {
 				let guard = recv.borrow_and_update();
 				let table = guard.as_ref().unwrap().0.table();
 				log::trace!("update: {:#?}", table);
 
+				is_skeleton_visible = {
+					// Closure allows early return
+					let is_visible = || -> Option<bool> {
+						for m in table.pub_sub_msgs()? {
+							let Some(m) = m.u_as_message() else {
+								continue;
+							};
+
+							if !is_overlay_topic(m) {
+								continue;
+							}
+
+							let Some(kv) = m.payload_as_key_values() else {
+							continue;
+						};
+
+							let (Some(keys), Some(values)) = (kv.keys(), kv.values()) else {
+							continue;
+						};
+
+							if keys.len() != values.len() {
+								log::warn!("Keys and values were not same length!");
+							}
+
+							for i in 0..usize::min(keys.len(), values.len()) {
+								let key = keys.get(i);
+								let value = values.get(i);
+								if key.to_lowercase() == "is_visible" {
+									return Some(value.to_lowercase() == "true");
+								}
+							}
+						}
+
+						None
+					}();
+					is_visible.unwrap_or(is_skeleton_visible)
+				};
+
 				let m = unwrap_or_continue!(table.data_feed_msgs());
+
+				// TODO: handle multiple updates?
 				let m = m.get(0);
 				let m = unwrap_or_continue!(m.message_as_data_feed_update());
 				let bones = unwrap_or_continue!(m.bones());
@@ -108,31 +161,45 @@ async fn overlay(
 						let rot = UnitQuaternion::from_quaternion(
 							[rot.x(), rot.y(), rot.z(), rot.w()].into(),
 						);
-						hidden_bones.remove(&bone_kind);
-						Some((bone_kind, pos, rot, length))
+						if is_skeleton_visible {
+							hidden_bones.remove(&bone_kind);
+						}
+						Some(BoneInfo {
+							kind: bone_kind,
+							pos,
+							rot,
+							length,
+						})
 					})
 					.collect()
 			};
+
 			log::debug!(
 				"Bones after filtering: {:?}",
-				bones.iter().map(|t| t.0).collect::<Vec<_>>()
+				bones.iter().map(|t| t.kind).collect::<Vec<_>>()
 			);
 			log::trace!("Bone data: {bones:?}");
-			for (bone_kind, pos, rot, length) in bones {
+
+			// Update all non-hidden bones
+			for BoneInfo {
+				kind,
+				pos,
+				rot,
+				length,
+			} in bones
+			{
 				let iso = Isometry {
 					rotation: rot,
 					translation: pos,
 				};
-				skeleton.set_isometry(bone_kind, iso);
-				skeleton.set_length(bone_kind, length);
-				skeleton.set_visibility(bone_kind, true);
-				if let Err(e) = skeleton.update_render(bone_kind, mngr) {
-					log::error!(
-						"Error updating render for bone {bone_kind:?}: {:?}",
-						e
-					);
+				skeleton.set_isometry(kind, iso);
+				skeleton.set_length(kind, length);
+				skeleton.set_visibility(kind, true);
+				if let Err(e) = skeleton.update_render(kind, mngr) {
+					log::error!("Error updating render for bone {kind:?}: {:?}", e);
 				}
 			}
+			// Hide all hidden bones
 			for bone_kind in hidden_bones.iter() {
 				skeleton.set_visibility(*bone_kind, false);
 				if let Err(e) = skeleton.update_render(*bone_kind, mngr) {
@@ -162,4 +229,16 @@ async fn networking(subsys: SubsystemHandle) -> Result<()> {
 		.wrap_err("Failed to start client")?;
 	subsys.start("Overlay", |s| overlay(recv, s));
 	client.join().await
+}
+
+fn is_overlay_topic(msg: Message<'_>) -> bool {
+	if let Some(topic_id) = msg.topic_as_topic_id() {
+		return matches!(topic_id.topic(), Some(TOPIC_DISPLAY_SETTINGS))
+			&& matches!(topic_id.organization(), Some(TOPIC_ORG))
+			&& matches!(topic_id.app_name(), Some(TOPIC_APP));
+	} else if let Some(topic_handle) = msg.topic_as_topic_handle() {
+		todo!("Check for topic handle")
+	} else {
+		false
+	}
 }
