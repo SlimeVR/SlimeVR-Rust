@@ -185,148 +185,148 @@
 
 <span class="attribute">#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>ShutdownReason {
-    CtrlC,
+	CtrlC,
 }
 
 <span class="macro">macro_rules! </span>unwrap_or_continue {
-    (<span class="macro-nonterminal">$e</span>:expr) =&gt; {{
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(inner) = <span class="macro-nonterminal">$e </span>{
-            inner
-        } <span class="kw">else </span>{
-            <span class="kw">continue</span>;
-        }
-    }};
+	(<span class="macro-nonterminal">$e</span>:expr) =&gt; {{
+		<span class="kw">if let </span><span class="prelude-val">Some</span>(inner) = <span class="macro-nonterminal">$e </span>{
+			inner
+		} <span class="kw">else </span>{
+			<span class="kw">continue</span>;
+		}
+	}};
 }
 
 <span class="attribute">#[tokio::main]
 </span><span class="kw">pub async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    Toplevel::new()
-        .start(<span class="string">&quot;Networking&quot;</span>, networking)
-        .catch_signals()
-        .handle_shutdown_requests(Duration::from_millis(<span class="number">1000</span>))
-        .<span class="kw">await
+	Toplevel::new()
+		.start(<span class="string">&quot;Networking&quot;</span>, networking)
+		.catch_signals()
+		.handle_shutdown_requests(Duration::from_millis(<span class="number">1000</span>))
+		.<span class="kw">await
 </span>}
 
 <span class="kw">async fn </span>overlay(
-    <span class="kw-2">mut </span>recv: watch::Receiver&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;,
-    subsys: SubsystemHandle,
+	<span class="kw-2">mut </span>recv: watch::Receiver&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;,
+	subsys: SubsystemHandle,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="macro">log::info!</span>(<span class="string">&quot;Initializing OpenVR context&quot;</span>);
-    <span class="kw">let </span>context = ovr::Context::init().wrap_err(<span class="string">&quot;Failed to initialize OpenVR&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let </span>mngr = <span class="kw-2">&amp;mut </span>context.overlay_mngr();
+	<span class="macro">log::info!</span>(<span class="string">&quot;Initializing OpenVR context&quot;</span>);
+	<span class="kw">let </span>context = ovr::Context::init().wrap_err(<span class="string">&quot;Failed to initialize OpenVR&quot;</span>)<span class="question-mark">?</span>;
+	<span class="kw">let </span>mngr = <span class="kw-2">&amp;mut </span>context.overlay_mngr();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>skeleton = SkeletonBuilder::default()
-        .build(mngr)
-        .wrap_err(<span class="string">&quot;Could not create skeleton&quot;</span>)<span class="question-mark">?</span>;
+	<span class="kw">let </span><span class="kw-2">mut </span>skeleton = SkeletonBuilder::default()
+		.build(mngr)
+		.wrap_err(<span class="string">&quot;Could not create skeleton&quot;</span>)<span class="question-mark">?</span>;
 
-    <span class="macro">log::info!</span>(<span class="string">&quot;Overlay Loop&quot;</span>);
+	<span class="macro">log::info!</span>(<span class="string">&quot;Overlay Loop&quot;</span>);
 
-    <span class="kw">let </span>loop_ = <span class="kw">async </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>hidden_bones: HashSet&lt;BoneKind&gt; = HashSet::new();
-        <span class="kw">loop </span>{
-            recv.changed()
-                .<span class="kw">await
-                </span>.wrap_err(<span class="string">&quot;Error while attempting to watch for feed update&quot;</span>)<span class="question-mark">?</span>;
+	<span class="kw">let </span>loop_ = <span class="kw">async </span>{
+		<span class="kw">let </span><span class="kw-2">mut </span>hidden_bones: HashSet&lt;BoneKind&gt; = HashSet::new();
+		<span class="kw">loop </span>{
+			recv.changed()
+				.<span class="kw">await
+				</span>.wrap_err(<span class="string">&quot;Error while attempting to watch for feed update&quot;</span>)<span class="question-mark">?</span>;
 
-            <span class="macro">log::trace!</span>(<span class="string">&quot;Got a feed update&quot;</span>);
+			<span class="macro">log::trace!</span>(<span class="string">&quot;Got a feed update&quot;</span>);
 
-            <span class="comment">// Mark all bones as &quot;need to hide&quot;
-            </span>hidden_bones.extend(BoneKind::iter());
+			<span class="comment">// Mark all bones as &quot;need to hide&quot;
+			</span>hidden_bones.extend(BoneKind::iter());
 
-            <span class="kw">let </span>bones: Vec&lt;<span class="kw">_</span>&gt; = {
-                <span class="kw">let </span>guard = recv.borrow_and_update();
-                <span class="kw">let </span>table = guard.as_ref().unwrap().<span class="number">0</span>.table();
-                <span class="macro">log::trace!</span>(<span class="string">&quot;update: {:#?}&quot;</span>, table);
+			<span class="kw">let </span>bones: Vec&lt;<span class="kw">_</span>&gt; = {
+				<span class="kw">let </span>guard = recv.borrow_and_update();
+				<span class="kw">let </span>table = guard.as_ref().unwrap().<span class="number">0</span>.table();
+				<span class="macro">log::trace!</span>(<span class="string">&quot;update: {:#?}&quot;</span>, table);
 
-                <span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(table.data_feed_msgs());
-                <span class="kw">let </span>m = m.get(<span class="number">0</span>);
-                <span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(m.message_as_data_feed_update());
-                <span class="kw">let </span>bones = <span class="macro">unwrap_or_continue!</span>(m.bones());
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Got {} bones before filtering&quot;</span>, bones.len());
+				<span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(table.data_feed_msgs());
+				<span class="kw">let </span>m = m.get(<span class="number">0</span>);
+				<span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(m.message_as_data_feed_update());
+				<span class="kw">let </span>bones = <span class="macro">unwrap_or_continue!</span>(m.bones());
+				<span class="macro">log::debug!</span>(<span class="string">&quot;Got {} bones before filtering&quot;</span>, bones.len());
 
-                bones
-                    .iter()
-                    .filter_map(|b| {
-                        <span class="kw">let </span>part = b.body_part();
-                        <span class="macro">log::trace!</span>(<span class="string">&quot;body_part: {part:?}&quot;</span>);
-                        <span class="kw">let </span>bone_kind = BoneKind::try_from(part)
-                            .map_err(|e| {
-                                <span class="macro">log::trace!</span>(<span class="string">&quot;Filtering out {e:?}&quot;</span>);
-                                e
-                            })
-                            .ok()<span class="question-mark">?</span>;
-                        <span class="kw">let </span>pos = <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = b.head_position_g() {
-                            p
-                        } <span class="kw">else </span>{
-                            <span class="macro">log::warn!</span>(<span class="string">&quot;No position&quot;</span>);
-                            <span class="kw">return </span><span class="prelude-val">None</span>;
-                        };
-                        <span class="kw">let </span>rot = <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = b.rotation_g() {
-                            r
-                        } <span class="kw">else </span>{
-                            <span class="macro">log::warn!</span>(<span class="string">&quot;No rotation&quot;</span>);
-                            <span class="kw">return </span><span class="prelude-val">None</span>;
-                        };
-                        <span class="kw">let </span>length = b.bone_length();
+				bones
+					.iter()
+					.filter_map(|b| {
+						<span class="kw">let </span>part = b.body_part();
+						<span class="macro">log::trace!</span>(<span class="string">&quot;body_part: {part:?}&quot;</span>);
+						<span class="kw">let </span>bone_kind = BoneKind::try_from(part)
+							.map_err(|e| {
+								<span class="macro">log::trace!</span>(<span class="string">&quot;Filtering out {e:?}&quot;</span>);
+								e
+							})
+							.ok()<span class="question-mark">?</span>;
+						<span class="kw">let </span>pos = <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = b.head_position_g() {
+							p
+						} <span class="kw">else </span>{
+							<span class="macro">log::warn!</span>(<span class="string">&quot;No position&quot;</span>);
+							<span class="kw">return </span><span class="prelude-val">None</span>;
+						};
+						<span class="kw">let </span>rot = <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = b.rotation_g() {
+							r
+						} <span class="kw">else </span>{
+							<span class="macro">log::warn!</span>(<span class="string">&quot;No rotation&quot;</span>);
+							<span class="kw">return </span><span class="prelude-val">None</span>;
+						};
+						<span class="kw">let </span>length = b.bone_length();
 
-                        <span class="kw">let </span>pos = Translation3::new(pos.x(), pos.y(), pos.z());
-                        <span class="kw">let </span>rot = UnitQuaternion::from_quaternion(
-                            [rot.x(), rot.y(), rot.z(), rot.w()].into(),
-                        );
-                        hidden_bones.remove(<span class="kw-2">&amp;</span>bone_kind);
-                        <span class="prelude-val">Some</span>((bone_kind, pos, rot, length))
-                    })
-                    .collect()
-            };
-            <span class="macro">log::debug!</span>(
-                <span class="string">&quot;Bones after filtering: {:?}&quot;</span>,
-                bones.iter().map(|t| t.<span class="number">0</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-            );
-            <span class="macro">log::trace!</span>(<span class="string">&quot;Bone data: {bones:?}&quot;</span>);
-            <span class="kw">for </span>(bone_kind, pos, rot, length) <span class="kw">in </span>bones {
-                <span class="kw">let </span>iso = Isometry {
-                    rotation: rot,
-                    translation: pos,
-                };
-                skeleton.set_isometry(bone_kind, iso);
-                skeleton.set_length(bone_kind, length);
-                skeleton.set_visibility(bone_kind, <span class="bool-val">true</span>);
-                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(bone_kind, mngr) {
-                    <span class="macro">log::error!</span>(
-                        <span class="string">&quot;Error updating render for bone {bone_kind:?}: {:?}&quot;</span>,
-                        e
-                    );
-                }
-            }
-            <span class="kw">for </span>bone_kind <span class="kw">in </span>hidden_bones.iter() {
-                skeleton.set_visibility(<span class="kw-2">*</span>bone_kind, <span class="bool-val">false</span>);
-                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(<span class="kw-2">*</span>bone_kind, mngr) {
-                    <span class="macro">log::error!</span>(
-                        <span class="string">&quot;Error updating render for bone {bone_kind:?}: {:?}&quot;</span>,
-                        e
-                    );
-                }
-            }
-        }
-    };
-    <span class="macro">tokio::select! </span>{
-        <span class="kw">_ </span>= subsys.on_shutdown_requested() =&gt; {
-            <span class="macro">log::debug!</span>(<span class="string">&quot;overlay shutdown requested&quot;</span>);
-            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, eyre::Report&gt;(())
-        },
-        r = loop_ =&gt; r,
-    }<span class="question-mark">?</span>;
+						<span class="kw">let </span>pos = Translation3::new(pos.x(), pos.y(), pos.z());
+						<span class="kw">let </span>rot = UnitQuaternion::from_quaternion(
+							[rot.x(), rot.y(), rot.z(), rot.w()].into(),
+						);
+						hidden_bones.remove(<span class="kw-2">&amp;</span>bone_kind);
+						<span class="prelude-val">Some</span>((bone_kind, pos, rot, length))
+					})
+					.collect()
+			};
+			<span class="macro">log::debug!</span>(
+				<span class="string">&quot;Bones after filtering: {:?}&quot;</span>,
+				bones.iter().map(|t| t.<span class="number">0</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+			);
+			<span class="macro">log::trace!</span>(<span class="string">&quot;Bone data: {bones:?}&quot;</span>);
+			<span class="kw">for </span>(bone_kind, pos, rot, length) <span class="kw">in </span>bones {
+				<span class="kw">let </span>iso = Isometry {
+					rotation: rot,
+					translation: pos,
+				};
+				skeleton.set_isometry(bone_kind, iso);
+				skeleton.set_length(bone_kind, length);
+				skeleton.set_visibility(bone_kind, <span class="bool-val">true</span>);
+				<span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(bone_kind, mngr) {
+					<span class="macro">log::error!</span>(
+						<span class="string">&quot;Error updating render for bone {bone_kind:?}: {:?}&quot;</span>,
+						e
+					);
+				}
+			}
+			<span class="kw">for </span>bone_kind <span class="kw">in </span>hidden_bones.iter() {
+				skeleton.set_visibility(<span class="kw-2">*</span>bone_kind, <span class="bool-val">false</span>);
+				<span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(<span class="kw-2">*</span>bone_kind, mngr) {
+					<span class="macro">log::error!</span>(
+						<span class="string">&quot;Error updating render for bone {bone_kind:?}: {:?}&quot;</span>,
+						e
+					);
+				}
+			}
+		}
+	};
+	<span class="macro">tokio::select! </span>{
+		<span class="kw">_ </span>= subsys.on_shutdown_requested() =&gt; {
+			<span class="macro">log::debug!</span>(<span class="string">&quot;overlay shutdown requested&quot;</span>);
+			<span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, eyre::Report&gt;(())
+		},
+		r = loop_ =&gt; r,
+	}<span class="question-mark">?</span>;
 
-    <span class="macro">log::info!</span>(<span class="string">&quot;Shutting down OpenVR context&quot;</span>);
-    <span class="kw">unsafe </span>{ context.shutdown() };
-    <span class="prelude-val">Ok</span>(())
+	<span class="macro">log::info!</span>(<span class="string">&quot;Shutting down OpenVR context&quot;</span>);
+	<span class="kw">unsafe </span>{ context.shutdown() };
+	<span class="prelude-val">Ok</span>(())
 }
 
 <span class="kw">async fn </span>networking(subsys: SubsystemHandle) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>(client, recv) = Client::new(CONNECT_STR.to_string(), subsys.clone())
-        .wrap_err(<span class="string">&quot;Failed to start client&quot;</span>)<span class="question-mark">?</span>;
-    subsys.start(<span class="string">&quot;Overlay&quot;</span>, |s| overlay(recv, s));
-    client.join().<span class="kw">await
+	<span class="kw">let </span>(client, recv) = Client::new(CONNECT_STR.to_string(), subsys.clone())
+		.wrap_err(<span class="string">&quot;Failed to start client&quot;</span>)<span class="question-mark">?</span>;
+	subsys.start(<span class="string">&quot;Overlay&quot;</span>, |s| overlay(recv, s));
+	client.join().<span class="kw">await
 </span>}
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

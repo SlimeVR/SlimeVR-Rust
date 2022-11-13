@@ -209,146 +209,146 @@
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]
 #[allow(dead_code)]
 </span><span class="kw">pub enum </span>BoneKind {
-    Neck = <span class="number">0</span>,
-    Chest,
-    Waist,
-    Hip,
-    ThighL,
-    ThighR,
-    AnkleL,
-    AnkleR,
-    FootL,
-    FootR,
+	Neck = <span class="number">0</span>,
+	Chest,
+	Waist,
+	Hip,
+	ThighL,
+	ThighR,
+	AnkleL,
+	AnkleR,
+	FootL,
+	FootR,
 
-    UpperArmL,
-    UpperArmR,
-    ForearmL,
-    ForearmR,
-    WristL,
-    WristR,
+	UpperArmL,
+	UpperArmR,
+	ForearmL,
+	ForearmR,
+	WristL,
+	WristR,
 }
 <span class="kw">impl </span>BoneKind {
-    <span class="doccomment">/// The bone with the largest integer value
-    </span><span class="kw">pub const fn </span>max() -&gt; BoneKind {
-        BoneKind::WristR
-    }
-    <span class="kw">pub const </span>MAX: BoneKind = <span class="self">Self</span>::max();
+	<span class="doccomment">/// The bone with the largest integer value
+	</span><span class="kw">pub const fn </span>max() -&gt; BoneKind {
+		BoneKind::WristR
+	}
+	<span class="kw">pub const </span>MAX: BoneKind = <span class="self">Self</span>::max();
 
-    <span class="doccomment">/// The bone with the smallest integer value
-    </span><span class="kw">pub const fn </span>min() -&gt; BoneKind {
-        BoneKind::root()
-    }
-    <span class="kw">pub const </span>MIN: BoneKind = <span class="self">Self</span>::min();
+	<span class="doccomment">/// The bone with the smallest integer value
+	</span><span class="kw">pub const fn </span>min() -&gt; BoneKind {
+		BoneKind::root()
+	}
+	<span class="kw">pub const </span>MIN: BoneKind = <span class="self">Self</span>::min();
 
-    <span class="doccomment">/// The root bone of the skeletal graph/tree.
-    </span><span class="kw">pub const fn </span>root() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Neck
-    }
-    <span class="kw">pub const </span>ROOT: BoneKind = <span class="self">Self</span>::root();
+	<span class="doccomment">/// The root bone of the skeletal graph/tree.
+	</span><span class="kw">pub const fn </span>root() -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::Neck
+	}
+	<span class="kw">pub const </span>ROOT: BoneKind = <span class="self">Self</span>::root();
 
-    <span class="doccomment">/// Returns the number of unique kinds of bones. This is equivalent to the number
-    /// of variants in `BoneKind`
-    </span><span class="kw">pub const fn </span>num_types() -&gt; usize {
-        BoneKind::max() <span class="kw">as </span>usize + <span class="number">1
-    </span>}
-    <span class="kw">pub const </span>NUM_TYPES: usize = <span class="self">Self</span>::num_types();
+	<span class="doccomment">/// Returns the number of unique kinds of bones. This is equivalent to the number
+	/// of variants in `BoneKind`
+	</span><span class="kw">pub const fn </span>num_types() -&gt; usize {
+		BoneKind::max() <span class="kw">as </span>usize + <span class="number">1
+	</span>}
+	<span class="kw">pub const </span>NUM_TYPES: usize = <span class="self">Self</span>::num_types();
 
-    <span class="doccomment">/// Returns the children of any particular bone.
-    ///
-    /// The slice is `&#39;static`, which means the lifetime of the returned slice lives
-    /// for the entire duration of the program. This is because the parent/child
-    /// relationship of bones is known at compile-time.
-    </span><span class="kw">pub const fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="self">Self</span>] {
-        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
-        <span class="kw">match </span><span class="self">self </span>{
-            Neck =&gt; <span class="kw-2">&amp;</span>[Chest, UpperArmL, UpperArmR],
-            Chest =&gt; <span class="kw-2">&amp;</span>[Waist],
-            Waist =&gt; <span class="kw-2">&amp;</span>[Hip],
-            Hip =&gt; <span class="kw-2">&amp;</span>[ThighL, ThighR],
-            ThighL =&gt; <span class="kw-2">&amp;</span>[AnkleL],
-            ThighR =&gt; <span class="kw-2">&amp;</span>[AnkleR],
-            AnkleL =&gt; <span class="kw-2">&amp;</span>[FootL],
-            AnkleR =&gt; <span class="kw-2">&amp;</span>[FootR],
-            FootL =&gt; <span class="kw-2">&amp;</span>[],
-            FootR =&gt; <span class="kw-2">&amp;</span>[],
+	<span class="doccomment">/// Returns the children of any particular bone.
+	///
+	/// The slice is `&#39;static`, which means the lifetime of the returned slice lives
+	/// for the entire duration of the program. This is because the parent/child
+	/// relationship of bones is known at compile-time.
+	</span><span class="kw">pub const fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="self">Self</span>] {
+		<span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+		<span class="kw">match </span><span class="self">self </span>{
+			Neck =&gt; <span class="kw-2">&amp;</span>[Chest, UpperArmL, UpperArmR],
+			Chest =&gt; <span class="kw-2">&amp;</span>[Waist],
+			Waist =&gt; <span class="kw-2">&amp;</span>[Hip],
+			Hip =&gt; <span class="kw-2">&amp;</span>[ThighL, ThighR],
+			ThighL =&gt; <span class="kw-2">&amp;</span>[AnkleL],
+			ThighR =&gt; <span class="kw-2">&amp;</span>[AnkleR],
+			AnkleL =&gt; <span class="kw-2">&amp;</span>[FootL],
+			AnkleR =&gt; <span class="kw-2">&amp;</span>[FootR],
+			FootL =&gt; <span class="kw-2">&amp;</span>[],
+			FootR =&gt; <span class="kw-2">&amp;</span>[],
 
-            UpperArmL =&gt; <span class="kw-2">&amp;</span>[ForearmL],
-            UpperArmR =&gt; <span class="kw-2">&amp;</span>[ForearmR],
-            ForearmL =&gt; <span class="kw-2">&amp;</span>[WristL],
-            ForearmR =&gt; <span class="kw-2">&amp;</span>[WristR],
-            WristR =&gt; <span class="kw-2">&amp;</span>[],
-            WristL =&gt; <span class="kw-2">&amp;</span>[],
-        }
-    }
+			UpperArmL =&gt; <span class="kw-2">&amp;</span>[ForearmL],
+			UpperArmR =&gt; <span class="kw-2">&amp;</span>[ForearmR],
+			ForearmL =&gt; <span class="kw-2">&amp;</span>[WristL],
+			ForearmR =&gt; <span class="kw-2">&amp;</span>[WristR],
+			WristR =&gt; <span class="kw-2">&amp;</span>[],
+			WristL =&gt; <span class="kw-2">&amp;</span>[],
+		}
+	}
 
-    <span class="doccomment">/// The parent of a bone.
-    </span><span class="kw">pub const fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BoneKind&gt; {
-        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
-        <span class="prelude-val">Some</span>(<span class="kw">match </span><span class="self">self </span>{
-            Neck =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
-            Chest =&gt; Neck,
-            Waist =&gt; Chest,
-            Hip =&gt; Waist,
-            ThighL =&gt; Hip,
-            ThighR =&gt; Hip,
-            AnkleL =&gt; ThighL,
-            AnkleR =&gt; ThighR,
-            FootL =&gt; AnkleL,
-            FootR =&gt; AnkleR,
+	<span class="doccomment">/// The parent of a bone.
+	</span><span class="kw">pub const fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BoneKind&gt; {
+		<span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+		<span class="prelude-val">Some</span>(<span class="kw">match </span><span class="self">self </span>{
+			Neck =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
+			Chest =&gt; Neck,
+			Waist =&gt; Chest,
+			Hip =&gt; Waist,
+			ThighL =&gt; Hip,
+			ThighR =&gt; Hip,
+			AnkleL =&gt; ThighL,
+			AnkleR =&gt; ThighR,
+			FootL =&gt; AnkleL,
+			FootR =&gt; AnkleR,
 
-            UpperArmL =&gt; Neck,
-            UpperArmR =&gt; Neck,
-            ForearmL =&gt; UpperArmL,
-            ForearmR =&gt; UpperArmR,
-            WristL =&gt; ForearmL,
-            WristR =&gt; ForearmR,
-        })
-    }
+			UpperArmL =&gt; Neck,
+			UpperArmR =&gt; Neck,
+			ForearmL =&gt; UpperArmL,
+			ForearmR =&gt; UpperArmR,
+			WristL =&gt; ForearmL,
+			WristR =&gt; ForearmR,
+		})
+	}
 
-    <span class="kw">pub fn </span>iter() -&gt; std::iter::Map&lt;std::ops::RangeInclusive&lt;u8&gt;, <span class="kw">fn</span>(u8) -&gt; BoneKind&gt; {
-        (<span class="self">Self</span>::MIN <span class="kw">as </span>u8..=<span class="self">Self</span>::MAX <span class="kw">as </span>u8).map(|x| x.try_into().unwrap())
-    }
+	<span class="kw">pub fn </span>iter() -&gt; std::iter::Map&lt;std::ops::RangeInclusive&lt;u8&gt;, <span class="kw">fn</span>(u8) -&gt; BoneKind&gt; {
+		(<span class="self">Self</span>::MIN <span class="kw">as </span>u8..=<span class="self">Self</span>::MAX <span class="kw">as </span>u8).map(|x| x.try_into().unwrap())
+	}
 
-    <span class="doccomment">/// Returns the initial calibration pose of the bone. Rotating the up vector by
-    /// this rotation would cause it to point in the same target direction as the bone.
-    </span><span class="kw">pub fn </span>calibration_rotation(<span class="self">self</span>) -&gt; Global&lt;UnitQuat&gt; {
-        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
-        Global(<span class="kw">match </span><span class="self">self </span>{
-            FootL | FootR =&gt; UnitQuat::look_at_rh(<span class="kw-2">&amp;</span>-up_vec(), <span class="kw-2">&amp;</span>forward_vec()),
-            <span class="kw">_ </span>=&gt; UnitQuat::default(),
-        })
-    }
+	<span class="doccomment">/// Returns the initial calibration pose of the bone. Rotating the up vector by
+	/// this rotation would cause it to point in the same target direction as the bone.
+	</span><span class="kw">pub fn </span>calibration_rotation(<span class="self">self</span>) -&gt; Global&lt;UnitQuat&gt; {
+		<span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+		Global(<span class="kw">match </span><span class="self">self </span>{
+			FootL | FootR =&gt; UnitQuat::look_at_rh(<span class="kw-2">&amp;</span>-up_vec(), <span class="kw-2">&amp;</span>forward_vec()),
+			<span class="kw">_ </span>=&gt; UnitQuat::default(),
+		})
+	}
 
-    <span class="doccomment">/// Returns the initial calibration pose of the bone, as a rotation relative to the
-    /// parent bone. See also: [`Self::calibration_rotation`]
-    </span><span class="kw">pub fn </span>calibration_rotation_local(<span class="self">self</span>) -&gt; Local&lt;UnitQuat&gt; {
-        <span class="kw">let </span>child_rot_g = <span class="self">self</span>.calibration_rotation();
-        <span class="kw">let </span>parent_rot_g = <span class="self">self</span>.parent().unwrap_or(<span class="self">self</span>).calibration_rotation();
-        Local(parent_rot_g.<span class="number">0</span>.rotation_to(<span class="kw-2">&amp;</span>child_rot_g.<span class="number">0</span>))
-    }
+	<span class="doccomment">/// Returns the initial calibration pose of the bone, as a rotation relative to the
+	/// parent bone. See also: [`Self::calibration_rotation`]
+	</span><span class="kw">pub fn </span>calibration_rotation_local(<span class="self">self</span>) -&gt; Local&lt;UnitQuat&gt; {
+		<span class="kw">let </span>child_rot_g = <span class="self">self</span>.calibration_rotation();
+		<span class="kw">let </span>parent_rot_g = <span class="self">self</span>.parent().unwrap_or(<span class="self">self</span>).calibration_rotation();
+		Local(parent_rot_g.<span class="number">0</span>.rotation_to(<span class="kw-2">&amp;</span>child_rot_g.<span class="number">0</span>))
+	}
 }
 <span class="kw">impl </span>TryFrom&lt;u8&gt; <span class="kw">for </span>BoneKind {
-    <span class="kw">type </span>Error = ();
+	<span class="kw">type </span>Error = ();
 
-    <span class="kw">fn </span>try_from(value: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        FromPrimitive::from_u8(value).ok_or(())
-    }
+	<span class="kw">fn </span>try_from(value: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+		FromPrimitive::from_u8(value).ok_or(())
+	}
 }
 <span class="kw">impl </span>TryFrom&lt;usize&gt; <span class="kw">for </span>BoneKind {
-    <span class="kw">type </span>Error = ();
-    <span class="kw">fn </span>try_from(value: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        FromPrimitive::from_usize(value).ok_or(())
-    }
+	<span class="kw">type </span>Error = ();
+	<span class="kw">fn </span>try_from(value: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+		FromPrimitive::from_usize(value).ok_or(())
+	}
 }
 <span class="kw">impl </span>From&lt;BoneKind&gt; <span class="kw">for </span>u8 {
-    <span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
-        other <span class="kw">as _
-    </span>}
+	<span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
+		other <span class="kw">as _
+	</span>}
 }
 <span class="kw">impl </span>From&lt;BoneKind&gt; <span class="kw">for </span>usize {
-    <span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
-        other <span class="kw">as _
-    </span>}
+	<span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
+		other <span class="kw">as _
+	</span>}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

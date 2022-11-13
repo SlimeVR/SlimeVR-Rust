@@ -89,14 +89,14 @@
 <span class="doccomment">/// The different kinds of edges.
 </span><span class="attribute">#[derive(Debug, Eq, PartialEq, Hash, From, Copy, Clone)]
 </span><span class="kw">pub enum </span>EdgeKind {
-    <span class="doccomment">/// Represents a regular bone in the skeleton.
-    </span>Bone(BoneKind),
-    <span class="doccomment">/// Represents a tracker that is providing pose information as an input to the
-    /// skeleton.
-    </span>InputTracker,
-    <span class="doccomment">/// Represents a computed/synthetic tracker that will act as an output tracker for
-    /// the skeleton.
-    </span>OutputTracker,
+	<span class="doccomment">/// Represents a regular bone in the skeleton.
+	</span>Bone(BoneKind),
+	<span class="doccomment">/// Represents a tracker that is providing pose information as an input to the
+	/// skeleton.
+	</span>InputTracker,
+	<span class="doccomment">/// Represents a computed/synthetic tracker that will act as an output tracker for
+	/// the skeleton.
+	</span>OutputTracker,
 }
 
 <span class="doccomment">/// `Edge`s represent the connections between the [`Node`]s of the
@@ -115,56 +115,56 @@
 ///
 /// [`Node`]: crate::skeleton::Node
 </span><span class="kw">pub struct </span>Edge {
-    kind: EdgeKind,
-    <span class="doccomment">/// Input rotation in global space. If it is unconstrained, it is `None`.
-    </span>input_rot_g: <span class="prelude-ty">Option</span>&lt;Global&lt;UnitQuat&gt;&gt;,
-    <span class="doccomment">/// Local rotation of the edge with respect to the parent edge at calibration time.
-    /// Maps from parent frame to child frame.
-    </span>calib_rot_l: Local&lt;UnitQuat&gt;,
-    <span class="doccomment">/// Length of the edge. May be set by the user, or may be computed at calibration.
-    </span>length: f32,
-    <span class="doccomment">/// The output rotation of the edge. Solving the skeleton updates this.
-    </span>output_rot_g: Global&lt;UnitQuat&gt;,
+	kind: EdgeKind,
+	<span class="doccomment">/// Input rotation in global space. If it is unconstrained, it is `None`.
+	</span>input_rot_g: <span class="prelude-ty">Option</span>&lt;Global&lt;UnitQuat&gt;&gt;,
+	<span class="doccomment">/// Local rotation of the edge with respect to the parent edge at calibration time.
+	/// Maps from parent frame to child frame.
+	</span>calib_rot_l: Local&lt;UnitQuat&gt;,
+	<span class="doccomment">/// Length of the edge. May be set by the user, or may be computed at calibration.
+	</span>length: f32,
+	<span class="doccomment">/// The output rotation of the edge. Solving the skeleton updates this.
+	</span>output_rot_g: Global&lt;UnitQuat&gt;,
 }
 <span class="kw">impl </span>Edge {
-    <span class="kw">pub fn </span>new(kind: <span class="kw">impl </span>Into&lt;EdgeKind&gt;, length: f32) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>kind = kind.into();
-        <span class="kw">let </span>calib_rot_l = <span class="kw">match </span>kind {
-            EdgeKind::Bone(k) =&gt; k.calibration_rotation_local(),
-            <span class="kw">_ </span>=&gt; UnitQuat::identity().into(),
-        };
-        <span class="self">Self </span>{
-            kind,
-            input_rot_g: <span class="prelude-val">None</span>,
-            calib_rot_l,
-            length,
-            output_rot_g: Default::default(),
-        }
-    }
+	<span class="kw">pub fn </span>new(kind: <span class="kw">impl </span>Into&lt;EdgeKind&gt;, length: f32) -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span>kind = kind.into();
+		<span class="kw">let </span>calib_rot_l = <span class="kw">match </span>kind {
+			EdgeKind::Bone(k) =&gt; k.calibration_rotation_local(),
+			<span class="kw">_ </span>=&gt; UnitQuat::identity().into(),
+		};
+		<span class="self">Self </span>{
+			kind,
+			input_rot_g: <span class="prelude-val">None</span>,
+			calib_rot_l,
+			length,
+			output_rot_g: Default::default(),
+		}
+	}
 
-    <span class="kw">pub fn </span>input_rotation_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Global&lt;UnitQuat&gt;&gt; {
-        <span class="self">self</span>.input_rot_g.as_mut()
-    }
+	<span class="kw">pub fn </span>input_rotation_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Global&lt;UnitQuat&gt;&gt; {
+		<span class="self">self</span>.input_rot_g.as_mut()
+	}
 
-    <span class="kw">pub fn </span>output_rotation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Global&lt;UnitQuat&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.output_rot_g
-    }
+	<span class="kw">pub fn </span>output_rotation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Global&lt;UnitQuat&gt; {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.output_rot_g
+	}
 
-    <span class="kw">pub fn </span>length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
-        <span class="self">self</span>.length
-    }
+	<span class="kw">pub fn </span>length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
+		<span class="self">self</span>.length
+	}
 
-    <span class="kw">pub fn </span>length_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>f32 {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.length
-    }
+	<span class="kw">pub fn </span>length_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>f32 {
+		<span class="kw-2">&amp;mut </span><span class="self">self</span>.length
+	}
 
-    <span class="kw">pub fn </span>calibration_rotation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Local&lt;UnitQuat&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.calib_rot_l
-    }
+	<span class="kw">pub fn </span>calibration_rotation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Local&lt;UnitQuat&gt; {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.calib_rot_l
+	}
 
-    <span class="kw">pub fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; EdgeKind {
-        <span class="self">self</span>.kind
-    }
+	<span class="kw">pub fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; EdgeKind {
+		<span class="self">self</span>.kind
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

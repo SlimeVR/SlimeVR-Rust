@@ -63,49 +63,49 @@
 
 <span class="attribute">#[derive(thiserror::Error, Debug)]
 </span><span class="kw">pub enum </span>DecodeError {
-    <span class="attribute">#[error(<span class="string">&quot;Flatbuffer failed verification: {0}&quot;</span>)]
-    </span>FbVerification(<span class="attribute">#[from] </span>InvalidFlatbuffer),
-    <span class="comment">// #[error(&quot;Io error: {0}&quot;)]
-    // Io(#[from] std::io::Error),
+	<span class="attribute">#[error(<span class="string">&quot;Flatbuffer failed verification: {0}&quot;</span>)]
+	</span>FbVerification(<span class="attribute">#[from] </span>InvalidFlatbuffer),
+	<span class="comment">// #[error(&quot;Io error: {0}&quot;)]
+	// Io(#[from] std::io::Error),
 </span>}
 
 <span class="doccomment">/// Root flatbuffer type, after verification
 </span><span class="attribute">#[self_referencing]
 </span><span class="kw">pub struct </span>Data {
-    data: Vec&lt;u8&gt;,
-    <span class="attribute">#[borrows(data)]
-    #[covariant]
-    </span>table: MessageBundle&lt;<span class="lifetime">&#39;this</span>&gt;,
+	data: Vec&lt;u8&gt;,
+	<span class="attribute">#[borrows(data)]
+	#[covariant]
+	</span>table: MessageBundle&lt;<span class="lifetime">&#39;this</span>&gt;,
 }
 <span class="kw">impl </span>Data {
-    <span class="kw">pub unsafe fn </span>from_vec_unchecked(data: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new(data, |v| flatbuffers::root_unchecked::&lt;MessageBundle&gt;(v))
-    }
+	<span class="kw">pub unsafe fn </span>from_vec_unchecked(data: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::new(data, |v| flatbuffers::root_unchecked::&lt;MessageBundle&gt;(v))
+	}
 
-    <span class="kw">pub fn </span>from_vec(data: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, (Vec&lt;u8&gt;, DecodeError)&gt; {
-        <span class="self">Self</span>::try_new_or_recover(data, |v| flatbuffers::root::&lt;MessageBundle&gt;(v))
-            .map_err(|(e, data)| (data.data, e.into()))
-    }
+	<span class="kw">pub fn </span>from_vec(data: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, (Vec&lt;u8&gt;, DecodeError)&gt; {
+		<span class="self">Self</span>::try_new_or_recover(data, |v| flatbuffers::root::&lt;MessageBundle&gt;(v))
+			.map_err(|(e, data)| (data.data, e.into()))
+	}
 
-    <span class="kw">pub fn </span>into_vec(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
-        <span class="self">self</span>.into_heads().data
-    }
+	<span class="kw">pub fn </span>into_vec(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
+		<span class="self">self</span>.into_heads().data
+	}
 
-    <span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
-        <span class="self">self</span>.with_data(|v| v.as_slice())
-    }
+	<span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+		<span class="self">self</span>.with_data(|v| v.as_slice())
+	}
 
-    <span class="kw">pub fn </span>table(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MessageBundle {
-        <span class="kw-2">*</span><span class="self">self</span>.borrow_table()
-    }
+	<span class="kw">pub fn </span>table(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MessageBundle {
+		<span class="kw-2">*</span><span class="self">self</span>.borrow_table()
+	}
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>Data {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;Data&quot;</span>)
-            .field(<span class="string">&quot;table&quot;</span>, <span class="self">self</span>.borrow_table())
-            .finish()
-    }
+	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+		f.debug_struct(<span class="string">&quot;Data&quot;</span>)
+			.field(<span class="string">&quot;table&quot;</span>, <span class="self">self</span>.borrow_table())
+			.finish()
+	}
 }
 
 <span class="attribute">#[derive(Debug)]

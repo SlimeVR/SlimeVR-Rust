@@ -36,41 +36,41 @@
 <span id="36">36</span>
 <span id="37">37</span>
 </pre><pre class="rust"><code><span class="macro">macro_rules! </span>def_color {
-    (<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$r</span>:literal, <span class="macro-nonterminal">$g</span>:literal, <span class="macro-nonterminal">$b</span>: literal, <span class="macro-nonterminal">$a</span>: literal) =&gt; {
-        <span class="kw">pub const </span><span class="macro-nonterminal">$name</span>: RGBA = RGBA::new(<span class="macro-nonterminal">$r</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$b</span>, <span class="macro-nonterminal">$a</span>);
-    };
-    (<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$r</span>:literal, <span class="macro-nonterminal">$g</span>:literal, <span class="macro-nonterminal">$b</span>:literal) =&gt; {
-        <span class="macro">def_color!</span>(<span class="macro-nonterminal">$name</span>, <span class="macro-nonterminal">$r</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$b</span>, <span class="number">255</span>);
-    };
+	(<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$r</span>:literal, <span class="macro-nonterminal">$g</span>:literal, <span class="macro-nonterminal">$b</span>: literal, <span class="macro-nonterminal">$a</span>: literal) =&gt; {
+		<span class="kw">pub const </span><span class="macro-nonterminal">$name</span>: RGBA = RGBA::new(<span class="macro-nonterminal">$r</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$b</span>, <span class="macro-nonterminal">$a</span>);
+	};
+	(<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$r</span>:literal, <span class="macro-nonterminal">$g</span>:literal, <span class="macro-nonterminal">$b</span>:literal) =&gt; {
+		<span class="macro">def_color!</span>(<span class="macro-nonterminal">$name</span>, <span class="macro-nonterminal">$r</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$b</span>, <span class="number">255</span>);
+	};
 }
 
 <span class="attribute">#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>RGBA {
-    <span class="kw">pub </span>r: u8,
-    <span class="kw">pub </span>g: u8,
-    <span class="kw">pub </span>b: u8,
-    <span class="kw">pub </span>a: u8,
+	<span class="kw">pub </span>r: u8,
+	<span class="kw">pub </span>g: u8,
+	<span class="kw">pub </span>b: u8,
+	<span class="kw">pub </span>a: u8,
 }
 <span class="kw">impl </span>RGBA {
-    <span class="kw">pub const fn </span>new(r: u8, g: u8, b: u8, a: u8) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ r, g, b, a }
-    }
-    <span class="macro">def_color!</span>(WHITE, <span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>);
-    <span class="macro">def_color!</span>(SILVER, <span class="number">192</span>, <span class="number">192</span>, <span class="number">192</span>);
-    <span class="macro">def_color!</span>(GRAY, <span class="number">128</span>, <span class="number">128</span>, <span class="number">128</span>);
-    <span class="macro">def_color!</span>(BLACK, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(RED, <span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(MAROON, <span class="number">128</span>, <span class="number">0</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(YELLOW, <span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(OLIVE, <span class="number">128</span>, <span class="number">128</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(LIME, <span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(GREEN, <span class="number">0</span>, <span class="number">128</span>, <span class="number">0</span>);
-    <span class="macro">def_color!</span>(AQUA, <span class="number">0</span>, <span class="number">255</span>, <span class="number">255</span>);
-    <span class="macro">def_color!</span>(TEAL, <span class="number">0</span>, <span class="number">128</span>, <span class="number">128</span>);
-    <span class="macro">def_color!</span>(BLUE, <span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>);
-    <span class="macro">def_color!</span>(NAVY, <span class="number">0</span>, <span class="number">0</span>, <span class="number">128</span>);
-    <span class="macro">def_color!</span>(FUCHSIA, <span class="number">255</span>, <span class="number">0</span>, <span class="number">255</span>);
-    <span class="macro">def_color!</span>(PURPLE, <span class="number">128</span>, <span class="number">0</span>, <span class="number">128</span>);
+	<span class="kw">pub const fn </span>new(r: u8, g: u8, b: u8, a: u8) -&gt; <span class="self">Self </span>{
+		<span class="self">Self </span>{ r, g, b, a }
+	}
+	<span class="macro">def_color!</span>(WHITE, <span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>);
+	<span class="macro">def_color!</span>(SILVER, <span class="number">192</span>, <span class="number">192</span>, <span class="number">192</span>);
+	<span class="macro">def_color!</span>(GRAY, <span class="number">128</span>, <span class="number">128</span>, <span class="number">128</span>);
+	<span class="macro">def_color!</span>(BLACK, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(RED, <span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(MAROON, <span class="number">128</span>, <span class="number">0</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(YELLOW, <span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(OLIVE, <span class="number">128</span>, <span class="number">128</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(LIME, <span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(GREEN, <span class="number">0</span>, <span class="number">128</span>, <span class="number">0</span>);
+	<span class="macro">def_color!</span>(AQUA, <span class="number">0</span>, <span class="number">255</span>, <span class="number">255</span>);
+	<span class="macro">def_color!</span>(TEAL, <span class="number">0</span>, <span class="number">128</span>, <span class="number">128</span>);
+	<span class="macro">def_color!</span>(BLUE, <span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>);
+	<span class="macro">def_color!</span>(NAVY, <span class="number">0</span>, <span class="number">0</span>, <span class="number">128</span>);
+	<span class="macro">def_color!</span>(FUCHSIA, <span class="number">255</span>, <span class="number">0</span>, <span class="number">255</span>);
+	<span class="macro">def_color!</span>(PURPLE, <span class="number">128</span>, <span class="number">0</span>, <span class="number">128</span>);
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

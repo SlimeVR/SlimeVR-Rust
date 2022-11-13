@@ -148,123 +148,123 @@
 /// - `A`: An acknowledgement of the shutdown, possibly containing any useful
 ///   information that can be sent back to the `ShutdownBroadcaster`.
 </span><span class="kw">pub struct </span>Broadcaster&lt;R: Clone = (), A = ()&gt; {
-    broadcaster: broadcast::Sender&lt;R&gt;,
-    shutdown_watcher: mpsc::UnboundedReceiver&lt;A&gt;,
-    <span class="comment">// we hang on to this to be able to create new listeners.
-    </span>mpsc_copy: mpsc::UnboundedSender&lt;A&gt;,
+	broadcaster: broadcast::Sender&lt;R&gt;,
+	shutdown_watcher: mpsc::UnboundedReceiver&lt;A&gt;,
+	<span class="comment">// we hang on to this to be able to create new listeners.
+	</span>mpsc_copy: mpsc::UnboundedSender&lt;A&gt;,
 }
 <span class="kw">impl</span>&lt;R: Clone, A&gt; Broadcaster&lt;R, A&gt; {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>(b_sender, <span class="kw">_</span>) = broadcast::channel(<span class="number">1</span>);
-        <span class="kw">let </span>(mpsc_sender, mpsc_receiver) = mpsc::unbounded_channel();
+	<span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span>(b_sender, <span class="kw">_</span>) = broadcast::channel(<span class="number">1</span>);
+		<span class="kw">let </span>(mpsc_sender, mpsc_receiver) = mpsc::unbounded_channel();
 
-        <span class="self">Self </span>{
-            broadcaster: b_sender,
-            shutdown_watcher: mpsc_receiver,
-            mpsc_copy: mpsc_sender,
-        }
-    }
+		<span class="self">Self </span>{
+			broadcaster: b_sender,
+			shutdown_watcher: mpsc_receiver,
+			mpsc_copy: mpsc_sender,
+		}
+	}
 
-    <span class="doccomment">/// Creates a new `Listener` to the `Broadcaster`.
-    </span><span class="kw">pub fn </span>new_listener(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Listener&lt;R, A&gt; {
-        <span class="kw">let </span>b_receiver = <span class="self">self</span>.broadcaster.subscribe();
-        <span class="kw">let </span>mpsc_sender = <span class="self">self</span>.mpsc_copy.clone();
+	<span class="doccomment">/// Creates a new `Listener` to the `Broadcaster`.
+	</span><span class="kw">pub fn </span>new_listener(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Listener&lt;R, A&gt; {
+		<span class="kw">let </span>b_receiver = <span class="self">self</span>.broadcaster.subscribe();
+		<span class="kw">let </span>mpsc_sender = <span class="self">self</span>.mpsc_copy.clone();
 
-        Listener {
-            b_receiver,
-            mpsc_sender,
-            shutdown_reason: <span class="prelude-val">None</span>,
-        }
-    }
+		Listener {
+			b_receiver,
+			mpsc_sender,
+			shutdown_reason: <span class="prelude-val">None</span>,
+		}
+	}
 
-    <span class="kw">pub fn </span>num_listeners(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.broadcaster.receiver_count()
-    }
+	<span class="kw">pub fn </span>num_listeners(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="self">self</span>.broadcaster.receiver_count()
+	}
 
-    <span class="doccomment">/// Signals shutdown, with an optional reason. If no reason is provided, the
-    /// listeners will get [`ShutdownReason::BroadcasterClosed`].
-    ///
-    /// # Returns
-    /// Returns a channel to be used for receiving the shutdown acknowledgements.
-    </span><span class="kw">pub fn </span>signal_shutdown(<span class="self">self</span>, reason: <span class="prelude-ty">Option</span>&lt;R&gt;) -&gt; mpsc::UnboundedReceiver&lt;A&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = reason {
-            <span class="comment">// We don&#39;t care if all recipients are closed
-            </span><span class="self">self</span>.broadcaster.send(r).ok();
-        }
-        <span class="self">self</span>.shutdown_watcher
-    }
+	<span class="doccomment">/// Signals shutdown, with an optional reason. If no reason is provided, the
+	/// listeners will get [`ShutdownReason::BroadcasterClosed`].
+	///
+	/// # Returns
+	/// Returns a channel to be used for receiving the shutdown acknowledgements.
+	</span><span class="kw">pub fn </span>signal_shutdown(<span class="self">self</span>, reason: <span class="prelude-ty">Option</span>&lt;R&gt;) -&gt; mpsc::UnboundedReceiver&lt;A&gt; {
+		<span class="kw">if let </span><span class="prelude-val">Some</span>(r) = reason {
+			<span class="comment">// We don&#39;t care if all recipients are closed
+			</span><span class="self">self</span>.broadcaster.send(r).ok();
+		}
+		<span class="self">self</span>.shutdown_watcher
+	}
 }
 <span class="kw">impl</span>&lt;R: Clone, A&gt; Default <span class="kw">for </span>Broadcaster&lt;R, A&gt; {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new()
-    }
+	<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::new()
+	}
 }
 
 <span class="doccomment">/// # Generics
 /// See [`Broadcaster`] for documentation on the generic args.
 </span><span class="kw">pub struct </span>Listener&lt;R: Clone = (), A = ()&gt; {
-    b_receiver: broadcast::Receiver&lt;R&gt;,
-    mpsc_sender: mpsc::UnboundedSender&lt;A&gt;,
-    shutdown_reason: <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt;,
+	b_receiver: broadcast::Receiver&lt;R&gt;,
+	mpsc_sender: mpsc::UnboundedSender&lt;A&gt;,
+	shutdown_reason: <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt;,
 }
 <span class="kw">impl</span>&lt;R: Clone, I&gt; Listener&lt;R, I&gt; {
-    <span class="doccomment">/// Doesn&#39;t return until a shutdown occurs.
-    </span><span class="kw">pub async fn </span>recv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ShutdownReason&lt;R&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>r) = <span class="self">self</span>.shutdown_reason {
-            <span class="kw">return </span>r;
-        }
-        <span class="kw">let </span>reason = <span class="kw">match </span><span class="self">self</span>.b_receiver.recv().<span class="kw">await </span>{
-            <span class="prelude-val">Ok</span>(r) =&gt; ShutdownReason::Reason(r),
-            <span class="prelude-val">Err</span>(broadcast::error::RecvError::Closed) =&gt; {
-                ShutdownReason::BroadcasterClosed
-            }
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(
-                <span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;
-            </span>),
-        };
-        <span class="self">self</span>.shutdown_reason = <span class="prelude-val">Some</span>(reason);
-        <span class="self">self</span>.shutdown_reason.as_ref().unwrap()
-    }
+	<span class="doccomment">/// Doesn&#39;t return until a shutdown occurs.
+	</span><span class="kw">pub async fn </span>recv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ShutdownReason&lt;R&gt; {
+		<span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>r) = <span class="self">self</span>.shutdown_reason {
+			<span class="kw">return </span>r;
+		}
+		<span class="kw">let </span>reason = <span class="kw">match </span><span class="self">self</span>.b_receiver.recv().<span class="kw">await </span>{
+			<span class="prelude-val">Ok</span>(r) =&gt; ShutdownReason::Reason(r),
+			<span class="prelude-val">Err</span>(broadcast::error::RecvError::Closed) =&gt; {
+				ShutdownReason::BroadcasterClosed
+			}
+			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(
+				<span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;
+			</span>),
+		};
+		<span class="self">self</span>.shutdown_reason = <span class="prelude-val">Some</span>(reason);
+		<span class="self">self</span>.shutdown_reason.as_ref().unwrap()
+	}
 
-    <span class="doccomment">/// Returns `None` if no shutdown has occurred, otherwise returns the shutdown
-    /// reason.
-    </span><span class="kw">pub fn </span>try_recv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ShutdownReason&lt;R&gt;&gt; {
-        <span class="kw">let </span>reason = <span class="kw">match </span><span class="self">self</span>.b_receiver.try_recv() {
-            <span class="prelude-val">Ok</span>(r) =&gt; ShutdownReason::Reason(r),
-            <span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Closed) =&gt; {
-                ShutdownReason::BroadcasterClosed
-            }
-            <span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Empty) =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
-            <span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Lagged(<span class="kw">_</span>)) =&gt; {
-                <span class="macro">unreachable!</span>(
-                    <span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;
-                </span>)
-            }
-        };
-        <span class="self">self</span>.shutdown_reason = <span class="prelude-val">Some</span>(reason);
-        <span class="self">self</span>.shutdown_reason.as_ref()
-    }
+	<span class="doccomment">/// Returns `None` if no shutdown has occurred, otherwise returns the shutdown
+	/// reason.
+	</span><span class="kw">pub fn </span>try_recv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ShutdownReason&lt;R&gt;&gt; {
+		<span class="kw">let </span>reason = <span class="kw">match </span><span class="self">self</span>.b_receiver.try_recv() {
+			<span class="prelude-val">Ok</span>(r) =&gt; ShutdownReason::Reason(r),
+			<span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Closed) =&gt; {
+				ShutdownReason::BroadcasterClosed
+			}
+			<span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Empty) =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
+			<span class="prelude-val">Err</span>(broadcast::error::TryRecvError::Lagged(<span class="kw">_</span>)) =&gt; {
+				<span class="macro">unreachable!</span>(
+					<span class="string">&quot;we shouldn&#39;t be able to lag, only 1 shutdown is ever sent.&quot;
+				</span>)
+			}
+		};
+		<span class="self">self</span>.shutdown_reason = <span class="prelude-val">Some</span>(reason);
+		<span class="self">self</span>.shutdown_reason.as_ref()
+	}
 
-    <span class="doccomment">/// Get the underlying shutdown reason, if present. Does not send any shut
-    </span><span class="kw">pub fn </span>into_reason(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt; {
-        <span class="self">self</span>.shutdown_reason
-    }
+	<span class="doccomment">/// Get the underlying shutdown reason, if present. Does not send any shut
+	</span><span class="kw">pub fn </span>into_reason(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt; {
+		<span class="self">self</span>.shutdown_reason
+	}
 
-    <span class="doccomment">/// Block until an acknowledgement of the shutdown is sent. It is possible
-    /// for the `Broadcaster` to have already closed.
-    ///
-    /// # Returns
-    /// Returns the original shutdown reason, if any.
-    </span><span class="kw">pub fn </span>acknowledge(<span class="self">self</span>, info: I) -&gt; <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt; {
-        <span class="self">self</span>.mpsc_sender.send(info).ok();
-        <span class="self">self</span>.shutdown_reason
-    }
+	<span class="doccomment">/// Block until an acknowledgement of the shutdown is sent. It is possible
+	/// for the `Broadcaster` to have already closed.
+	///
+	/// # Returns
+	/// Returns the original shutdown reason, if any.
+	</span><span class="kw">pub fn </span>acknowledge(<span class="self">self</span>, info: I) -&gt; <span class="prelude-ty">Option</span>&lt;ShutdownReason&lt;R&gt;&gt; {
+		<span class="self">self</span>.mpsc_sender.send(info).ok();
+		<span class="self">self</span>.shutdown_reason
+	}
 }
 
 <span class="attribute">#[derive(Clone)]
 </span><span class="kw">pub enum </span>ShutdownReason&lt;R: Clone&gt; {
-    BroadcasterClosed,
-    Reason(R),
+	BroadcasterClosed,
+	Reason(R),
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="tokio_shutdown" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

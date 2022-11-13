@@ -195,178 +195,178 @@
 
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Bone {
-    overlays: (OverlayHandle, OverlayHandle),
-    iso: Isometry,
-    color: RGBA,
-    radius: f32,
-    length: f32,
-    is_visible: bool,
+	overlays: (OverlayHandle, OverlayHandle),
+	iso: Isometry,
+	color: RGBA,
+	radius: f32,
+	length: f32,
+	is_visible: bool,
 }
 <span class="kw">impl </span>Bone {
-    <span class="kw">pub fn </span>new(
-        mngr: <span class="kw-2">&amp;mut </span>OverlayManager,
-        color: RGBA,
-        isometry: Isometry,
-        key: String,
-        radius: f32, <span class="comment">// meters
-        </span>length: f32, <span class="comment">// meters
-    </span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>keys = (<span class="macro">format!</span>(<span class="string">&quot;{key}_0&quot;</span>), <span class="macro">format!</span>(<span class="string">&quot;{key}_1&quot;</span>));
+	<span class="kw">pub fn </span>new(
+		mngr: <span class="kw-2">&amp;mut </span>OverlayManager,
+		color: RGBA,
+		isometry: Isometry,
+		key: String,
+		radius: f32, <span class="comment">// meters
+		</span>length: f32, <span class="comment">// meters
+	</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+		<span class="kw">let </span>keys = (<span class="macro">format!</span>(<span class="string">&quot;{key}_0&quot;</span>), <span class="macro">format!</span>(<span class="string">&quot;{key}_1&quot;</span>));
 
-        <span class="kw">let </span><span class="kw-2">mut </span>init_overlay = |key: <span class="kw-2">&amp;</span>str| -&gt; <span class="prelude-ty">Result</span>&lt;OverlayHandle&gt; {
-            <span class="kw">let </span>overlay = mngr
-                .create_overlay(key, key)
-                .wrap_err(<span class="string">&quot;Failed to create overlay&quot;</span>)<span class="question-mark">?</span>;
-            mngr.set_curvature(overlay, <span class="number">1.</span>)
-                .wrap_err(<span class="string">&quot;Failed to set curvature&quot;</span>)<span class="question-mark">?</span>;
-            mngr.set_raw_data(overlay, <span class="kw-2">&amp;</span>[<span class="number">255u8</span>; <span class="number">4</span>], <span class="number">1</span>, <span class="number">1</span>, <span class="number">4</span>)
-                .wrap_err(<span class="string">&quot;Failed to set raw data&quot;</span>)<span class="question-mark">?</span>;
+		<span class="kw">let </span><span class="kw-2">mut </span>init_overlay = |key: <span class="kw-2">&amp;</span>str| -&gt; <span class="prelude-ty">Result</span>&lt;OverlayHandle&gt; {
+			<span class="kw">let </span>overlay = mngr
+				.create_overlay(key, key)
+				.wrap_err(<span class="string">&quot;Failed to create overlay&quot;</span>)<span class="question-mark">?</span>;
+			mngr.set_curvature(overlay, <span class="number">1.</span>)
+				.wrap_err(<span class="string">&quot;Failed to set curvature&quot;</span>)<span class="question-mark">?</span>;
+			mngr.set_raw_data(overlay, <span class="kw-2">&amp;</span>[<span class="number">255u8</span>; <span class="number">4</span>], <span class="number">1</span>, <span class="number">1</span>, <span class="number">4</span>)
+				.wrap_err(<span class="string">&quot;Failed to set raw data&quot;</span>)<span class="question-mark">?</span>;
 
-            <span class="prelude-val">Ok</span>(overlay)
-        };
+			<span class="prelude-val">Ok</span>(overlay)
+		};
 
-        <span class="kw">let </span>overlays = (init_overlay(<span class="kw-2">&amp;</span>keys.<span class="number">0</span>)<span class="question-mark">?</span>, init_overlay(<span class="kw-2">&amp;</span>keys.<span class="number">1</span>)<span class="question-mark">?</span>);
+		<span class="kw">let </span>overlays = (init_overlay(<span class="kw-2">&amp;</span>keys.<span class="number">0</span>)<span class="question-mark">?</span>, init_overlay(<span class="kw-2">&amp;</span>keys.<span class="number">1</span>)<span class="question-mark">?</span>);
 
-        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-            overlays,
-            iso: isometry,
-            radius,
-            length,
-            color,
-            is_visible: <span class="bool-val">false</span>,
-        })
-    }
+		<span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+			overlays,
+			iso: isometry,
+			radius,
+			length,
+			color,
+			is_visible: <span class="bool-val">false</span>,
+		})
+	}
 
-    <span class="kw">pub fn </span>update_render(<span class="kw-2">&amp;</span><span class="self">self</span>, mngr: <span class="kw-2">&amp;mut </span>OverlayManager&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="comment">// Set Color
-        </span>{
-            <span class="kw">fn </span>f(color: u8) -&gt; f32 {
-                color <span class="kw">as </span>f32 / <span class="number">255.
-            </span>}
-            <span class="kw">let </span>tint = ColorTint {
-                r: f(<span class="self">self</span>.color.r),
-                g: f(<span class="self">self</span>.color.g),
-                b: f(<span class="self">self</span>.color.b),
-                a: f(<span class="self">self</span>.color.a),
-            };
-            mngr.set_tint(<span class="self">self</span>.overlays.<span class="number">0</span>, tint)
-                .and_then(|<span class="kw">_</span>| mngr.set_tint(<span class="self">self</span>.overlays.<span class="number">1</span>, tint))
-                .wrap_err(<span class="string">&quot;Failed to set color&quot;</span>)<span class="question-mark">?</span>;
-        }
+	<span class="kw">pub fn </span>update_render(<span class="kw-2">&amp;</span><span class="self">self</span>, mngr: <span class="kw-2">&amp;mut </span>OverlayManager&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+		<span class="comment">// Set Color
+		</span>{
+			<span class="kw">fn </span>f(color: u8) -&gt; f32 {
+				color <span class="kw">as </span>f32 / <span class="number">255.
+			</span>}
+			<span class="kw">let </span>tint = ColorTint {
+				r: f(<span class="self">self</span>.color.r),
+				g: f(<span class="self">self</span>.color.g),
+				b: f(<span class="self">self</span>.color.b),
+				a: f(<span class="self">self</span>.color.a),
+			};
+			mngr.set_tint(<span class="self">self</span>.overlays.<span class="number">0</span>, tint)
+				.and_then(|<span class="kw">_</span>| mngr.set_tint(<span class="self">self</span>.overlays.<span class="number">1</span>, tint))
+				.wrap_err(<span class="string">&quot;Failed to set color&quot;</span>)<span class="question-mark">?</span>;
+		}
 
-        <span class="comment">// Set width and height
-        </span>{
-            <span class="kw">let </span><span class="kw-2">mut </span>f = |overlay| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-                mngr.set_width(overlay, <span class="self">self</span>.circumference())
-                    .wrap_err(<span class="string">&quot;Failed to set radius&quot;</span>)<span class="question-mark">?</span>;
-                <span class="kw">let </span>aspect = <span class="self">self</span>.circumference() / <span class="self">self</span>.length;
-                mngr.set_texel_aspect(overlay, aspect)
-                    .wrap_err(<span class="string">&quot;Failed to set texture aspect ratio&quot;</span>)<span class="question-mark">?</span>;
+		<span class="comment">// Set width and height
+		</span>{
+			<span class="kw">let </span><span class="kw-2">mut </span>f = |overlay| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+				mngr.set_width(overlay, <span class="self">self</span>.circumference())
+					.wrap_err(<span class="string">&quot;Failed to set radius&quot;</span>)<span class="question-mark">?</span>;
+				<span class="kw">let </span>aspect = <span class="self">self</span>.circumference() / <span class="self">self</span>.length;
+				mngr.set_texel_aspect(overlay, aspect)
+					.wrap_err(<span class="string">&quot;Failed to set texture aspect ratio&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(())
-            };
+				<span class="prelude-val">Ok</span>(())
+			};
 
-            f(<span class="self">self</span>.overlays.<span class="number">0</span>)<span class="question-mark">?</span>;
-            f(<span class="self">self</span>.overlays.<span class="number">1</span>)<span class="question-mark">?</span>;
-        }
+			f(<span class="self">self</span>.overlays.<span class="number">0</span>)<span class="question-mark">?</span>;
+			f(<span class="self">self</span>.overlays.<span class="number">1</span>)<span class="question-mark">?</span>;
+		}
 
-        mngr.set_visibility(<span class="self">self</span>.overlays.<span class="number">0</span>, <span class="self">self</span>.is_visible)
-            .and_then(|<span class="kw">_</span>| mngr.set_visibility(<span class="self">self</span>.overlays.<span class="number">1</span>, <span class="self">self</span>.is_visible))
-            .wrap_err(<span class="string">&quot;Failed to show overlay&quot;</span>)<span class="question-mark">?</span>;
+		mngr.set_visibility(<span class="self">self</span>.overlays.<span class="number">0</span>, <span class="self">self</span>.is_visible)
+			.and_then(|<span class="kw">_</span>| mngr.set_visibility(<span class="self">self</span>.overlays.<span class="number">1</span>, <span class="self">self</span>.is_visible))
+			.wrap_err(<span class="string">&quot;Failed to show overlay&quot;</span>)<span class="question-mark">?</span>;
 
-        <span class="comment">// Set transform
-        </span>{
-            <span class="comment">// Adjusts the rotation of `iso` to have only roll and not pitch, to avoid
-            // distortion due to the curvature that SteamVR causes. Also adjusts the
-            // translation to place the overlay in the center of the tube instead of
-            // the edge
-            </span><span class="kw">let </span><span class="kw-2">mut </span>f = |overlay, <span class="kw-2">mut </span>iso: Isometry, flip: f32| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-                <span class="comment">// Offset for skeleton debugging
-                // iso.translation *= Translation3::new(0., 0., -1.);
+		<span class="comment">// Set transform
+		</span>{
+			<span class="comment">// Adjusts the rotation of `iso` to have only roll and not pitch, to avoid
+			// distortion due to the curvature that SteamVR causes. Also adjusts the
+			// translation to place the overlay in the center of the tube instead of
+			// the edge
+			</span><span class="kw">let </span><span class="kw-2">mut </span>f = |overlay, <span class="kw-2">mut </span>iso: Isometry, flip: f32| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+				<span class="comment">// Offset for skeleton debugging
+				// iso.translation *= Translation3::new(0., 0., -1.);
 
-                // The direction the overlay&#39;s y axis points after the transform.
-                </span><span class="kw">let </span>y_direction = iso.rotation.transform_vector(<span class="kw-2">&amp;</span>Vector3::y_axis());
-                <span class="kw">let </span>transform = <span class="kw">if </span>y_direction == Vector3::y_axis().into_inner()
-                    || y_direction == -Vector3::y_axis().into_inner()
-                {
-                    <span class="comment">// just use the existing rotation, there won&#39;t be any distortion
-                    </span>iso.translation.vector += iso.rotation.transform_vector(
-                        <span class="kw-2">&amp;</span>Vector3::new(<span class="number">0.</span>, -<span class="self">self</span>.length / <span class="number">2.0</span>, -<span class="self">self</span>.radius),
-                    );
-                    iso.to_homogeneous().remove_fixed_rows::&lt;<span class="number">1</span>&gt;(<span class="number">3</span>)
-                } <span class="kw">else </span>{
-                    <span class="comment">// We can freely rotate around `y_direction`, but to avoid
-                    // distortion we want to have zero pitch, and only roll/yaw. A plane
-                    // with zero pitch would be the plane between two vectors - one
-                    // with the global y axis, and one with `y_direction`. Crossing
-                    // those two vectors gives us the normal of the plane, called
-                    // `z_direction`.
-                    </span><span class="kw">let </span>z_direction =
-                        flip * Vector3::&lt;f32&gt;::y_axis().cross(<span class="kw-2">&amp;</span>y_direction).normalize();
+				// The direction the overlay&#39;s y axis points after the transform.
+				</span><span class="kw">let </span>y_direction = iso.rotation.transform_vector(<span class="kw-2">&amp;</span>Vector3::y_axis());
+				<span class="kw">let </span>transform = <span class="kw">if </span>y_direction == Vector3::y_axis().into_inner()
+					|| y_direction == -Vector3::y_axis().into_inner()
+				{
+					<span class="comment">// just use the existing rotation, there won&#39;t be any distortion
+					</span>iso.translation.vector += iso.rotation.transform_vector(
+						<span class="kw-2">&amp;</span>Vector3::new(<span class="number">0.</span>, -<span class="self">self</span>.length / <span class="number">2.0</span>, -<span class="self">self</span>.radius),
+					);
+					iso.to_homogeneous().remove_fixed_rows::&lt;<span class="number">1</span>&gt;(<span class="number">3</span>)
+				} <span class="kw">else </span>{
+					<span class="comment">// We can freely rotate around `y_direction`, but to avoid
+					// distortion we want to have zero pitch, and only roll/yaw. A plane
+					// with zero pitch would be the plane between two vectors - one
+					// with the global y axis, and one with `y_direction`. Crossing
+					// those two vectors gives us the normal of the plane, called
+					// `z_direction`.
+					</span><span class="kw">let </span>z_direction =
+						flip * Vector3::&lt;f32&gt;::y_axis().cross(<span class="kw-2">&amp;</span>y_direction).normalize();
 
-                    <span class="comment">// Now that we have the y direction and the z direction, we can
-                    // form the rotation corresponding to this orientation.
-                    </span>iso.rotation =
-                        UnitQuaternion::face_towards(<span class="kw-2">&amp;</span>z_direction, <span class="kw-2">&amp;</span>y_direction);
-                    <span class="comment">// let x_basis = y_basis.cross(&amp;z_basis).normalize();
+					<span class="comment">// Now that we have the y direction and the z direction, we can
+					// form the rotation corresponding to this orientation.
+					</span>iso.rotation =
+						UnitQuaternion::face_towards(<span class="kw-2">&amp;</span>z_direction, <span class="kw-2">&amp;</span>y_direction);
+					<span class="comment">// let x_basis = y_basis.cross(&amp;z_basis).normalize();
 
-                    // Fixes the &quot;center of tube&quot; issue and the &quot;center of overlay&quot;
-                    // issue
-                    </span>iso.translation.vector += z_direction * -<span class="self">self</span>.radius;
-                    iso.translation.vector -= y_direction * <span class="self">self</span>.length / <span class="number">2.0</span>;
+					// Fixes the &quot;center of tube&quot; issue and the &quot;center of overlay&quot;
+					// issue
+					</span>iso.translation.vector += z_direction * -<span class="self">self</span>.radius;
+					iso.translation.vector -= y_direction * <span class="self">self</span>.length / <span class="number">2.0</span>;
 
-                    iso.to_homogeneous().remove_fixed_rows::&lt;<span class="number">1</span>&gt;(<span class="number">3</span>)
-                };
+					iso.to_homogeneous().remove_fixed_rows::&lt;<span class="number">1</span>&gt;(<span class="number">3</span>)
+				};
 
-                <span class="kw">let </span>col_major_3x4 = Matrix3x4::from(<span class="kw-2">&amp;</span>transform);
-                mngr.set_transform_absolute(
-                    overlay,
-                    TrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated,
-                    <span class="kw-2">&amp;</span>col_major_3x4,
-                )
-                .wrap_err(<span class="string">&quot;Failed to set transform&quot;</span>)<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(())
-            };
+				<span class="kw">let </span>col_major_3x4 = Matrix3x4::from(<span class="kw-2">&amp;</span>transform);
+				mngr.set_transform_absolute(
+					overlay,
+					TrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated,
+					<span class="kw-2">&amp;</span>col_major_3x4,
+				)
+				.wrap_err(<span class="string">&quot;Failed to set transform&quot;</span>)<span class="question-mark">?</span>;
+				<span class="prelude-val">Ok</span>(())
+			};
 
-            <span class="kw">let </span>flipped = {
-                <span class="kw">let </span><span class="kw-2">mut </span>rotation = UnitQuaternion::from_axis_angle(
-                    <span class="kw-2">&amp;</span>Vector3::y_axis(),
-                    std::f32::consts::PI,
-                );
-                rotation = <span class="self">self</span>.iso.rotation * rotation;
-                Isometry3 {
-                    rotation,
-                    translation: <span class="self">self</span>.iso.translation,
-                }
-            };
+			<span class="kw">let </span>flipped = {
+				<span class="kw">let </span><span class="kw-2">mut </span>rotation = UnitQuaternion::from_axis_angle(
+					<span class="kw-2">&amp;</span>Vector3::y_axis(),
+					std::f32::consts::PI,
+				);
+				rotation = <span class="self">self</span>.iso.rotation * rotation;
+				Isometry3 {
+					rotation,
+					translation: <span class="self">self</span>.iso.translation,
+				}
+			};
 
-            f(<span class="self">self</span>.overlays.<span class="number">0</span>, <span class="self">self</span>.iso, <span class="number">1.0</span>)<span class="question-mark">?</span>;
-            f(<span class="self">self</span>.overlays.<span class="number">1</span>, flipped, -<span class="number">1.0</span>)<span class="question-mark">?</span>;
-        }
+			f(<span class="self">self</span>.overlays.<span class="number">0</span>, <span class="self">self</span>.iso, <span class="number">1.0</span>)<span class="question-mark">?</span>;
+			f(<span class="self">self</span>.overlays.<span class="number">1</span>, flipped, -<span class="number">1.0</span>)<span class="question-mark">?</span>;
+		}
 
-        <span class="prelude-val">Ok</span>(())
-    }
+		<span class="prelude-val">Ok</span>(())
+	}
 
-    <span class="kw">pub fn </span>set_isometry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, isometry: Isometry) {
-        <span class="self">self</span>.iso = isometry;
-    }
+	<span class="kw">pub fn </span>set_isometry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, isometry: Isometry) {
+		<span class="self">self</span>.iso = isometry;
+	}
 
-    <span class="kw">pub fn </span>set_length(<span class="kw-2">&amp;mut </span><span class="self">self</span>, length: f32) {
-        <span class="macro">assert!</span>(length &gt;= <span class="number">0.</span>, <span class="string">&quot;Length must be positive&quot;</span>);
-        <span class="self">self</span>.length = length;
-    }
+	<span class="kw">pub fn </span>set_length(<span class="kw-2">&amp;mut </span><span class="self">self</span>, length: f32) {
+		<span class="macro">assert!</span>(length &gt;= <span class="number">0.</span>, <span class="string">&quot;Length must be positive&quot;</span>);
+		<span class="self">self</span>.length = length;
+	}
 
-    <span class="kw">pub fn </span>set_radius(<span class="kw-2">&amp;mut </span><span class="self">self</span>, radius: f32) {
-        <span class="self">self</span>.radius = radius;
-    }
+	<span class="kw">pub fn </span>set_radius(<span class="kw-2">&amp;mut </span><span class="self">self</span>, radius: f32) {
+		<span class="self">self</span>.radius = radius;
+	}
 
-    <span class="kw">pub fn </span>circumference(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
-        <span class="number">2. </span>* std::f32::consts::PI * <span class="self">self</span>.radius
-    }
+	<span class="kw">pub fn </span>circumference(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f32 {
+		<span class="number">2. </span>* std::f32::consts::PI * <span class="self">self</span>.radius
+	}
 
-    <span class="kw">pub fn </span>set_visibility(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is_visible: bool) {
-        <span class="self">self</span>.is_visible = is_visible;
-    }
+	<span class="kw">pub fn </span>set_visibility(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is_visible: bool) {
+		<span class="self">self</span>.is_visible = is_visible;
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

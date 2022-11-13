@@ -167,148 +167,148 @@
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>tempfile::tempdir;
 <span class="kw">use </span>tokio::{
-    fs::{File, OpenOptions},
-    io::AsyncWriteExt,
-    task::JoinHandle,
+	fs::{File, OpenOptions},
+	io::AsyncWriteExt,
+	task::JoinHandle,
 };
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>VERSIONING_URL: Url = Url::parse(
-        <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/autoupdater-latest/versioning.json&quot;
-    </span>).unwrap();
+	<span class="kw">static </span><span class="kw-2">ref </span>VERSIONING_URL: Url = Url::parse(
+		<span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Overlay/releases/download/autoupdater-latest/versioning.json&quot;
+	</span>).unwrap();
 }
 
 <span class="attribute">#[derive(Parser)]
 </span><span class="kw">struct </span>Args {
-    <span class="doccomment">/// The url to fetch the versioning.yaml from.
-    </span><span class="attribute">#[clap(long, default_value_t = VERSIONING_URL.clone())]
-    </span>url: Url,
-    <span class="attribute">#[clap(long)]
-    </span><span class="doccomment">/// The path to a versioning.yaml file, to use instead of the URL.
-    </span>path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+	<span class="doccomment">/// The url to fetch the versioning.yaml from.
+	</span><span class="attribute">#[clap(long, default_value_t = VERSIONING_URL.clone())]
+	</span>url: Url,
+	<span class="attribute">#[clap(long)]
+	</span><span class="doccomment">/// The path to a versioning.yaml file, to use instead of the URL.
+	</span>path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
 }
 
 <span class="doccomment">/// Helper macro to unpack Option&lt;T&gt; and continue with a helpful error if None.
 </span><span class="macro">macro_rules! </span>try_get {
-    (<span class="macro-nonterminal">$arg</span>:expr) =&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="macro-nonterminal">$arg </span>{
-            v
-        } <span class="kw">else </span>{
-            <span class="macro">println!</span>(<span class="string">&quot;Component not supported on this platform. Skipping.&quot;</span>);
-            <span class="kw">continue</span>;
-        }
-    };
+	(<span class="macro-nonterminal">$arg</span>:expr) =&gt; {
+		<span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="macro-nonterminal">$arg </span>{
+			v
+		} <span class="kw">else </span>{
+			<span class="macro">println!</span>(<span class="string">&quot;Component not supported on this platform. Skipping.&quot;</span>);
+			<span class="kw">continue</span>;
+		}
+	};
 }
 
 <span class="attribute">#[tokio::main]
 </span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>args = Args::parse();
-    color_eyre::install()<span class="question-mark">?</span>; <span class="comment">// pwetty errors UwU 👉👈
+	<span class="kw">let </span>args = Args::parse();
+	color_eyre::install()<span class="question-mark">?</span>; <span class="comment">// pwetty errors UwU 👉👈
 
-    // Read yaml file from url or path
-    </span><span class="kw">let </span>versioning = <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = args.path {
-        std::fs::read_to_string(p)
-            .wrap_err(<span class="string">&quot;Failed to read versioning.yaml from file&quot;</span>)<span class="question-mark">?
-    </span>} <span class="kw">else </span>{
-        reqwest::get(args.url.clone())
-            .<span class="kw">await
-            </span>.wrap_err_with(<span class="kw">move </span>|| {
-                <span class="macro">format!</span>(
-                    <span class="string">&quot;Failed to download `versioning.json` from URL: {}&quot;</span>,
-                    <span class="kw-2">&amp;</span>args.url
-                )
-            })<span class="question-mark">?
-            </span>.text()
-            .<span class="kw">await
-            </span>.wrap_err(<span class="string">&quot;Failed to decode response body&quot;</span>)<span class="question-mark">?
-    </span>};
+	// Read yaml file from url or path
+	</span><span class="kw">let </span>versioning = <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = args.path {
+		std::fs::read_to_string(p)
+			.wrap_err(<span class="string">&quot;Failed to read versioning.yaml from file&quot;</span>)<span class="question-mark">?
+	</span>} <span class="kw">else </span>{
+		reqwest::get(args.url.clone())
+			.<span class="kw">await
+			</span>.wrap_err_with(<span class="kw">move </span>|| {
+				<span class="macro">format!</span>(
+					<span class="string">&quot;Failed to download `versioning.json` from URL: {}&quot;</span>,
+					<span class="kw-2">&amp;</span>args.url
+				)
+			})<span class="question-mark">?
+			</span>.text()
+			.<span class="kw">await
+			</span>.wrap_err(<span class="string">&quot;Failed to decode response body&quot;</span>)<span class="question-mark">?
+	</span>};
 
-    <span class="comment">// Parse/deserialize yaml
-    </span><span class="kw">let </span>components: Components =
-        serde_yaml::from_str(<span class="kw-2">&amp;</span>versioning).wrap_err_with(|| {
-            <span class="macro">format!</span>(<span class="string">&quot;Could not deserialize YAML, whose contents was:\n{versioning}&quot;</span>)
-        })<span class="question-mark">?</span>;
+	<span class="comment">// Parse/deserialize yaml
+	</span><span class="kw">let </span>components: Components =
+		serde_yaml::from_str(<span class="kw-2">&amp;</span>versioning).wrap_err_with(|| {
+			<span class="macro">format!</span>(<span class="string">&quot;Could not deserialize YAML, whose contents was:\n{versioning}&quot;</span>)
+		})<span class="question-mark">?</span>;
 
-    <span class="comment">// We will delete the temporary dir upon drop.
-    </span><span class="kw">let </span>tmp_dir = tempdir().wrap_err(<span class="string">&quot;Failed to create temporary directory&quot;</span>)<span class="question-mark">?</span>;
+	<span class="comment">// We will delete the temporary dir upon drop.
+	</span><span class="kw">let </span>tmp_dir = tempdir().wrap_err(<span class="string">&quot;Failed to create temporary directory&quot;</span>)<span class="question-mark">?</span>;
 
-    <span class="comment">// Download each component, storing the async tasks in `download_tasks`
-    </span><span class="kw">let </span><span class="kw-2">mut </span>download_tasks = Vec::new();
-    <span class="kw">for </span>(comp_name, comp_info) <span class="kw">in </span>components.<span class="number">0</span>.into_iter() {
-        <span class="macro">println!</span>(<span class="string">&quot;Downloading component: {comp_name}...&quot;</span>);
-        <span class="kw">let </span>url = <span class="macro">try_get!</span>(comp_info.download_url.get_owned());
-        <span class="kw">let </span>install_path = <span class="macro">try_get!</span>(comp_info.install_dir.get_owned());
+	<span class="comment">// Download each component, storing the async tasks in `download_tasks`
+	</span><span class="kw">let </span><span class="kw-2">mut </span>download_tasks = Vec::new();
+	<span class="kw">for </span>(comp_name, comp_info) <span class="kw">in </span>components.<span class="number">0</span>.into_iter() {
+		<span class="macro">println!</span>(<span class="string">&quot;Downloading component: {comp_name}...&quot;</span>);
+		<span class="kw">let </span>url = <span class="macro">try_get!</span>(comp_info.download_url.get_owned());
+		<span class="kw">let </span>install_path = <span class="macro">try_get!</span>(comp_info.install_dir.get_owned());
 
-        <span class="kw">let </span><span class="kw-2">mut </span>response = reqwest::get(url.clone()).<span class="kw">await</span>.wrap_err_with(|| {
-            <span class="macro">format!</span>(<span class="string">&quot;Failed to download `{comp_name}` from URL: {url}&quot;</span>)
-        })<span class="question-mark">?</span>;
+		<span class="kw">let </span><span class="kw-2">mut </span>response = reqwest::get(url.clone()).<span class="kw">await</span>.wrap_err_with(|| {
+			<span class="macro">format!</span>(<span class="string">&quot;Failed to download `{comp_name}` from URL: {url}&quot;</span>)
+		})<span class="question-mark">?</span>;
 
-        <span class="comment">// TODO: This should use snake_case names since that is what the components in the
-        // file use.
-        </span><span class="kw">let </span>filename = url
-            .path_segments()
-            .map_or(comp_name.to_string(), |v| v.last().unwrap().to_string());
-        <span class="kw">let </span>download_path = tmp_dir.path().join(filename);
-        <span class="kw">let </span><span class="kw-2">mut </span>download_file = File::create(<span class="kw-2">&amp;</span>download_path)
-            .<span class="kw">await
-            </span>.wrap_err(<span class="string">&quot;Failed to create temporary file&quot;</span>)<span class="question-mark">?</span>;
+		<span class="comment">// TODO: This should use snake_case names since that is what the components in the
+		// file use.
+		</span><span class="kw">let </span>filename = url
+			.path_segments()
+			.map_or(comp_name.to_string(), |v| v.last().unwrap().to_string());
+		<span class="kw">let </span>download_path = tmp_dir.path().join(filename);
+		<span class="kw">let </span><span class="kw-2">mut </span>download_file = File::create(<span class="kw-2">&amp;</span>download_path)
+			.<span class="kw">await
+			</span>.wrap_err(<span class="string">&quot;Failed to create temporary file&quot;</span>)<span class="question-mark">?</span>;
 
-        <span class="comment">// We spawn a task so that the file can be downloaded concurrently
-        </span><span class="kw">let </span>task: JoinHandle&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>&gt;&gt; = tokio::spawn(<span class="kw">async move </span>{
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>b) = response
-                .chunk()
-                .<span class="kw">await
-                </span>.wrap_err(<span class="string">&quot;error while slurping chunks&quot;</span>)<span class="question-mark">?
-            </span>{
-                download_file
-                    .write_all_buf(<span class="kw-2">&amp;mut </span>b)
-                    .<span class="kw">await
-                    </span>.wrap_err(<span class="string">&quot;Error while writing to file&quot;</span>)<span class="question-mark">?
-            </span>}
-            <span class="prelude-val">Ok</span>((download_file, download_path, install_path.to_path()<span class="question-mark">?</span>))
-        });
-        download_tasks.push(task);
-    }
+		<span class="comment">// We spawn a task so that the file can be downloaded concurrently
+		</span><span class="kw">let </span>task: JoinHandle&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>&gt;&gt; = tokio::spawn(<span class="kw">async move </span>{
+			<span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>b) = response
+				.chunk()
+				.<span class="kw">await
+				</span>.wrap_err(<span class="string">&quot;error while slurping chunks&quot;</span>)<span class="question-mark">?
+			</span>{
+				download_file
+					.write_all_buf(<span class="kw-2">&amp;mut </span>b)
+					.<span class="kw">await
+					</span>.wrap_err(<span class="string">&quot;Error while writing to file&quot;</span>)<span class="question-mark">?
+			</span>}
+			<span class="prelude-val">Ok</span>((download_file, download_path, install_path.to_path()<span class="question-mark">?</span>))
+		});
+		download_tasks.push(task);
+	}
 
-    <span class="comment">// Check that all components downloaded successfully
-    </span><span class="kw">let </span>downloads: <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = join_all(download_tasks)
-        .<span class="kw">await
-        </span>.into_iter()
-        .map(|t| {
-            <span class="prelude-val">Ok</span>(t.wrap_err(<span class="string">&quot;couldn&#39;t join task&quot;</span>)<span class="question-mark">?
-                </span>.wrap_err(<span class="string">&quot;failed download of component&quot;</span>)<span class="question-mark">?</span>)
-        })
-        .collect();
-    <span class="kw">let </span>downloads = downloads<span class="question-mark">?</span>;
+	<span class="comment">// Check that all components downloaded successfully
+	</span><span class="kw">let </span>downloads: <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = join_all(download_tasks)
+		.<span class="kw">await
+		</span>.into_iter()
+		.map(|t| {
+			<span class="prelude-val">Ok</span>(t.wrap_err(<span class="string">&quot;couldn&#39;t join task&quot;</span>)<span class="question-mark">?
+				</span>.wrap_err(<span class="string">&quot;failed download of component&quot;</span>)<span class="question-mark">?</span>)
+		})
+		.collect();
+	<span class="kw">let </span>downloads = downloads<span class="question-mark">?</span>;
 
-    <span class="comment">// Check that all files are writeable *before* attempting to move.
-    </span>join_all(downloads.iter().map(|(<span class="kw">_</span>, <span class="kw">_</span>, install_path)| <span class="kw">async move </span>{
-        OpenOptions::new()
-            .create(<span class="bool-val">true</span>)
-            .write(<span class="bool-val">true</span>)
-            .open(install_path)
-            .<span class="kw">await
-            </span>.wrap_err_with(|| <span class="macro">format!</span>(<span class="string">&quot;{install_path:?} was not writeable&quot;</span>))
-    }))
-    .<span class="kw">await
-    </span>.into_iter()
-    .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>; <span class="comment">// returns if errors
+	<span class="comment">// Check that all files are writeable *before* attempting to move.
+	</span>join_all(downloads.iter().map(|(<span class="kw">_</span>, <span class="kw">_</span>, install_path)| <span class="kw">async move </span>{
+		OpenOptions::new()
+			.create(<span class="bool-val">true</span>)
+			.write(<span class="bool-val">true</span>)
+			.open(install_path)
+			.<span class="kw">await
+			</span>.wrap_err_with(|| <span class="macro">format!</span>(<span class="string">&quot;{install_path:?} was not writeable&quot;</span>))
+	}))
+	.<span class="kw">await
+	</span>.into_iter()
+	.collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>; <span class="comment">// returns if errors
 
-    // Move all the components to overwrite the old ones.
-    // This is suceptible to race conditions after the writable check, but its fine 😅
-    </span><span class="kw">for </span>(download_file, download_path, <span class="kw-2">ref </span>install_path) <span class="kw">in </span>downloads {
-        drop(download_file);
-        <span class="comment">// Truncates if the file already exists.
-        </span>tokio::fs::rename(download_path, install_path)
-            .<span class="kw">await
-            </span>.wrap_err_with(|| {
-                <span class="macro">format!</span>(<span class="string">&quot;Failed to move temporary file to {install_path:?}&quot;</span>)
-            })<span class="question-mark">?</span>;
-    }
+	// Move all the components to overwrite the old ones.
+	// This is suceptible to race conditions after the writable check, but its fine 😅
+	</span><span class="kw">for </span>(download_file, download_path, <span class="kw-2">ref </span>install_path) <span class="kw">in </span>downloads {
+		drop(download_file);
+		<span class="comment">// Truncates if the file already exists.
+		</span>tokio::fs::rename(download_path, install_path)
+			.<span class="kw">await
+			</span>.wrap_err_with(|| {
+				<span class="macro">format!</span>(<span class="string">&quot;Failed to move temporary file to {install_path:?}&quot;</span>)
+			})<span class="question-mark">?</span>;
+	}
 
-    <span class="macro">println!</span>(<span class="string">&quot;Press enter to quit...&quot;</span>);
-    std::io::stdin().read_line(<span class="kw-2">&amp;mut </span>String::new()).unwrap();
-    <span class="prelude-val">Ok</span>(())
+	<span class="macro">println!</span>(<span class="string">&quot;Press enter to quit...&quot;</span>);
+	std::io::stdin().read_line(<span class="kw-2">&amp;mut </span>String::new()).unwrap();
+	<span class="prelude-val">Ok</span>(())
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="autoupdater" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

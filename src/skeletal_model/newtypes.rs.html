@@ -45,13 +45,13 @@
 
 <span class="doccomment">/// Implements `From&lt;T&gt; for $ident&lt;T&gt;`
 </span><span class="macro">macro_rules! </span>impl_helper {
-    (<span class="macro-nonterminal">$ident</span>:ident) =&gt; {
-        <span class="kw">impl</span>&lt;T: private::Sealed&gt; From&lt;T&gt; <span class="kw">for </span><span class="macro-nonterminal">$ident</span>&lt;T&gt; {
-            <span class="kw">fn </span>from(other: T) -&gt; <span class="self">Self </span>{
-                <span class="self">Self</span>(other)
-            }
-        }
-    };
+	(<span class="macro-nonterminal">$ident</span>:ident) =&gt; {
+		<span class="kw">impl</span>&lt;T: private::Sealed&gt; From&lt;T&gt; <span class="kw">for </span><span class="macro-nonterminal">$ident</span>&lt;T&gt; {
+			<span class="kw">fn </span>from(other: T) -&gt; <span class="self">Self </span>{
+				<span class="self">Self</span>(other)
+			}
+		}
+	};
 }
 <span class="macro">impl_helper!</span>(Global);
 <span class="macro">impl_helper!</span>(Local);
@@ -61,16 +61,16 @@
 </span><span class="kw">pub struct </span>Local&lt;T: private::Sealed&gt;(<span class="kw">pub </span>T);
 
 <span class="kw">mod </span>private {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="doccomment">/// Private helper trait to limit the types that can go in [`Global`] or [`Local`].
-    ///
-    /// For more info about this pattern, see
-    /// [here](https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed)
-    </span><span class="kw">pub trait </span>Sealed {}
-    <span class="kw">impl </span>Sealed <span class="kw">for </span>Translation {}
-    <span class="kw">impl </span>Sealed <span class="kw">for </span>UnitQuat {}
-    <span class="kw">impl </span>Sealed <span class="kw">for </span>Point {}
+	<span class="doccomment">/// Private helper trait to limit the types that can go in [`Global`] or [`Local`].
+	///
+	/// For more info about this pattern, see
+	/// [here](https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed)
+	</span><span class="kw">pub trait </span>Sealed {}
+	<span class="kw">impl </span>Sealed <span class="kw">for </span>Translation {}
+	<span class="kw">impl </span>Sealed <span class="kw">for </span>UnitQuat {}
+	<span class="kw">impl </span>Sealed <span class="kw">for </span>Point {}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

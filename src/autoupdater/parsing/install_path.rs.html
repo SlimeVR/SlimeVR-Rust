@@ -47,8 +47,8 @@
 <span id="47">47</span>
 <span id="48">48</span>
 </pre><pre class="rust"><code><span class="kw">use </span>color_eyre::{
-    eyre::{ContextCompat, WrapErr},
-    <span class="prelude-ty">Result</span>,
+	eyre::{ContextCompat, WrapErr},
+	<span class="prelude-ty">Result</span>,
 };
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>path_absolutize::Absolutize;
@@ -58,8 +58,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::parsing::MCP;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>SLIME_DIR: MCP&lt;PathBuf&gt; = MCP::Cross(PathBuf::from(<span class="string">&quot;todo&quot;</span>));
-    <span class="kw">static </span><span class="kw-2">ref </span>STEAM_DIR: MCP&lt;PathBuf&gt; = MCP::Cross(PathBuf::from(<span class="string">&quot;todo&quot;</span>));
+	<span class="kw">static </span><span class="kw-2">ref </span>SLIME_DIR: MCP&lt;PathBuf&gt; = MCP::Cross(PathBuf::from(<span class="string">&quot;todo&quot;</span>));
+	<span class="kw">static </span><span class="kw-2">ref </span>STEAM_DIR: MCP&lt;PathBuf&gt; = MCP::Cross(PathBuf::from(<span class="string">&quot;todo&quot;</span>));
 }
 
 <span class="doccomment">/// The location to install a component.
@@ -68,31 +68,31 @@
 </span><span class="attribute">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
 </span><span class="kw">pub enum </span>InstallPath {
-    <span class="doccomment">/// Just a regular path
-    </span>Normal(PathBuf),
-    <span class="doccomment">/// A path relative to the SlimeVR installation dir
-    </span>RelativeToSlime(PathBuf),
-    <span class="doccomment">/// A path relative to the SteamVR installation dir
-    </span>RelativeToSteam(PathBuf),
+	<span class="doccomment">/// Just a regular path
+	</span>Normal(PathBuf),
+	<span class="doccomment">/// A path relative to the SlimeVR installation dir
+	</span>RelativeToSlime(PathBuf),
+	<span class="doccomment">/// A path relative to the SteamVR installation dir
+	</span>RelativeToSteam(PathBuf),
 }
 <span class="kw">impl </span>InstallPath {
-    <span class="doccomment">/// Converts to the full absolute path of the file
-    </span><span class="kw">pub fn </span>to_path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;PathBuf&gt; {
-        <span class="kw">let </span>p = <span class="kw">match </span><span class="self">self </span>{
-            InstallPath::Normal(p) =&gt; p.to_owned(),
-            InstallPath::RelativeToSlime(p) =&gt; SLIME_DIR
-                .get()
-                .wrap_err(<span class="string">&quot;No slime install directory for current platform&quot;</span>)<span class="question-mark">?
-                </span>.join(p),
-            InstallPath::RelativeToSteam(p) =&gt; STEAM_DIR
-                .get()
-                .wrap_err(<span class="string">&quot;No steam install directory for current platform&quot;</span>)<span class="question-mark">?
-                </span>.join(p),
-        };
-        p.absolutize()
-            .map(|p| p.to_path_buf())
-            .wrap_err(<span class="string">&quot;Failed to canonicalize install path&quot;</span>)
-    }
+	<span class="doccomment">/// Converts to the full absolute path of the file
+	</span><span class="kw">pub fn </span>to_path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;PathBuf&gt; {
+		<span class="kw">let </span>p = <span class="kw">match </span><span class="self">self </span>{
+			InstallPath::Normal(p) =&gt; p.to_owned(),
+			InstallPath::RelativeToSlime(p) =&gt; SLIME_DIR
+				.get()
+				.wrap_err(<span class="string">&quot;No slime install directory for current platform&quot;</span>)<span class="question-mark">?
+				</span>.join(p),
+			InstallPath::RelativeToSteam(p) =&gt; STEAM_DIR
+				.get()
+				.wrap_err(<span class="string">&quot;No steam install directory for current platform&quot;</span>)<span class="question-mark">?
+				</span>.join(p),
+		};
+		p.absolutize()
+			.map(|p| p.to_path_buf())
+			.wrap_err(<span class="string">&quot;Failed to canonicalize install path&quot;</span>)
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="autoupdater" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

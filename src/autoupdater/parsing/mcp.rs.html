@@ -52,33 +52,33 @@
 </span><span class="attribute">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, From)]
 #[serde(untagged)]
 </span><span class="kw">pub enum </span>MaybeCrossPlatform&lt;T&gt; {
-    <span class="doccomment">/// This `T` is the same across all platforms.
-    </span>Cross(T),
-    <span class="doccomment">/// This `T` depends on the `Platform`
-    </span>NotCross(HashMap&lt;Platform, T&gt;),
+	<span class="doccomment">/// This `T` is the same across all platforms.
+	</span>Cross(T),
+	<span class="doccomment">/// This `T` depends on the `Platform`
+	</span>NotCross(HashMap&lt;Platform, T&gt;),
 }
 <span class="kw">impl</span>&lt;T&gt; MaybeCrossPlatform&lt;T&gt; {
-    <span class="doccomment">/// Gets the `T` for the current platform.
-    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
-            MaybeCrossPlatform::NotCross(map) =&gt; map.get(Platform::current()),
-        }
-    }
+	<span class="doccomment">/// Gets the `T` for the current platform.
+	</span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
+		<span class="kw">match </span><span class="self">self </span>{
+			MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
+			MaybeCrossPlatform::NotCross(map) =&gt; map.get(Platform::current()),
+		}
+	}
 
-    <span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>T&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
-            MaybeCrossPlatform::NotCross(map) =&gt; map.get_mut(Platform::current()),
-        }
-    }
+	<span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>T&gt; {
+		<span class="kw">match </span><span class="self">self </span>{
+			MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
+			MaybeCrossPlatform::NotCross(map) =&gt; map.get_mut(Platform::current()),
+		}
+	}
 
-    <span class="kw">pub fn </span>get_owned(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
-            MaybeCrossPlatform::NotCross(<span class="kw-2">mut </span>map) =&gt; map.remove(Platform::current()),
-        }
-    }
+	<span class="kw">pub fn </span>get_owned(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+		<span class="kw">match </span><span class="self">self </span>{
+			MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
+			MaybeCrossPlatform::NotCross(<span class="kw-2">mut </span>map) =&gt; map.remove(Platform::current()),
+		}
+	}
 }
 <span class="doccomment">/// Type alias so we don&#39;t have long ass names
 </span><span class="kw">pub type </span>MCP&lt;T&gt; = MaybeCrossPlatform&lt;T&gt;;

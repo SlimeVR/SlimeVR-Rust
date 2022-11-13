@@ -197,74 +197,74 @@
 </span><span class="attribute">#[derive(Debug, Default, Clone, Copy, From, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>BoneMap&lt;T&gt;([T; BoneKind::num_types()]);
 <span class="kw">impl</span>&lt;T&gt; BoneMap&lt;T&gt; {
-    <span class="kw">pub fn </span>new(map: [T; BoneKind::num_types()]) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(map)
-    }
+	<span class="kw">pub fn </span>new(map: [T; BoneKind::num_types()]) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>(map)
+	}
 
-    <span class="doccomment">/// Gets an iterator over the (key, value) pairs of the `BoneMap`.
-    ///
-    /// Iteration is guaranteed to start at [`BoneKind::root()`] but beyond that,
-    /// iteration order is not guaranteed. However, iteration *is* exhaustive over
-    /// the various kinds of bones.
-    </span><span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Iter&lt;<span class="lifetime">&#39;_</span>, T&gt; {
-        <span class="self">self</span>.into_iter()
-    }
+	<span class="doccomment">/// Gets an iterator over the (key, value) pairs of the `BoneMap`.
+	///
+	/// Iteration is guaranteed to start at [`BoneKind::root()`] but beyond that,
+	/// iteration order is not guaranteed. However, iteration *is* exhaustive over
+	/// the various kinds of bones.
+	</span><span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Iter&lt;<span class="lifetime">&#39;_</span>, T&gt; {
+		<span class="self">self</span>.into_iter()
+	}
 
-    <span class="doccomment">/// Gets a mutable iterator over the `(key, value)` pairs of the `BoneMap`.
-    ///
-    /// See also: [`Self::iter()`]
-    </span><span class="kw">pub fn </span>iter_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; IterMut&lt;<span class="lifetime">&#39;_</span>, T&gt; {
-        <span class="self">self</span>.into_iter()
-    }
+	<span class="doccomment">/// Gets a mutable iterator over the `(key, value)` pairs of the `BoneMap`.
+	///
+	/// See also: [`Self::iter()`]
+	</span><span class="kw">pub fn </span>iter_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; IterMut&lt;<span class="lifetime">&#39;_</span>, T&gt; {
+		<span class="self">self</span>.into_iter()
+	}
 
-    <span class="doccomment">/// Applies a function to each element of the `BoneMap`, mapping it from `T` to `U`.
-    </span><span class="kw">pub fn </span>map&lt;U&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(BoneKind, T) -&gt; U) -&gt; BoneMap&lt;U&gt; {
-        <span class="kw">let </span>it = <span class="self">self</span>.into_iter().map(|(kind, item)| (kind, f(kind, item)));
-        it.try_collect().unwrap()
-    }
+	<span class="doccomment">/// Applies a function to each element of the `BoneMap`, mapping it from `T` to `U`.
+	</span><span class="kw">pub fn </span>map&lt;U&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(BoneKind, T) -&gt; U) -&gt; BoneMap&lt;U&gt; {
+		<span class="kw">let </span>it = <span class="self">self</span>.into_iter().map(|(kind, item)| (kind, f(kind, item)));
+		it.try_collect().unwrap()
+	}
 }
 
 <span class="comment">// ---- Type conversion stuff ----
 </span><span class="kw">impl</span>&lt;T&gt; TryFrom&lt;HashMap&lt;BoneKind, T&gt;&gt; <span class="kw">for </span>BoneMap&lt;T&gt; {
-    <span class="kw">type </span>Error = IncompleteArrayError;
+	<span class="kw">type </span>Error = IncompleteArrayError;
 
-    <span class="kw">fn </span>try_from(other: HashMap&lt;BoneKind, T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        other.into_iter().try_collect()
-    }
+	<span class="kw">fn </span>try_from(other: HashMap&lt;BoneKind, T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+		other.into_iter().try_collect()
+	}
 }
 
 <span class="kw">impl</span>&lt;T&gt; TryFromIterator&lt;(BoneKind, T)&gt; <span class="kw">for </span>BoneMap&lt;T&gt; {
-    <span class="kw">type </span>Error = IncompleteArrayError;
+	<span class="kw">type </span>Error = IncompleteArrayError;
 
-    <span class="kw">fn </span>try_from_iter&lt;I&gt;(iter: I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt;
-    <span class="kw">where
-        </span>I: IntoIterator&lt;Item = (BoneKind, T)&gt;,
-    {
-        <span class="kw">let </span><span class="kw-2">mut </span>bmap: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt; = BoneMap::default();
-        <span class="kw">for </span>(kind, item) <span class="kw">in </span>iter.into_iter().take(BoneKind::NUM_TYPES) {
-            bmap[kind] = <span class="prelude-val">Some</span>(item);
-        }
-        <span class="kw">if </span>bmap.iter().any(|(_kind, item)| item.is_none()) {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(IncompleteArrayError);
-        }
-        <span class="prelude-val">Ok</span>(BoneMap::new(bmap.<span class="number">0</span>.map(|item| item.unwrap())))
-    }
+	<span class="kw">fn </span>try_from_iter&lt;I&gt;(iter: I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt;
+	<span class="kw">where
+		</span>I: IntoIterator&lt;Item = (BoneKind, T)&gt;,
+	{
+		<span class="kw">let </span><span class="kw-2">mut </span>bmap: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt; = BoneMap::default();
+		<span class="kw">for </span>(kind, item) <span class="kw">in </span>iter.into_iter().take(BoneKind::NUM_TYPES) {
+			bmap[kind] = <span class="prelude-val">Some</span>(item);
+		}
+		<span class="kw">if </span>bmap.iter().any(|(_kind, item)| item.is_none()) {
+			<span class="kw">return </span><span class="prelude-val">Err</span>(IncompleteArrayError);
+		}
+		<span class="prelude-val">Ok</span>(BoneMap::new(bmap.<span class="number">0</span>.map(|item| item.unwrap())))
+	}
 }
 
 <span class="comment">// ---- Index stuff ----
 </span><span class="kw">impl</span>&lt;T&gt; Index&lt;BoneKind&gt; <span class="kw">for </span>BoneMap&lt;T&gt; {
-    <span class="kw">type </span>Output = T;
+	<span class="kw">type </span>Output = T;
 
-    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: BoneKind) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-        <span class="comment">// I *could* do get_unchecked, but meh, why introduce more unsafe. Maybe the
-        // compiler will optimize it.
-        </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[usize::from(index)]
-    }
+	<span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: BoneKind) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+		<span class="comment">// I *could* do get_unchecked, but meh, why introduce more unsafe. Maybe the
+		// compiler will optimize it.
+		</span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[usize::from(index)]
+	}
 }
 <span class="kw">impl</span>&lt;T&gt; IndexMut&lt;BoneKind&gt; <span class="kw">for </span>BoneMap&lt;T&gt; {
-    <span class="kw">fn </span>index_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: BoneKind) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Output {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0</span>[usize::from(index)]
-    }
+	<span class="kw">fn </span>index_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: BoneKind) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Output {
+		<span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0</span>[usize::from(index)]
+	}
 }
 
 <span class="comment">// ---- Iterator stuff ----
@@ -274,71 +274,71 @@
 <span class="kw">pub type </span>Iter&lt;<span class="lifetime">&#39;a</span>, T&gt; = Map&lt;Enumerate&lt;std::slice::Iter&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;, MapIdxFnType&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T&gt;&gt;;
 
 <span class="kw">pub type </span>IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt; =
-    Map&lt;Enumerate&lt;std::slice::IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;, MapIdxFnType&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T&gt;&gt;;
+	Map&lt;Enumerate&lt;std::slice::IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;, MapIdxFnType&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T&gt;&gt;;
 
 <span class="kw">pub type </span>IntoIter&lt;T&gt; =
-    Map&lt;Enumerate&lt;std::array::IntoIter&lt;T, { BoneKind::NUM_TYPES }&gt;&gt;, MapIdxFnType&lt;T&gt;&gt;;
+	Map&lt;Enumerate&lt;std::array::IntoIter&lt;T, { BoneKind::NUM_TYPES }&gt;&gt;, MapIdxFnType&lt;T&gt;&gt;;
 
 <span class="kw">impl</span>&lt;T&gt; IntoIterator <span class="kw">for </span>BoneMap&lt;T&gt; {
-    <span class="kw">type </span>Item = (BoneKind, T);
+	<span class="kw">type </span>Item = (BoneKind, T);
 
-    <span class="kw">type </span>IntoIter = IntoIter&lt;T&gt;;
+	<span class="kw">type </span>IntoIter = IntoIter&lt;T&gt;;
 
-    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-        <span class="self">self</span>.<span class="number">0</span>.into_iter().enumerate().map(map_idx)
-    }
+	<span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
+		<span class="self">self</span>.<span class="number">0</span>.into_iter().enumerate().map(map_idx)
+	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; IntoIterator <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BoneMap&lt;T&gt; {
-    <span class="kw">type </span>Item = (BoneKind, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T);
+	<span class="kw">type </span>Item = (BoneKind, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T);
 
-    <span class="kw">type </span>IntoIter = Iter&lt;<span class="lifetime">&#39;a</span>, T&gt;;
+	<span class="kw">type </span>IntoIter = Iter&lt;<span class="lifetime">&#39;a</span>, T&gt;;
 
-    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-        <span class="self">self</span>.<span class="number">0</span>.iter().enumerate().map(map_idx)
-    }
+	<span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
+		<span class="self">self</span>.<span class="number">0</span>.iter().enumerate().map(map_idx)
+	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; IntoIterator <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>BoneMap&lt;T&gt; {
-    <span class="kw">type </span>Item = (BoneKind, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T);
+	<span class="kw">type </span>Item = (BoneKind, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T);
 
-    <span class="kw">type </span>IntoIter = IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt;;
+	<span class="kw">type </span>IntoIter = IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt;;
 
-    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-        <span class="self">self</span>.<span class="number">0</span>.iter_mut().enumerate().map(map_idx)
-    }
+	<span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
+		<span class="self">self</span>.<span class="number">0</span>.iter_mut().enumerate().map(map_idx)
+	}
 }
 
 <span class="kw">fn </span>map_idx&lt;T&gt;(item: (usize, T)) -&gt; (BoneKind, T) {
-    (BoneKind::try_from(item.<span class="number">0</span>).unwrap(), item.<span class="number">1</span>)
+	(BoneKind::try_from(item.<span class="number">0</span>).unwrap(), item.<span class="number">1</span>)
 }
 
 <span class="attribute">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[test]
-    </span><span class="kw">fn </span>test_default() {
-        <span class="kw">let </span>zeros = BoneMap::new([<span class="number">0u8</span>; BoneKind::NUM_TYPES]);
-        <span class="kw">let </span>ones = BoneMap::new([<span class="number">1u8</span>; BoneKind::NUM_TYPES]);
-        <span class="macro">assert_eq!</span>(zeros, BoneMap::default());
-        <span class="macro">assert_ne!</span>(ones, BoneMap::default());
+	<span class="attribute">#[test]
+	</span><span class="kw">fn </span>test_default() {
+		<span class="kw">let </span>zeros = BoneMap::new([<span class="number">0u8</span>; BoneKind::NUM_TYPES]);
+		<span class="kw">let </span>ones = BoneMap::new([<span class="number">1u8</span>; BoneKind::NUM_TYPES]);
+		<span class="macro">assert_eq!</span>(zeros, BoneMap::default());
+		<span class="macro">assert_ne!</span>(ones, BoneMap::default());
 
-        <span class="attribute">#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-        </span><span class="kw">struct </span>Foo;
-        <span class="kw">let </span>nones: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;Foo&gt;&gt; = BoneMap::new([<span class="prelude-val">None</span>; BoneKind::NUM_TYPES]);
-        <span class="macro">assert_eq!</span>(nones, BoneMap::default())
-    }
+		<span class="attribute">#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+		</span><span class="kw">struct </span>Foo;
+		<span class="kw">let </span>nones: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;Foo&gt;&gt; = BoneMap::new([<span class="prelude-val">None</span>; BoneKind::NUM_TYPES]);
+		<span class="macro">assert_eq!</span>(nones, BoneMap::default())
+	}
 
-    <span class="attribute">#[test]
-    </span><span class="kw">fn </span>test_map() {
-        <span class="kw">let </span>zeros = BoneMap::new([<span class="number">0u8</span>; BoneKind::NUM_TYPES]);
+	<span class="attribute">#[test]
+	</span><span class="kw">fn </span>test_map() {
+		<span class="kw">let </span>zeros = BoneMap::new([<span class="number">0u8</span>; BoneKind::NUM_TYPES]);
 
-        <span class="kw">let </span>as_u8 = zeros.map(|kind, <span class="kw">_</span>| kind <span class="kw">as </span>u8);
-        <span class="kw">for </span>(kind, <span class="kw">_</span>) <span class="kw">in </span>zeros.iter() {
-            <span class="macro">assert_eq!</span>(kind <span class="kw">as </span>u8, as_u8[kind]);
-        }
-    }
+		<span class="kw">let </span>as_u8 = zeros.map(|kind, <span class="kw">_</span>| kind <span class="kw">as </span>u8);
+		<span class="kw">for </span>(kind, <span class="kw">_</span>) <span class="kw">in </span>zeros.iter() {
+			<span class="macro">assert_eq!</span>(kind <span class="kw">as </span>u8, as_u8[kind]);
+		}
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -155,126 +155,126 @@
 <span class="kw">pub type </span>BoneArena = BoneMap&lt;Bone&gt;;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>DEFAULT_COLORS: BoneMap&lt;RGBA&gt; = {
-        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
-        HashMap::from([
-            (Head, RGBA::BLACK),
-            (Neck, RGBA::SILVER),
-            (Chest, RGBA::OLIVE),
-            (Waist, RGBA::LIME),
-            (Hip, RGBA::MAROON),
-            (ThighL, RGBA::BLUE),
-            (ThighR, RGBA::BLUE),
-            (AnkleL, RGBA::TEAL),
-            (AnkleR, RGBA::TEAL),
-            (FootL, RGBA::PURPLE),
-            (FootR, RGBA::PURPLE),
-            (UpperArmL, RGBA::RED),
-            (UpperArmR, RGBA::RED),
-            (ForearmL, RGBA::PURPLE),
-            (ForearmR, RGBA::PURPLE),
-            (WristL, RGBA::FUCHSIA),
-            (WristR, RGBA::FUCHSIA),
-        ])
-        .try_into()
-        .unwrap()
-    };
+	<span class="kw">static </span><span class="kw-2">ref </span>DEFAULT_COLORS: BoneMap&lt;RGBA&gt; = {
+		<span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+		HashMap::from([
+			(Head, RGBA::BLACK),
+			(Neck, RGBA::SILVER),
+			(Chest, RGBA::OLIVE),
+			(Waist, RGBA::LIME),
+			(Hip, RGBA::MAROON),
+			(ThighL, RGBA::BLUE),
+			(ThighR, RGBA::BLUE),
+			(AnkleL, RGBA::TEAL),
+			(AnkleR, RGBA::TEAL),
+			(FootL, RGBA::PURPLE),
+			(FootR, RGBA::PURPLE),
+			(UpperArmL, RGBA::RED),
+			(UpperArmR, RGBA::RED),
+			(ForearmL, RGBA::PURPLE),
+			(ForearmR, RGBA::PURPLE),
+			(WristL, RGBA::FUCHSIA),
+			(WristR, RGBA::FUCHSIA),
+		])
+		.try_into()
+		.unwrap()
+	};
 }
 
 <span class="kw">const </span>BONE_RADIUS: f32 = <span class="number">0.002</span>;
 
 <span class="doccomment">/// Builder for the [`Skeleton`].
 </span><span class="kw">pub struct </span>SkeletonBuilder {
-    colors: <span class="prelude-ty">Option</span>&lt;BoneMap&lt;<span class="prelude-ty">Option</span>&lt;RGBA&gt;&gt;&gt;,
-    key: String,
-    bone_radius: f32,
-    bone_lengths: <span class="prelude-ty">Option</span>&lt;BoneMap&lt;f32&gt;&gt;,
+	colors: <span class="prelude-ty">Option</span>&lt;BoneMap&lt;<span class="prelude-ty">Option</span>&lt;RGBA&gt;&gt;&gt;,
+	key: String,
+	bone_radius: f32,
+	bone_lengths: <span class="prelude-ty">Option</span>&lt;BoneMap&lt;f32&gt;&gt;,
 }
 <span class="kw">impl </span>SkeletonBuilder {
-    <span class="attribute">#[allow(dead_code)]
-    </span><span class="kw">pub fn </span>build(<span class="self">self</span>, overlay_manager: <span class="kw-2">&amp;mut </span>OverlayManager) -&gt; <span class="prelude-ty">Result</span>&lt;Skeleton&gt; {
-        <span class="kw">let </span>colors = <span class="kw">if let </span><span class="prelude-val">Some</span>(colors) = <span class="self">self</span>.colors {
-            colors
-        } <span class="kw">else </span>{
-            Default::default()
-        };
-        <span class="kw">let </span>colors: BoneMap&lt;RGBA&gt; = colors
-            .into_iter()
-            .map(|(kind, maybe_color)| {
-                (kind, maybe_color.unwrap_or_else(|| DEFAULT_COLORS[kind]))
-            })
-            .try_collect()
-            .unwrap();
+	<span class="attribute">#[allow(dead_code)]
+	</span><span class="kw">pub fn </span>build(<span class="self">self</span>, overlay_manager: <span class="kw-2">&amp;mut </span>OverlayManager) -&gt; <span class="prelude-ty">Result</span>&lt;Skeleton&gt; {
+		<span class="kw">let </span>colors = <span class="kw">if let </span><span class="prelude-val">Some</span>(colors) = <span class="self">self</span>.colors {
+			colors
+		} <span class="kw">else </span>{
+			Default::default()
+		};
+		<span class="kw">let </span>colors: BoneMap&lt;RGBA&gt; = colors
+			.into_iter()
+			.map(|(kind, maybe_color)| {
+				(kind, maybe_color.unwrap_or_else(|| DEFAULT_COLORS[kind]))
+			})
+			.try_collect()
+			.unwrap();
 
-        <span class="kw">let </span>bone_lengths = <span class="self">self
-            </span>.bone_lengths
-            .unwrap_or_else(|| BoneMap::new([<span class="number">0.1</span>; BoneKind::NUM_TYPES]));
+		<span class="kw">let </span>bone_lengths = <span class="self">self
+			</span>.bone_lengths
+			.unwrap_or_else(|| BoneMap::new([<span class="number">0.1</span>; BoneKind::NUM_TYPES]));
 
-        <span class="kw">let </span><span class="kw-2">mut </span>bones = Vec::new();
-        <span class="kw">for </span>(kind, color) <span class="kw">in </span>colors {
-            <span class="kw">let </span>bone = Bone::new(
-                overlay_manager,
-                color,
-                Default::default(),
-                <span class="macro">format!</span>(<span class="string">&quot;{}: {kind:?}&quot;</span>, <span class="self">self</span>.key),
-                <span class="self">self</span>.bone_radius,
-                bone_lengths[kind],
-            )<span class="question-mark">?</span>;
-            bones.push((kind, bone));
-        }
-        <span class="kw">let </span>bones: BoneArena = bones.into_iter().try_collect().unwrap();
-        <span class="prelude-val">Ok</span>(Skeleton::new(bones))
-    }
+		<span class="kw">let </span><span class="kw-2">mut </span>bones = Vec::new();
+		<span class="kw">for </span>(kind, color) <span class="kw">in </span>colors {
+			<span class="kw">let </span>bone = Bone::new(
+				overlay_manager,
+				color,
+				Default::default(),
+				<span class="macro">format!</span>(<span class="string">&quot;{}: {kind:?}&quot;</span>, <span class="self">self</span>.key),
+				<span class="self">self</span>.bone_radius,
+				bone_lengths[kind],
+			)<span class="question-mark">?</span>;
+			bones.push((kind, bone));
+		}
+		<span class="kw">let </span>bones: BoneArena = bones.into_iter().try_collect().unwrap();
+		<span class="prelude-val">Ok</span>(Skeleton::new(bones))
+	}
 }
 <span class="kw">impl </span>Default <span class="kw">for </span>SkeletonBuilder {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            colors: <span class="prelude-val">None</span>,
-            key: String::from(<span class="string">&quot;slimevr&quot;</span>),
-            bone_radius: BONE_RADIUS,
-            bone_lengths: <span class="prelude-val">None</span>,
-        }
-    }
+	<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+		<span class="self">Self </span>{
+			colors: <span class="prelude-val">None</span>,
+			key: String::from(<span class="string">&quot;slimevr&quot;</span>),
+			bone_radius: BONE_RADIUS,
+			bone_lengths: <span class="prelude-val">None</span>,
+		}
+	}
 }
 
 <span class="kw">pub struct </span>Skeleton {
-    <span class="kw">pub </span>bones: BoneArena,
+	<span class="kw">pub </span>bones: BoneArena,
 }
 <span class="attribute">#[allow(dead_code)]
 </span><span class="kw">impl </span>Skeleton {
-    <span class="kw">pub fn </span>new(bones: BoneArena) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self </span>{ bones };
-        <span class="comment">// We explicitly set all bones to invisible, to reduce code brittleness.
-        </span><span class="kw">for </span>b <span class="kw">in </span>BoneKind::iter() {
-            result.set_visibility(b, <span class="bool-val">false</span>);
-        }
-        result
-    }
+	<span class="kw">pub fn </span>new(bones: BoneArena) -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self </span>{ bones };
+		<span class="comment">// We explicitly set all bones to invisible, to reduce code brittleness.
+		</span><span class="kw">for </span>b <span class="kw">in </span>BoneKind::iter() {
+			result.set_visibility(b, <span class="bool-val">false</span>);
+		}
+		result
+	}
 
-    <span class="kw">pub fn </span>set_isometry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bone: BoneKind, iso: Isometry) {
-        <span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
-        bone.set_isometry(iso);
-    }
+	<span class="kw">pub fn </span>set_isometry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bone: BoneKind, iso: Isometry) {
+		<span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
+		bone.set_isometry(iso);
+	}
 
-    <span class="kw">pub fn </span>set_length(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bone: BoneKind, len: f32) {
-        <span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
-        bone.set_length(len);
-    }
+	<span class="kw">pub fn </span>set_length(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bone: BoneKind, len: f32) {
+		<span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
+		bone.set_length(len);
+	}
 
-    <span class="kw">pub fn </span>update_render(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        bone: BoneKind,
-        mngr: <span class="kw-2">&amp;mut </span>OverlayManager,
-    ) -&gt; eyre::Result&lt;()&gt; {
-        <span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
-        bone.update_render(mngr)
-            .wrap_err(<span class="string">&quot;could not update render for bone&quot;</span>)
-    }
+	<span class="kw">pub fn </span>update_render(
+		<span class="kw-2">&amp;mut </span><span class="self">self</span>,
+		bone: BoneKind,
+		mngr: <span class="kw-2">&amp;mut </span>OverlayManager,
+	) -&gt; eyre::Result&lt;()&gt; {
+		<span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
+		bone.update_render(mngr)
+			.wrap_err(<span class="string">&quot;could not update render for bone&quot;</span>)
+	}
 
-    <span class="kw">pub fn </span>set_visibility(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bone: BoneKind, is_visible: bool) {
-        <span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
-        bone.set_visibility(is_visible);
-    }
+	<span class="kw">pub fn </span>set_visibility(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bone: BoneKind, is_visible: bool) {
+		<span class="kw">let </span>bone = <span class="kw-2">&amp;mut </span><span class="self">self</span>.bones[bone];
+		bone.set_visibility(is_visible);
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

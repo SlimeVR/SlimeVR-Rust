@@ -162,153 +162,153 @@
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]
 #[allow(dead_code)]
 </span><span class="kw">pub enum </span>BoneKind {
-    Head = <span class="number">0</span>,
-    Neck,
-    Chest,
-    Waist,
-    Hip,
-    ThighL,
-    ThighR,
-    AnkleL,
-    AnkleR,
-    FootL,
-    FootR,
+	Head = <span class="number">0</span>,
+	Neck,
+	Chest,
+	Waist,
+	Hip,
+	ThighL,
+	ThighR,
+	AnkleL,
+	AnkleR,
+	FootL,
+	FootR,
 
-    UpperArmL,
-    UpperArmR,
-    ForearmL,
-    ForearmR,
-    WristL,
-    WristR,
+	UpperArmL,
+	UpperArmR,
+	ForearmL,
+	ForearmR,
+	WristL,
+	WristR,
 }
 <span class="kw">impl </span>BoneKind {
-    <span class="doccomment">/// The `BoneKind` with the largest integer value
-    </span><span class="kw">pub const fn </span>max() -&gt; BoneKind {
-        BoneKind::WristR
-    }
-    <span class="kw">pub const </span>MAX: BoneKind = <span class="self">Self</span>::max();
+	<span class="doccomment">/// The `BoneKind` with the largest integer value
+	</span><span class="kw">pub const fn </span>max() -&gt; BoneKind {
+		BoneKind::WristR
+	}
+	<span class="kw">pub const </span>MAX: BoneKind = <span class="self">Self</span>::max();
 
-    <span class="doccomment">/// The `BoneKind` with the smallest integer value
-    </span><span class="kw">pub const fn </span>min() -&gt; BoneKind {
-        BoneKind::root()
-    }
-    <span class="kw">pub const </span>MIN: BoneKind = <span class="self">Self</span>::min();
+	<span class="doccomment">/// The `BoneKind` with the smallest integer value
+	</span><span class="kw">pub const fn </span>min() -&gt; BoneKind {
+		BoneKind::root()
+	}
+	<span class="kw">pub const </span>MIN: BoneKind = <span class="self">Self</span>::min();
 
-    <span class="doccomment">/// The root bone type.
-    </span><span class="kw">pub const fn </span>root() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Head
-    }
-    <span class="kw">pub const </span>ROOT: BoneKind = <span class="self">Self</span>::root();
+	<span class="doccomment">/// The root bone type.
+	</span><span class="kw">pub const fn </span>root() -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::Head
+	}
+	<span class="kw">pub const </span>ROOT: BoneKind = <span class="self">Self</span>::root();
 
-    <span class="doccomment">/// Returns the number of different types of bones.
-    </span><span class="kw">pub const fn </span>num_types() -&gt; usize {
-        BoneKind::max() <span class="kw">as </span>usize + <span class="number">1
-    </span>}
-    <span class="kw">pub const </span>NUM_TYPES: usize = <span class="self">Self</span>::num_types();
+	<span class="doccomment">/// Returns the number of different types of bones.
+	</span><span class="kw">pub const fn </span>num_types() -&gt; usize {
+		BoneKind::max() <span class="kw">as </span>usize + <span class="number">1
+	</span>}
+	<span class="kw">pub const </span>NUM_TYPES: usize = <span class="self">Self</span>::num_types();
 
-    <span class="kw">pub const fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="self">Self</span>] {
-        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
-        <span class="kw">match </span><span class="self">self </span>{
-            Head =&gt; <span class="kw-2">&amp;</span>[Neck],
-            Neck =&gt; <span class="kw-2">&amp;</span>[Chest, UpperArmL, UpperArmR],
-            Chest =&gt; <span class="kw-2">&amp;</span>[Waist],
-            Waist =&gt; <span class="kw-2">&amp;</span>[Hip],
-            Hip =&gt; <span class="kw-2">&amp;</span>[ThighL, ThighR],
-            ThighL =&gt; <span class="kw-2">&amp;</span>[AnkleL],
-            ThighR =&gt; <span class="kw-2">&amp;</span>[AnkleR],
-            AnkleL =&gt; <span class="kw-2">&amp;</span>[FootL],
-            AnkleR =&gt; <span class="kw-2">&amp;</span>[FootR],
-            FootL =&gt; <span class="kw-2">&amp;</span>[],
-            FootR =&gt; <span class="kw-2">&amp;</span>[],
+	<span class="kw">pub const fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="self">Self</span>] {
+		<span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+		<span class="kw">match </span><span class="self">self </span>{
+			Head =&gt; <span class="kw-2">&amp;</span>[Neck],
+			Neck =&gt; <span class="kw-2">&amp;</span>[Chest, UpperArmL, UpperArmR],
+			Chest =&gt; <span class="kw-2">&amp;</span>[Waist],
+			Waist =&gt; <span class="kw-2">&amp;</span>[Hip],
+			Hip =&gt; <span class="kw-2">&amp;</span>[ThighL, ThighR],
+			ThighL =&gt; <span class="kw-2">&amp;</span>[AnkleL],
+			ThighR =&gt; <span class="kw-2">&amp;</span>[AnkleR],
+			AnkleL =&gt; <span class="kw-2">&amp;</span>[FootL],
+			AnkleR =&gt; <span class="kw-2">&amp;</span>[FootR],
+			FootL =&gt; <span class="kw-2">&amp;</span>[],
+			FootR =&gt; <span class="kw-2">&amp;</span>[],
 
-            UpperArmL =&gt; <span class="kw-2">&amp;</span>[ForearmL],
-            UpperArmR =&gt; <span class="kw-2">&amp;</span>[ForearmR],
-            ForearmL =&gt; <span class="kw-2">&amp;</span>[WristL],
-            ForearmR =&gt; <span class="kw-2">&amp;</span>[WristR],
-            WristR =&gt; <span class="kw-2">&amp;</span>[],
-            WristL =&gt; <span class="kw-2">&amp;</span>[],
-        }
-    }
+			UpperArmL =&gt; <span class="kw-2">&amp;</span>[ForearmL],
+			UpperArmR =&gt; <span class="kw-2">&amp;</span>[ForearmR],
+			ForearmL =&gt; <span class="kw-2">&amp;</span>[WristL],
+			ForearmR =&gt; <span class="kw-2">&amp;</span>[WristR],
+			WristR =&gt; <span class="kw-2">&amp;</span>[],
+			WristL =&gt; <span class="kw-2">&amp;</span>[],
+		}
+	}
 
-    <span class="kw">pub const fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BoneKind&gt; {
-        <span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
-        <span class="prelude-val">Some</span>(<span class="kw">match </span><span class="self">self </span>{
-            Head =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
-            Neck =&gt; Head,
-            Chest =&gt; Neck,
-            Waist =&gt; Chest,
-            Hip =&gt; Waist,
-            ThighL =&gt; Hip,
-            ThighR =&gt; Hip,
-            AnkleL =&gt; ThighL,
-            AnkleR =&gt; ThighR,
-            FootL =&gt; AnkleL,
-            FootR =&gt; AnkleR,
+	<span class="kw">pub const fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BoneKind&gt; {
+		<span class="kw">use </span>BoneKind::<span class="kw-2">*</span>;
+		<span class="prelude-val">Some</span>(<span class="kw">match </span><span class="self">self </span>{
+			Head =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
+			Neck =&gt; Head,
+			Chest =&gt; Neck,
+			Waist =&gt; Chest,
+			Hip =&gt; Waist,
+			ThighL =&gt; Hip,
+			ThighR =&gt; Hip,
+			AnkleL =&gt; ThighL,
+			AnkleR =&gt; ThighR,
+			FootL =&gt; AnkleL,
+			FootR =&gt; AnkleR,
 
-            UpperArmL =&gt; Neck,
-            UpperArmR =&gt; Neck,
-            ForearmL =&gt; UpperArmL,
-            ForearmR =&gt; UpperArmR,
-            WristL =&gt; ForearmL,
-            WristR =&gt; ForearmR,
-        })
-    }
+			UpperArmL =&gt; Neck,
+			UpperArmR =&gt; Neck,
+			ForearmL =&gt; UpperArmL,
+			ForearmR =&gt; UpperArmR,
+			WristL =&gt; ForearmL,
+			WristR =&gt; ForearmR,
+		})
+	}
 
-    <span class="kw">pub fn </span>iter() -&gt; std::iter::Map&lt;std::ops::RangeInclusive&lt;u8&gt;, <span class="kw">fn</span>(u8) -&gt; BoneKind&gt; {
-        (<span class="self">Self</span>::MIN <span class="kw">as </span>u8..=<span class="self">Self</span>::MAX <span class="kw">as </span>u8).map(|x| x.try_into().unwrap())
-    }
+	<span class="kw">pub fn </span>iter() -&gt; std::iter::Map&lt;std::ops::RangeInclusive&lt;u8&gt;, <span class="kw">fn</span>(u8) -&gt; BoneKind&gt; {
+		(<span class="self">Self</span>::MIN <span class="kw">as </span>u8..=<span class="self">Self</span>::MAX <span class="kw">as </span>u8).map(|x| x.try_into().unwrap())
+	}
 }
 <span class="kw">impl </span>TryFrom&lt;u8&gt; <span class="kw">for </span>BoneKind {
-    <span class="kw">type </span>Error = ();
+	<span class="kw">type </span>Error = ();
 
-    <span class="kw">fn </span>try_from(value: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        FromPrimitive::from_u8(value).ok_or(())
-    }
+	<span class="kw">fn </span>try_from(value: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+		FromPrimitive::from_u8(value).ok_or(())
+	}
 }
 <span class="kw">impl </span>TryFrom&lt;usize&gt; <span class="kw">for </span>BoneKind {
-    <span class="kw">type </span>Error = ();
-    <span class="kw">fn </span>try_from(value: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        FromPrimitive::from_usize(value).ok_or(())
-    }
+	<span class="kw">type </span>Error = ();
+	<span class="kw">fn </span>try_from(value: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+		FromPrimitive::from_usize(value).ok_or(())
+	}
 }
 <span class="kw">impl </span>From&lt;BoneKind&gt; <span class="kw">for </span>u8 {
-    <span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
-        other <span class="kw">as _
-    </span>}
+	<span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
+		other <span class="kw">as _
+	</span>}
 }
 <span class="kw">impl </span>From&lt;BoneKind&gt; <span class="kw">for </span>usize {
-    <span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
-        other <span class="kw">as _
-    </span>}
+	<span class="kw">fn </span>from(other: BoneKind) -&gt; <span class="self">Self </span>{
+		other <span class="kw">as _
+	</span>}
 }
 <span class="kw">impl </span>TryFrom&lt;BodyPart&gt; <span class="kw">for </span>BoneKind {
-    <span class="kw">type </span>Error = BodyPart;
-    <span class="kw">fn </span>try_from(other: BodyPart) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">use </span>BodyPart <span class="kw">as </span>O;
-        <span class="prelude-val">Ok</span>(<span class="kw">match </span>other {
-            O::NONE | O::LEFT_CONTROLLER | O::RIGHT_CONTROLLER =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(other),
+	<span class="kw">type </span>Error = BodyPart;
+	<span class="kw">fn </span>try_from(other: BodyPart) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+		<span class="kw">use </span>BodyPart <span class="kw">as </span>O;
+		<span class="prelude-val">Ok</span>(<span class="kw">match </span>other {
+			O::NONE | O::LEFT_CONTROLLER | O::RIGHT_CONTROLLER =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(other),
 
-            O::NECK =&gt; <span class="self">Self</span>::Neck,
-            O::CHEST =&gt; <span class="self">Self</span>::Chest,
-            O::WAIST =&gt; <span class="self">Self</span>::Waist,
-            O::HIP =&gt; <span class="self">Self</span>::Hip,
-            O::LEFT_UPPER_LEG =&gt; <span class="self">Self</span>::ThighL,
-            O::RIGHT_UPPER_LEG =&gt; <span class="self">Self</span>::ThighR,
-            O::LEFT_LOWER_LEG =&gt; <span class="self">Self</span>::AnkleL,
-            O::RIGHT_LOWER_LEG =&gt; <span class="self">Self</span>::AnkleR,
-            O::LEFT_FOOT =&gt; <span class="self">Self</span>::FootL,
-            O::RIGHT_FOOT =&gt; <span class="self">Self</span>::FootR,
+			O::NECK =&gt; <span class="self">Self</span>::Neck,
+			O::CHEST =&gt; <span class="self">Self</span>::Chest,
+			O::WAIST =&gt; <span class="self">Self</span>::Waist,
+			O::HIP =&gt; <span class="self">Self</span>::Hip,
+			O::LEFT_UPPER_LEG =&gt; <span class="self">Self</span>::ThighL,
+			O::RIGHT_UPPER_LEG =&gt; <span class="self">Self</span>::ThighR,
+			O::LEFT_LOWER_LEG =&gt; <span class="self">Self</span>::AnkleL,
+			O::RIGHT_LOWER_LEG =&gt; <span class="self">Self</span>::AnkleR,
+			O::LEFT_FOOT =&gt; <span class="self">Self</span>::FootL,
+			O::RIGHT_FOOT =&gt; <span class="self">Self</span>::FootR,
 
-            O::LEFT_UPPER_ARM =&gt; <span class="self">Self</span>::UpperArmL,
-            O::RIGHT_UPPER_ARM =&gt; <span class="self">Self</span>::UpperArmR,
-            O::LEFT_LOWER_ARM =&gt; <span class="self">Self</span>::ForearmL,
-            O::RIGHT_LOWER_ARM =&gt; <span class="self">Self</span>::ForearmR,
-            O::LEFT_HAND =&gt; <span class="self">Self</span>::WristL,
-            O::RIGHT_HAND =&gt; <span class="self">Self</span>::WristR,
+			O::LEFT_UPPER_ARM =&gt; <span class="self">Self</span>::UpperArmL,
+			O::RIGHT_UPPER_ARM =&gt; <span class="self">Self</span>::UpperArmR,
+			O::LEFT_LOWER_ARM =&gt; <span class="self">Self</span>::ForearmL,
+			O::RIGHT_LOWER_ARM =&gt; <span class="self">Self</span>::ForearmR,
+			O::LEFT_HAND =&gt; <span class="self">Self</span>::WristL,
+			O::RIGHT_HAND =&gt; <span class="self">Self</span>::WristR,
 
-            O(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(other),
-        })
-    }
+			O(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(other),
+		})
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

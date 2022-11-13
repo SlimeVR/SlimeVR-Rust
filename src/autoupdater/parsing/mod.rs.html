@@ -198,57 +198,57 @@
 
 <span class="doccomment">/// Represents a target platform for SlimeVR
 </span><span class="attribute">#[derive(
-    Deserialize_enum_str, Serialize_enum_str, Clone, Debug, Eq, PartialEq, Hash,
+	Deserialize_enum_str, Serialize_enum_str, Clone, Debug, Eq, PartialEq, Hash,
 )]
 #[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
 </span><span class="kw">pub enum </span>Platform {
-    Windows64,
-    Linux64,
-    <span class="doccomment">/// A platform we don&#39;t understand.
-    ///
-    /// We might get this variant if we added a new platform that we want to support,
-    /// but the updater hasn&#39;t updated to understand it yet.
-    </span><span class="attribute">#[serde(other)]
-    </span>Unknown(String),
+	Windows64,
+	Linux64,
+	<span class="doccomment">/// A platform we don&#39;t understand.
+	///
+	/// We might get this variant if we added a new platform that we want to support,
+	/// but the updater hasn&#39;t updated to understand it yet.
+	</span><span class="attribute">#[serde(other)]
+	</span>Unknown(String),
 }
 <span class="kw">impl </span>Platform {
-    <span class="kw">pub fn </span>current() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>Platform {
-        <span class="attribute">#[cfg(all(target_os = <span class="string">&quot;windows&quot;</span>, target_arch = <span class="string">&quot;x86_64&quot;</span>))]
-        </span><span class="kw">return </span><span class="kw-2">&amp;</span>Platform::Windows64;
-        <span class="attribute">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, target_arch = <span class="string">&quot;x86_64&quot;</span>))]
-        </span><span class="kw">return </span><span class="kw-2">&amp;</span>Platform::Linux64;
-        <span class="macro">lazy_static! </span>{
-            <span class="kw">static </span><span class="kw-2">ref </span>PLATFORM: Platform = Platform::Unknown(<span class="string">&quot;unknown&quot;</span>.to_string());
-        }
-        <span class="attribute">#[allow(unused)]
-        </span><span class="kw-2">&amp;</span>PLATFORM
-    }
+	<span class="kw">pub fn </span>current() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>Platform {
+		<span class="attribute">#[cfg(all(target_os = <span class="string">&quot;windows&quot;</span>, target_arch = <span class="string">&quot;x86_64&quot;</span>))]
+		</span><span class="kw">return </span><span class="kw-2">&amp;</span>Platform::Windows64;
+		<span class="attribute">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, target_arch = <span class="string">&quot;x86_64&quot;</span>))]
+		</span><span class="kw">return </span><span class="kw-2">&amp;</span>Platform::Linux64;
+		<span class="macro">lazy_static! </span>{
+			<span class="kw">static </span><span class="kw-2">ref </span>PLATFORM: Platform = Platform::Unknown(<span class="string">&quot;unknown&quot;</span>.to_string());
+		}
+		<span class="attribute">#[allow(unused)]
+		</span><span class="kw-2">&amp;</span>PLATFORM
+	}
 }
 
 <span class="doccomment">/// Describes all the information about a component and how to install it.
 </span><span class="attribute">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>ComponentInfo {
-    <span class="doccomment">/// The URL from which this component is downloaded.
-    </span><span class="kw">pub </span>download_url: MCP&lt;Url&gt;,
-    <span class="doccomment">/// The dir to which this component is installed.
-    </span><span class="kw">pub </span>install_dir: MCP&lt;InstallPath&gt;,
+	<span class="doccomment">/// The URL from which this component is downloaded.
+	</span><span class="kw">pub </span>download_url: MCP&lt;Url&gt;,
+	<span class="doccomment">/// The dir to which this component is installed.
+	</span><span class="kw">pub </span>install_dir: MCP&lt;InstallPath&gt;,
 }
 
 <span class="attribute">#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Hash, Eq, PartialEq)]
 #[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
 </span><span class="kw">pub enum </span>ComponentName {
-    Overlay,
-    Server,
-    Feeder,
-    Driver,
-    Gui,
-    AutoUpdater,
-    <span class="doccomment">/// The name of a component we don&#39;t understand.
-    ///
-    /// This might happen if the autoupdater has not yet updated to know about this
-    /// component.
-    </span><span class="attribute">#[serde(other)]
-    </span>Unknown(String),
+	Overlay,
+	Server,
+	Feeder,
+	Driver,
+	Gui,
+	AutoUpdater,
+	<span class="doccomment">/// The name of a component we don&#39;t understand.
+	///
+	/// This might happen if the autoupdater has not yet updated to know about this
+	/// component.
+	</span><span class="attribute">#[serde(other)]
+	</span>Unknown(String),
 }
 
 <span class="attribute">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -256,66 +256,66 @@
 
 <span class="attribute">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::path::PathBuf;
+	<span class="kw">use </span>std::path::PathBuf;
 
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">use </span>lazy_static::lazy_static;
+	<span class="kw">use </span>lazy_static::lazy_static;
 
-    <span class="comment">// These have been split out because rustfmt shits the bed when lines exceed the
-    // max_width and can&#39;t be wrapped for it
-    </span><span class="kw">const </span>SERVER_WINDOWS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Server/releases/download/v0.2.0/slimevr.jar&quot;</span>;
-    <span class="kw">const </span>OVERLAY_WINDOWS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/windows-x64.zip&quot;</span>;
-    <span class="kw">const </span>OVERLAY_LINUX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/linux-x64.zip&quot;</span>;
+	<span class="comment">// These have been split out because rustfmt shits the bed when lines exceed the
+	// max_width and can&#39;t be wrapped for it
+	</span><span class="kw">const </span>SERVER_WINDOWS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Server/releases/download/v0.2.0/slimevr.jar&quot;</span>;
+	<span class="kw">const </span>OVERLAY_WINDOWS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/windows-x64.zip&quot;</span>;
+	<span class="kw">const </span>OVERLAY_LINUX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://github.com/SlimeVR/SlimeVR-Rust/releases/download/overlay-latest/linux-x64.zip&quot;</span>;
 
-    <span class="macro">lazy_static! </span>{
-        <span class="kw">static </span><span class="kw-2">ref </span>EXAMPLE_STRUCT: Components = {
-            <span class="kw">let </span><span class="kw-2">mut </span>components = HashMap::new();
-            components.insert(
-                ComponentName::Server,
-                ComponentInfo {
-                    download_url: Url::parse(SERVER_WINDOWS).unwrap().into(),
-                    install_dir: InstallPath::RelativeToSlime(PathBuf::from(<span class="string">&quot;&quot;</span>)).into(),
-                },
-            );
-            components.insert(
-                ComponentName::Overlay,
-                ComponentInfo {
-                    download_url: MCP::NotCross(HashMap::from([
-                        (Platform::Windows64, Url::parse(OVERLAY_WINDOWS).unwrap()),
-                        (Platform::Linux64, Url::parse(OVERLAY_LINUX).unwrap()),
-                    ])),
-                    install_dir: InstallPath::RelativeToSlime(PathBuf::from(<span class="string">&quot;overlay&quot;</span>))
-                        .into(),
-                },
-            );
-            components.insert(
-                ComponentName::Unknown(<span class="string">&quot;a_new_component&quot;</span>.to_string()),
-                ComponentInfo {
-                    download_url: Url::parse(<span class="string">&quot;https://github.com/SlimeVR/whatever&quot;</span>)
-                        .unwrap()
-                        .into(),
-                    install_dir: InstallPath::Normal(PathBuf::from(<span class="string">r&quot;D:\s\nuts&quot;</span>))
-                        .into(),
-                },
-            );
-            components.insert(
-                ComponentName::Unknown(<span class="string">&quot;another_component&quot;</span>.to_string()),
-                ComponentInfo {
-                    download_url: Url::parse(<span class="string">&quot;https://github.com/slimeVR/another&quot;</span>)
-                        .unwrap()
-                        .into(),
-                    install_dir: MCP::NotCross(HashMap::from([
-                        (Platform::Windows64, InstallPath::Normal(<span class="string">&quot;&quot;</span>.into())),
-                        (Platform::Linux64, InstallPath::Normal(<span class="string">&quot;&quot;</span>.into())),
-                    ])),
-                },
-            );
-            Components(components)
-        };
-    }
+	<span class="macro">lazy_static! </span>{
+		<span class="kw">static </span><span class="kw-2">ref </span>EXAMPLE_STRUCT: Components = {
+			<span class="kw">let </span><span class="kw-2">mut </span>components = HashMap::new();
+			components.insert(
+				ComponentName::Server,
+				ComponentInfo {
+					download_url: Url::parse(SERVER_WINDOWS).unwrap().into(),
+					install_dir: InstallPath::RelativeToSlime(PathBuf::from(<span class="string">&quot;&quot;</span>)).into(),
+				},
+			);
+			components.insert(
+				ComponentName::Overlay,
+				ComponentInfo {
+					download_url: MCP::NotCross(HashMap::from([
+						(Platform::Windows64, Url::parse(OVERLAY_WINDOWS).unwrap()),
+						(Platform::Linux64, Url::parse(OVERLAY_LINUX).unwrap()),
+					])),
+					install_dir: InstallPath::RelativeToSlime(PathBuf::from(<span class="string">&quot;overlay&quot;</span>))
+						.into(),
+				},
+			);
+			components.insert(
+				ComponentName::Unknown(<span class="string">&quot;a_new_component&quot;</span>.to_string()),
+				ComponentInfo {
+					download_url: Url::parse(<span class="string">&quot;https://github.com/SlimeVR/whatever&quot;</span>)
+						.unwrap()
+						.into(),
+					install_dir: InstallPath::Normal(PathBuf::from(<span class="string">r&quot;D:\s\nuts&quot;</span>))
+						.into(),
+				},
+			);
+			components.insert(
+				ComponentName::Unknown(<span class="string">&quot;another_component&quot;</span>.to_string()),
+				ComponentInfo {
+					download_url: Url::parse(<span class="string">&quot;https://github.com/slimeVR/another&quot;</span>)
+						.unwrap()
+						.into(),
+					install_dir: MCP::NotCross(HashMap::from([
+						(Platform::Windows64, InstallPath::Normal(<span class="string">&quot;&quot;</span>.into())),
+						(Platform::Linux64, InstallPath::Normal(<span class="string">&quot;&quot;</span>.into())),
+					])),
+				},
+			);
+			Components(components)
+		};
+	}
 
-    <span class="kw">const </span>EXAMPLE_STR: <span class="kw-2">&amp;</span>str = <span class="string">r#&quot;
+	<span class="kw">const </span>EXAMPLE_STR: <span class="kw-2">&amp;</span>str = <span class="string">r#&quot;
         server:
             download_url: https://github.com/SlimeVR/SlimeVR-Server/releases/download/v0.2.0/slimevr.jar
             install_dir:
@@ -339,18 +339,18 @@
                     normal: &quot;&quot;
     &quot;#</span>;
 
-    <span class="attribute">#[test]
-    </span><span class="kw">fn </span>test_round_trip() -&gt; color_eyre::Result&lt;()&gt; {
-        <span class="kw">let </span>deserialized: Components = serde_yaml::from_str(EXAMPLE_STR)<span class="question-mark">?</span>;
-        <span class="kw">let </span>round_tripped: Components =
-            serde_yaml::from_str(<span class="kw-2">&amp;</span>serde_yaml::to_string(<span class="kw-2">&amp;</span>deserialized)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+	<span class="attribute">#[test]
+	</span><span class="kw">fn </span>test_round_trip() -&gt; color_eyre::Result&lt;()&gt; {
+		<span class="kw">let </span>deserialized: Components = serde_yaml::from_str(EXAMPLE_STR)<span class="question-mark">?</span>;
+		<span class="kw">let </span>round_tripped: Components =
+			serde_yaml::from_str(<span class="kw-2">&amp;</span>serde_yaml::to_string(<span class="kw-2">&amp;</span>deserialized)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
 
-        <span class="macro">assert_eq!</span>(deserialized, round_tripped);
-        <span class="macro">println!</span>(<span class="string">&quot;Example:\n{:#?}&quot;</span>, <span class="kw-2">*</span>EXAMPLE_STRUCT);
-        <span class="macro">println!</span>(<span class="string">&quot;Deserialized:\n{:#?}&quot;</span>, deserialized);
-        <span class="macro">assert_eq!</span>(deserialized, <span class="kw-2">*</span>EXAMPLE_STRUCT);
-        <span class="prelude-val">Ok</span>(())
-    }
+		<span class="macro">assert_eq!</span>(deserialized, round_tripped);
+		<span class="macro">println!</span>(<span class="string">&quot;Example:\n{:#?}&quot;</span>, <span class="kw-2">*</span>EXAMPLE_STRUCT);
+		<span class="macro">println!</span>(<span class="string">&quot;Deserialized:\n{:#?}&quot;</span>, deserialized);
+		<span class="macro">assert_eq!</span>(deserialized, <span class="kw-2">*</span>EXAMPLE_STRUCT);
+		<span class="prelude-val">Ok</span>(())
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="autoupdater" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

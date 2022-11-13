@@ -320,12 +320,12 @@
 
 <span class="doccomment">/// Used to initialize the [`Skeleton`] with its initial parameters
 </span><span class="kw">pub struct </span>SkeletonConfig {
-    bone_lengths: BoneMap&lt;f32&gt;,
+	bone_lengths: BoneMap&lt;f32&gt;,
 }
 <span class="kw">impl </span>SkeletonConfig {
-    <span class="kw">pub fn </span>new(bone_lengths: BoneMap&lt;f32&gt;) -&gt; <span class="self">Self </span>{
-        SkeletonConfig { bone_lengths }
-    }
+	<span class="kw">pub fn </span>new(bone_lengths: BoneMap&lt;f32&gt;) -&gt; <span class="self">Self </span>{
+		SkeletonConfig { bone_lengths }
+	}
 }
 
 <span class="doccomment">/// The `Skeleton` provides a way of reading, writing, and solving for the pose of
@@ -333,90 +333,90 @@
 ///
 /// See the [`crate::skeleton`] module for more information.
 </span><span class="kw">pub struct </span>Skeleton {
-    bone_map: BoneMap&lt;EdgeIndex&gt;,
-    graph: Dag&lt;Node, Edge&gt;,
+	bone_map: BoneMap&lt;EdgeIndex&gt;,
+	graph: Dag&lt;Node, Edge&gt;,
 }
 <span class="kw">impl </span>Skeleton {
-    <span class="doccomment">/// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
-    /// not have any input trackers or output trackers.
-    </span><span class="kw">pub fn </span>new(config: <span class="kw-2">&amp;</span>SkeletonConfig) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>g = Dag::new();
+	<span class="doccomment">/// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
+	/// not have any input trackers or output trackers.
+	</span><span class="kw">pub fn </span>new(config: <span class="kw-2">&amp;</span>SkeletonConfig) -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span><span class="kw-2">mut </span>g = Dag::new();
 
-        <span class="comment">// Option is used for resiliance against bugs while the map is being built
-        </span><span class="kw">let </span><span class="kw-2">mut </span>bone_map: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;EdgeIndex&gt;&gt; = BoneMap::default();
+		<span class="comment">// Option is used for resiliance against bugs while the map is being built
+		</span><span class="kw">let </span><span class="kw-2">mut </span>bone_map: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;EdgeIndex&gt;&gt; = BoneMap::default();
 
-        <span class="comment">// Create root skeletal bone: edge (bone) connects to nodes (joints)
-        </span>{
-            <span class="kw">let </span>head = g.add_node(Node::new());
-            <span class="kw">let </span>(edge, _tail) = g.add_child(
-                head,
-                Edge::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
-                Node::new(),
-            );
-            bone_map[BoneKind::Neck] = <span class="prelude-val">Some</span>(edge);
-        }
+		<span class="comment">// Create root skeletal bone: edge (bone) connects to nodes (joints)
+		</span>{
+			<span class="kw">let </span>head = g.add_node(Node::new());
+			<span class="kw">let </span>(edge, _tail) = g.add_child(
+				head,
+				Edge::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
+				Node::new(),
+			);
+			bone_map[BoneKind::Neck] = <span class="prelude-val">Some</span>(edge);
+		}
 
-        <span class="comment">// This closure adds all the immediate children of `parent_bone` to the graph
-        </span><span class="kw">let </span><span class="kw-2">mut </span>add_child_bones = |parent_bone: BoneKind| {
-            <span class="kw">let </span>parent_edge =
-                bone_map[parent_bone].expect(<span class="string">&quot;Bone was not yet added to graph&quot;</span>);
-            <span class="kw">let </span>head = g.edge_endpoints(parent_edge).unwrap().<span class="number">1</span>; <span class="comment">// Get child node of edge
-            </span><span class="kw">for </span>child_kind <span class="kw">in </span>parent_bone.children() {
-                <span class="comment">// No need to work with a ref, `child_kind` is `Copy`
-                </span><span class="kw">let </span>child_kind = <span class="kw-2">*</span>child_kind;
+		<span class="comment">// This closure adds all the immediate children of `parent_bone` to the graph
+		</span><span class="kw">let </span><span class="kw-2">mut </span>add_child_bones = |parent_bone: BoneKind| {
+			<span class="kw">let </span>parent_edge =
+				bone_map[parent_bone].expect(<span class="string">&quot;Bone was not yet added to graph&quot;</span>);
+			<span class="kw">let </span>head = g.edge_endpoints(parent_edge).unwrap().<span class="number">1</span>; <span class="comment">// Get child node of edge
+			</span><span class="kw">for </span>child_kind <span class="kw">in </span>parent_bone.children() {
+				<span class="comment">// No need to work with a ref, `child_kind` is `Copy`
+				</span><span class="kw">let </span>child_kind = <span class="kw-2">*</span>child_kind;
 
-                <span class="kw">let </span>(edge, _tail) = g.add_child(
-                    head,
-                    Edge::new(child_kind, config.bone_lengths[child_kind]),
-                    Node::new(),
-                );
+				<span class="kw">let </span>(edge, _tail) = g.add_child(
+					head,
+					Edge::new(child_kind, config.bone_lengths[child_kind]),
+					Node::new(),
+				);
 
-                bone_map[child_kind] = <span class="prelude-val">Some</span>(edge);
-            }
-        };
+				bone_map[child_kind] = <span class="prelude-val">Some</span>(edge);
+			}
+		};
 
-        <span class="comment">// Call `add_child_bones` in a depth-first traversal to build the actual graph.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>bone_stack = <span class="macro">vec!</span>[BoneKind::Neck];
-        <span class="kw">while </span>!bone_stack.is_empty() {
-            <span class="kw">let </span>parent_bone = bone_stack.pop().unwrap();
-            add_child_bones(parent_bone);
-            bone_stack.extend(parent_bone.children());
-        }
+		<span class="comment">// Call `add_child_bones` in a depth-first traversal to build the actual graph.
+		</span><span class="kw">let </span><span class="kw-2">mut </span>bone_stack = <span class="macro">vec!</span>[BoneKind::Neck];
+		<span class="kw">while </span>!bone_stack.is_empty() {
+			<span class="kw">let </span>parent_bone = bone_stack.pop().unwrap();
+			add_child_bones(parent_bone);
+			bone_stack.extend(parent_bone.children());
+		}
 
-        <span class="comment">// Map is populated, get rid of the `Optional`
-        </span><span class="kw">let </span>bone_map: BoneMap&lt;EdgeIndex&gt; = bone_map.map(|_kind, bone| bone.unwrap());
+		<span class="comment">// Map is populated, get rid of the `Optional`
+		</span><span class="kw">let </span>bone_map: BoneMap&lt;EdgeIndex&gt; = bone_map.map(|_kind, bone| bone.unwrap());
 
-        <span class="self">Self </span>{ graph: g, bone_map }
-    }
+		<span class="self">Self </span>{ graph: g, bone_map }
+	}
 }
 <span class="kw">impl </span>Index&lt;BoneKind&gt; <span class="kw">for </span>Skeleton {
-    <span class="kw">type </span>Output = Edge;
+	<span class="kw">type </span>Output = Edge;
 
-    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: BoneKind) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-        <span class="kw">let </span>edge = <span class="self">self</span>.bone_map[index];
-        <span class="kw-2">&amp;</span><span class="self">self</span>.graph[edge]
-    }
+	<span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: BoneKind) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+		<span class="kw">let </span>edge = <span class="self">self</span>.bone_map[index];
+		<span class="kw-2">&amp;</span><span class="self">self</span>.graph[edge]
+	}
 }
 
 <span class="attribute">#[cfg(test)]
 </span><span class="kw">mod </span>test {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="doccomment">/// Tests that all lengths of the skeleton are properly initialized based on `SkeletonConfig`
-    </span><span class="attribute">#[test]
-    </span><span class="kw">fn </span>test_lengths() {
-        <span class="kw">let </span><span class="kw-2">mut </span>bone_lengths = BoneMap::new([<span class="number">0.</span>; BoneKind::num_types()]);
+	<span class="doccomment">/// Tests that all lengths of the skeleton are properly initialized based on `SkeletonConfig`
+	</span><span class="attribute">#[test]
+	</span><span class="kw">fn </span>test_lengths() {
+		<span class="kw">let </span><span class="kw-2">mut </span>bone_lengths = BoneMap::new([<span class="number">0.</span>; BoneKind::num_types()]);
 
-        bone_lengths[BoneKind::FootL] = <span class="number">4.0</span>;
+		bone_lengths[BoneKind::FootL] = <span class="number">4.0</span>;
 
-        <span class="kw">let </span>config = SkeletonConfig::new(bone_lengths);
+		<span class="kw">let </span>config = SkeletonConfig::new(bone_lengths);
 
-        <span class="kw">let </span>skeleton = Skeleton::new(<span class="kw-2">&amp;</span>config);
+		<span class="kw">let </span>skeleton = Skeleton::new(<span class="kw-2">&amp;</span>config);
 
-        <span class="kw">for </span>(bone, length) <span class="kw">in </span>bone_lengths.iter() {
-            <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>skeleton[bone].length(), length);
-        }
-    }
+		<span class="kw">for </span>(bone, length) <span class="kw">in </span>bone_lengths.iter() {
+			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>skeleton[bone].length(), length);
+		}
+	}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="skeletal_model" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

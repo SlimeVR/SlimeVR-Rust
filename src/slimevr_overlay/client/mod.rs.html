@@ -132,97 +132,97 @@
 <span class="kw">type </span>Wss = WebSocketStream&lt;MaybeTlsStream&lt;TcpStream&gt;&gt;;
 
 <span class="kw">pub struct </span>Client {
-    socket_task: JoinHandle&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;,
+	socket_task: JoinHandle&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;,
 }
 <span class="kw">impl </span>Client {
-    <span class="kw">pub fn </span>new(
-        connect_to: String,
-        sub: SubsystemHandle,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="self">Self</span>, watch::Receiver&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;)&gt; {
-        <span class="kw">let </span>(data_send, data_recv) = watch::channel(<span class="prelude-val">None</span>);
+	<span class="kw">pub fn </span>new(
+		connect_to: String,
+		sub: SubsystemHandle,
+	) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="self">Self</span>, watch::Receiver&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;)&gt; {
+		<span class="kw">let </span>(data_send, data_recv) = watch::channel(<span class="prelude-val">None</span>);
 
-        <span class="kw">let </span>socket_task = task::spawn(<span class="kw">async move </span>{
-            <span class="macro">tokio::select! </span>{
-                <span class="kw">_ </span>= sub.on_shutdown_requested() =&gt; {}
-                result = <span class="self">Self</span>::run(connect_to, data_send) =&gt; {result<span class="question-mark">?</span>}
-            };
-            <span class="prelude-val">Ok</span>(())
-        });
+		<span class="kw">let </span>socket_task = task::spawn(<span class="kw">async move </span>{
+			<span class="macro">tokio::select! </span>{
+				<span class="kw">_ </span>= sub.on_shutdown_requested() =&gt; {}
+				result = <span class="self">Self</span>::run(connect_to, data_send) =&gt; {result<span class="question-mark">?</span>}
+			};
+			<span class="prelude-val">Ok</span>(())
+		});
 
-        <span class="prelude-val">Ok</span>((<span class="self">Self </span>{ socket_task }, data_recv))
-    }
+		<span class="prelude-val">Ok</span>((<span class="self">Self </span>{ socket_task }, data_recv))
+	}
 
-    <span class="kw">async fn </span>run(
-        connect_to: String,
-        data_send: watch::Sender&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>disconnected = <span class="prelude-val">Some</span>(ClientStateMachine::new(connect_to));
-        <span class="kw">loop </span>{
-            <span class="kw">let </span>ready = <span class="kw">match </span>disconnected.take().unwrap().connect().<span class="kw">await </span>{
-                <span class="prelude-val">Ok</span>(ready) =&gt; ready,
-                <span class="prelude-val">Err</span>((d, err)) =&gt; {
-                    <span class="macro">log::error!</span>(<span class="string">&quot;Error while connecting: {}&quot;</span>, err);
-                    disconnected = <span class="prelude-val">Some</span>(d);
-                    <span class="kw">continue</span>;
-                }
-            };
-            <span class="kw">let </span>active = <span class="kw">match </span>ready.request_feed().<span class="kw">await </span>{
-                <span class="prelude-val">Ok</span>(active) =&gt; active,
-                <span class="prelude-val">Err</span>((d, err)) =&gt; {
-                    <span class="macro">log::error!</span>(
-                        <span class="string">&quot;{:?}&quot;</span>,
-                        eyre::Report::new(err).wrap_err(<span class="string">&quot;Failed to request feed&quot;</span>)
-                    );
-                    disconnected = <span class="prelude-val">Some</span>(d);
-                    <span class="kw">continue</span>;
-                }
-            };
-            <span class="kw">let </span><span class="kw-2">mut </span>active = <span class="prelude-val">Some</span>(active);
-            <span class="kw">loop </span>{
-                <span class="kw">use </span>RecvError <span class="kw">as </span>E;
-                <span class="kw">match </span>active.take().unwrap().recv().<span class="kw">await </span>{
-                    <span class="prelude-val">Ok</span>((a, update)) =&gt; {
-                        <span class="macro">log::trace!</span>(<span class="string">&quot;Sending data to watchers: {:#?}&quot;</span>, update);
-                        active = <span class="prelude-val">Some</span>(a);
-                        data_send.send_replace(<span class="prelude-val">Some</span>(update));
-                    }
-                    <span class="prelude-val">Err</span>(err) =&gt; {
-                        <span class="kw">let </span>display = <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>err);
-                        <span class="kw">match </span>err {
-                            E::CriticalWs(d, <span class="kw">_</span>) =&gt; {
-                                <span class="macro">log::error!</span>(<span class="string">&quot;Critical websocket error: {}&quot;</span>, display);
-                                disconnected = <span class="prelude-val">Some</span>(d);
-                                <span class="kw">break</span>;
-                            }
-                            E::None(d) =&gt; {
-                                <span class="macro">log::error!</span>(<span class="string">&quot;Critical websocket error: {}&quot;</span>, display);
-                                disconnected = <span class="prelude-val">Some</span>(d);
-                                <span class="kw">break</span>;
-                            }
-                            E::Deserialize(a, DeserializeError::PayloadType(<span class="kw">_</span>)) =&gt; {
-                                active = <span class="prelude-val">Some</span>(a)
-                            }
-                            E::Deserialize(a, d_err) =&gt; {
-                                <span class="kw">match </span>d_err {
-                                    DeserializeError::PayloadType(<span class="kw">_</span>) =&gt; {
-                                        <span class="macro">log::trace!</span>(<span class="string">&quot;{}&quot;</span>, d_err)
-                                    }
-                                    <span class="kw">_ </span>=&gt; {
-                                        <span class="macro">log::warn!</span>(<span class="string">&quot;Deserialization error: {}&quot;</span>, display)
-                                    }
-                                }
-                                active = <span class="prelude-val">Some</span>(a);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+	<span class="kw">async fn </span>run(
+		connect_to: String,
+		data_send: watch::Sender&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;,
+	) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+		<span class="kw">let </span><span class="kw-2">mut </span>disconnected = <span class="prelude-val">Some</span>(ClientStateMachine::new(connect_to));
+		<span class="kw">loop </span>{
+			<span class="kw">let </span>ready = <span class="kw">match </span>disconnected.take().unwrap().connect().<span class="kw">await </span>{
+				<span class="prelude-val">Ok</span>(ready) =&gt; ready,
+				<span class="prelude-val">Err</span>((d, err)) =&gt; {
+					<span class="macro">log::error!</span>(<span class="string">&quot;Error while connecting: {}&quot;</span>, err);
+					disconnected = <span class="prelude-val">Some</span>(d);
+					<span class="kw">continue</span>;
+				}
+			};
+			<span class="kw">let </span>active = <span class="kw">match </span>ready.request_feed().<span class="kw">await </span>{
+				<span class="prelude-val">Ok</span>(active) =&gt; active,
+				<span class="prelude-val">Err</span>((d, err)) =&gt; {
+					<span class="macro">log::error!</span>(
+						<span class="string">&quot;{:?}&quot;</span>,
+						eyre::Report::new(err).wrap_err(<span class="string">&quot;Failed to request feed&quot;</span>)
+					);
+					disconnected = <span class="prelude-val">Some</span>(d);
+					<span class="kw">continue</span>;
+				}
+			};
+			<span class="kw">let </span><span class="kw-2">mut </span>active = <span class="prelude-val">Some</span>(active);
+			<span class="kw">loop </span>{
+				<span class="kw">use </span>RecvError <span class="kw">as </span>E;
+				<span class="kw">match </span>active.take().unwrap().recv().<span class="kw">await </span>{
+					<span class="prelude-val">Ok</span>((a, update)) =&gt; {
+						<span class="macro">log::trace!</span>(<span class="string">&quot;Sending data to watchers: {:#?}&quot;</span>, update);
+						active = <span class="prelude-val">Some</span>(a);
+						data_send.send_replace(<span class="prelude-val">Some</span>(update));
+					}
+					<span class="prelude-val">Err</span>(err) =&gt; {
+						<span class="kw">let </span>display = <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>err);
+						<span class="kw">match </span>err {
+							E::CriticalWs(d, <span class="kw">_</span>) =&gt; {
+								<span class="macro">log::error!</span>(<span class="string">&quot;Critical websocket error: {}&quot;</span>, display);
+								disconnected = <span class="prelude-val">Some</span>(d);
+								<span class="kw">break</span>;
+							}
+							E::None(d) =&gt; {
+								<span class="macro">log::error!</span>(<span class="string">&quot;Critical websocket error: {}&quot;</span>, display);
+								disconnected = <span class="prelude-val">Some</span>(d);
+								<span class="kw">break</span>;
+							}
+							E::Deserialize(a, DeserializeError::PayloadType(<span class="kw">_</span>)) =&gt; {
+								active = <span class="prelude-val">Some</span>(a)
+							}
+							E::Deserialize(a, d_err) =&gt; {
+								<span class="kw">match </span>d_err {
+									DeserializeError::PayloadType(<span class="kw">_</span>) =&gt; {
+										<span class="macro">log::trace!</span>(<span class="string">&quot;{}&quot;</span>, d_err)
+									}
+									<span class="kw">_ </span>=&gt; {
+										<span class="macro">log::warn!</span>(<span class="string">&quot;Deserialization error: {}&quot;</span>, display)
+									}
+								}
+								active = <span class="prelude-val">Some</span>(a);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
-    <span class="kw">pub async fn </span>join(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.socket_task.<span class="kw">await</span>.wrap_err(<span class="string">&quot;Failed to join!&quot;</span>)<span class="question-mark">?
-    </span>}
+	<span class="kw">pub async fn </span>join(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+		<span class="self">self</span>.socket_task.<span class="kw">await</span>.wrap_err(<span class="string">&quot;Failed to join!&quot;</span>)<span class="question-mark">?
+	</span>}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

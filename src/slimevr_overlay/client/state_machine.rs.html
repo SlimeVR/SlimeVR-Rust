@@ -267,30 +267,30 @@
 <span class="doccomment">/// Data common to all states goes here
 </span><span class="attribute">#[derive(Debug)]
 </span><span class="kw">struct </span>Common {
-    connect_to: String,
+	connect_to: String,
 }
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>ClientStateMachine&lt;State = Disconnected&gt; {
-    state: State,
-    common: Common,
+	state: State,
+	common: Common,
 }
 <span class="kw">impl </span>ClientStateMachine {
-    <span class="doccomment">/// Creates a new `NetworkStateMachine`. This starts in the [`Disconnected`] state.
-    </span><span class="kw">pub fn </span>new(connect_to: String) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            state: Disconnected,
-            common: Common { connect_to },
-        }
-    }
+	<span class="doccomment">/// Creates a new `NetworkStateMachine`. This starts in the [`Disconnected`] state.
+	</span><span class="kw">pub fn </span>new(connect_to: String) -&gt; <span class="self">Self </span>{
+		<span class="self">Self </span>{
+			state: Disconnected,
+			common: Common { connect_to },
+		}
+	}
 }
 <span class="kw">impl</span>&lt;S&gt; ClientStateMachine&lt;S&gt; {
-    <span class="doccomment">/// Helper function to transition to next state while preserving all common data
-    </span><span class="kw">fn </span>into_state&lt;Next&gt;(<span class="self">self</span>, state: Next) -&gt; ClientStateMachine&lt;Next&gt; {
-        ClientStateMachine {
-            common: <span class="self">self</span>.common,
-            state,
-        }
-    }
+	<span class="doccomment">/// Helper function to transition to next state while preserving all common data
+	</span><span class="kw">fn </span>into_state&lt;Next&gt;(<span class="self">self</span>, state: Next) -&gt; ClientStateMachine&lt;Next&gt; {
+		ClientStateMachine {
+			common: <span class="self">self</span>.common,
+			state,
+		}
+	}
 }
 
 <span class="comment">// Makes things easier to type
@@ -300,187 +300,187 @@
 
 </span><span class="attribute">#[derive(thiserror::Error, Debug)]
 </span><span class="kw">pub enum </span>DeserializeError {
-    <span class="attribute">#[error(<span class="string">&quot;Decoding error: {1}&quot;</span>)]
-    </span>DecodeError(Vec&lt;u8&gt;, <span class="attribute">#[source] </span>DecodeError),
-    <span class="attribute">#[error(<span class="string">&quot;Payload was an invalid type&quot;</span>)]
-    </span>PayloadType(Message),
-    <span class="attribute">#[error(transparent)]
-    </span>Ws(<span class="attribute">#[from] </span>WsError),
+	<span class="attribute">#[error(<span class="string">&quot;Decoding error: {1}&quot;</span>)]
+	</span>DecodeError(Vec&lt;u8&gt;, <span class="attribute">#[source] </span>DecodeError),
+	<span class="attribute">#[error(<span class="string">&quot;Payload was an invalid type&quot;</span>)]
+	</span>PayloadType(Message),
+	<span class="attribute">#[error(transparent)]
+	</span>Ws(<span class="attribute">#[from] </span>WsError),
 }
 
 <span class="doccomment">/// Client is fully disconnected from the server.
 </span><span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Disconnected;
 <span class="kw">impl </span>M&lt;Disconnected&gt; {
-    <span class="kw">pub async fn </span>connect(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;M&lt;Connected&gt;, (<span class="self">Self</span>, WsError)&gt; {
-        <span class="kw">match </span>connect_async(<span class="kw-2">&amp;</span><span class="self">self</span>.common.connect_to).<span class="kw">await </span>{
-            <span class="prelude-val">Ok</span>((socket, <span class="kw">_</span>)) =&gt; {
-                <span class="kw">let </span>(sink, stream) = socket.split();
+	<span class="kw">pub async fn </span>connect(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;M&lt;Connected&gt;, (<span class="self">Self</span>, WsError)&gt; {
+		<span class="kw">match </span>connect_async(<span class="kw-2">&amp;</span><span class="self">self</span>.common.connect_to).<span class="kw">await </span>{
+			<span class="prelude-val">Ok</span>((socket, <span class="kw">_</span>)) =&gt; {
+				<span class="kw">let </span>(sink, stream) = socket.split();
 
-                <span class="comment">// We never actually error, but this signature satisfies `sink.with()`
-                // `Ready` is required because otherwise our `Future` won&#39;t implement `Debug`
-                </span><span class="kw">fn </span>serialize(data: Data) -&gt; future::Ready&lt;<span class="prelude-ty">Result</span>&lt;Message, WsError&gt;&gt; {
-                    <span class="kw">let </span>v = data.into_vec();
-                    <span class="macro">log::trace!</span>(<span class="string">&quot;Sending serialized data: {v:?}&quot;</span>);
-                    future::ready(<span class="prelude-val">Ok</span>(Message::Binary(v)))
-                }
+				<span class="comment">// We never actually error, but this signature satisfies `sink.with()`
+				// `Ready` is required because otherwise our `Future` won&#39;t implement `Debug`
+				</span><span class="kw">fn </span>serialize(data: Data) -&gt; future::Ready&lt;<span class="prelude-ty">Result</span>&lt;Message, WsError&gt;&gt; {
+					<span class="kw">let </span>v = data.into_vec();
+					<span class="macro">log::trace!</span>(<span class="string">&quot;Sending serialized data: {v:?}&quot;</span>);
+					future::ready(<span class="prelude-val">Ok</span>(Message::Binary(v)))
+				}
 
-                <span class="kw">fn </span>deserialize(
-                    msg: <span class="prelude-ty">Result</span>&lt;Message, WsError&gt;,
-                ) -&gt; <span class="prelude-ty">Result</span>&lt;Data, DeserializeError&gt; {
-                    <span class="macro">log::trace!</span>(<span class="string">&quot;Received websocket message&quot;</span>);
-                    <span class="kw">use </span>DeserializeError::<span class="kw-2">*</span>;
-                    <span class="kw">match </span>msg {
-                        <span class="prelude-val">Ok</span>(Message::Binary(v)) =&gt; {
-                            Data::from_vec(v).map_err(|e| DecodeError(e.<span class="number">0</span>, e.<span class="number">1</span>))
-                        }
-                        <span class="prelude-val">Ok</span>(m) =&gt; <span class="prelude-val">Err</span>(PayloadType(m)),
-                        <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(Ws(err)),
-                    }
-                }
+				<span class="kw">fn </span>deserialize(
+					msg: <span class="prelude-ty">Result</span>&lt;Message, WsError&gt;,
+				) -&gt; <span class="prelude-ty">Result</span>&lt;Data, DeserializeError&gt; {
+					<span class="macro">log::trace!</span>(<span class="string">&quot;Received websocket message&quot;</span>);
+					<span class="kw">use </span>DeserializeError::<span class="kw-2">*</span>;
+					<span class="kw">match </span>msg {
+						<span class="prelude-val">Ok</span>(Message::Binary(v)) =&gt; {
+							Data::from_vec(v).map_err(|e| DecodeError(e.<span class="number">0</span>, e.<span class="number">1</span>))
+						}
+						<span class="prelude-val">Ok</span>(m) =&gt; <span class="prelude-val">Err</span>(PayloadType(m)),
+						<span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(Ws(err)),
+					}
+				}
 
-                <span class="kw">let </span>sink = sink.with(serialize);
-                <span class="kw">let </span>sink: Pin&lt;Box&lt;<span class="kw">dyn </span>SlimeSinkT&gt;&gt; = Box::pin(sink);
-                <span class="kw">let </span>stream: SlimeStream = stream.map(deserialize);
-                <span class="prelude-val">Ok</span>(<span class="self">self</span>.into_state(Connected {
-                    sink,
-                    stream,
-                    fbb: FlatBufferBuilder::new(),
-                }))
-            }
-            <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>((<span class="self">self</span>.into_state(Disconnected), e)),
-        }
-    }
+				<span class="kw">let </span>sink = sink.with(serialize);
+				<span class="kw">let </span>sink: Pin&lt;Box&lt;<span class="kw">dyn </span>SlimeSinkT&gt;&gt; = Box::pin(sink);
+				<span class="kw">let </span>stream: SlimeStream = stream.map(deserialize);
+				<span class="prelude-val">Ok</span>(<span class="self">self</span>.into_state(Connected {
+					sink,
+					stream,
+					fbb: FlatBufferBuilder::new(),
+				}))
+			}
+			<span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>((<span class="self">self</span>.into_state(Disconnected), e)),
+		}
+	}
 }
 
 <span class="doccomment">/// Client is connected over websocket
 </span><span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Connected {
-    sink: Pin&lt;SlimeSink&gt;,
-    stream: SlimeStream,
-    fbb: FlatBufferBuilder&lt;<span class="lifetime">&#39;static</span>&gt;,
+	sink: Pin&lt;SlimeSink&gt;,
+	stream: SlimeStream,
+	fbb: FlatBufferBuilder&lt;<span class="lifetime">&#39;static</span>&gt;,
 }
 <span class="kw">impl </span>M&lt;Connected&gt; {
-    <span class="kw">pub async fn </span>request_feed(
-        <span class="kw-2">mut </span><span class="self">self</span>,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;M&lt;Active&gt;, (M&lt;Disconnected&gt;, WsError)&gt; {
-        <span class="kw">use </span>solarxr_protocol::{
-            data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
-            MessageBundleArgs,
-        };
-        <span class="kw">let </span>fbb = <span class="kw-2">&amp;mut </span><span class="self">self</span>.state.fbb;
-        <span class="kw">let </span>data = {
-            <span class="kw">use </span>solarxr_protocol::data_feed::tracker::{
-                TrackerDataMask, TrackerDataMaskArgs,
-            };
-            <span class="kw">use </span>solarxr_protocol::data_feed::{
-                DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
-                StartDataFeedArgs,
-            };
+	<span class="kw">pub async fn </span>request_feed(
+		<span class="kw-2">mut </span><span class="self">self</span>,
+	) -&gt; <span class="prelude-ty">Result</span>&lt;M&lt;Active&gt;, (M&lt;Disconnected&gt;, WsError)&gt; {
+		<span class="kw">use </span>solarxr_protocol::{
+			data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
+			MessageBundleArgs,
+		};
+		<span class="kw">let </span>fbb = <span class="kw-2">&amp;mut </span><span class="self">self</span>.state.fbb;
+		<span class="kw">let </span>data = {
+			<span class="kw">use </span>solarxr_protocol::data_feed::tracker::{
+				TrackerDataMask, TrackerDataMaskArgs,
+			};
+			<span class="kw">use </span>solarxr_protocol::data_feed::{
+				DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
+				StartDataFeedArgs,
+			};
 
-            <span class="kw">let </span>_tracker_mask = TrackerDataMask::create(
-                fbb,
-                <span class="kw-2">&amp;</span>TrackerDataMaskArgs {
-                    <span class="comment">// TODO: We only need the body part here, not the whole TrackerInfo
-                    </span>info: <span class="bool-val">true</span>,
-                    rotation: <span class="bool-val">true</span>,
-                    position: <span class="bool-val">true</span>,
-                    ..Default::default()
-                },
-            );
+			<span class="kw">let </span>_tracker_mask = TrackerDataMask::create(
+				fbb,
+				<span class="kw-2">&amp;</span>TrackerDataMaskArgs {
+					<span class="comment">// TODO: We only need the body part here, not the whole TrackerInfo
+					</span>info: <span class="bool-val">true</span>,
+					rotation: <span class="bool-val">true</span>,
+					position: <span class="bool-val">true</span>,
+					..Default::default()
+				},
+			);
 
-            <span class="kw">let </span>data_feed_config = DataFeedConfig::create(
-                fbb,
-                <span class="kw-2">&amp;</span>DataFeedConfigArgs {
-                    minimum_time_since_last: <span class="number">10</span>,
-                    <span class="comment">// We don&#39;t care about anything but bones
-                    </span>bone_mask: <span class="bool-val">true</span>,
-                    ..Default::default()
-                },
-            );
-            <span class="kw">let </span>data_feed_config = fbb.create_vector(<span class="kw-2">&amp;</span>[data_feed_config]);
+			<span class="kw">let </span>data_feed_config = DataFeedConfig::create(
+				fbb,
+				<span class="kw-2">&amp;</span>DataFeedConfigArgs {
+					minimum_time_since_last: <span class="number">10</span>,
+					<span class="comment">// We don&#39;t care about anything but bones
+					</span>bone_mask: <span class="bool-val">true</span>,
+					..Default::default()
+				},
+			);
+			<span class="kw">let </span>data_feed_config = fbb.create_vector(<span class="kw-2">&amp;</span>[data_feed_config]);
 
-            <span class="kw">let </span>start_data_feed = StartDataFeed::create(
-                fbb,
-                <span class="kw-2">&amp;</span>StartDataFeedArgs {
-                    data_feeds: <span class="prelude-val">Some</span>(data_feed_config),
-                },
-            );
-            <span class="kw">let </span>header = DataFeedMessageHeader::create(
-                fbb,
-                <span class="kw-2">&amp;</span>DataFeedMessageHeaderArgs {
-                    message_type: DataFeedMessage::StartDataFeed,
-                    message: <span class="prelude-val">Some</span>(start_data_feed.as_union_value()),
-                    ..Default::default()
-                },
-            );
-            <span class="kw">let </span>header = fbb.create_vector(<span class="kw-2">&amp;</span>[header]);
-            <span class="kw">let </span>root = MessageBundle::create(
-                fbb,
-                <span class="kw-2">&amp;</span>MessageBundleArgs {
-                    data_feed_msgs: <span class="prelude-val">Some</span>(header),
-                    ..Default::default()
-                },
-            );
-            fbb.finish(root, <span class="prelude-val">None</span>);
-            <span class="kw">let </span>v = fbb.finished_data().to_vec();
+			<span class="kw">let </span>start_data_feed = StartDataFeed::create(
+				fbb,
+				<span class="kw-2">&amp;</span>StartDataFeedArgs {
+					data_feeds: <span class="prelude-val">Some</span>(data_feed_config),
+				},
+			);
+			<span class="kw">let </span>header = DataFeedMessageHeader::create(
+				fbb,
+				<span class="kw-2">&amp;</span>DataFeedMessageHeaderArgs {
+					message_type: DataFeedMessage::StartDataFeed,
+					message: <span class="prelude-val">Some</span>(start_data_feed.as_union_value()),
+					..Default::default()
+				},
+			);
+			<span class="kw">let </span>header = fbb.create_vector(<span class="kw-2">&amp;</span>[header]);
+			<span class="kw">let </span>root = MessageBundle::create(
+				fbb,
+				<span class="kw-2">&amp;</span>MessageBundleArgs {
+					data_feed_msgs: <span class="prelude-val">Some</span>(header),
+					..Default::default()
+				},
+			);
+			fbb.finish(root, <span class="prelude-val">None</span>);
+			<span class="kw">let </span>v = fbb.finished_data().to_vec();
 
-            <span class="attribute">#[cfg(not(debug_assertions))]
-            </span><span class="kw">unsafe </span>{
-                Data::from_vec_unchecked(v)
-            }
-            <span class="attribute">#[cfg(debug_assertions)]
-            </span>Data::from_vec(v).unwrap()
-        };
+			<span class="attribute">#[cfg(not(debug_assertions))]
+			</span><span class="kw">unsafe </span>{
+				Data::from_vec_unchecked(v)
+			}
+			<span class="attribute">#[cfg(debug_assertions)]
+			</span>Data::from_vec(v).unwrap()
+		};
 
-        <span class="kw">let </span><span class="kw-2">mut </span>sink = <span class="self">self</span>.state.sink.as_mut();
-        <span class="kw">match </span>sink.send(data).<span class="kw">await </span>{
-            <span class="prelude-val">Ok</span>(()) =&gt; <span class="prelude-val">Ok</span>(M {
-                common: <span class="self">self</span>.common,
-                state: Active {
-                    _sink: <span class="self">self</span>.state.sink,
-                    stream: <span class="self">self</span>.state.stream,
-                },
-            }),
-            <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>((
-                M {
-                    common: <span class="self">self</span>.common,
-                    state: Disconnected,
-                },
-                err,
-            )),
-        }
-    }
+		<span class="kw">let </span><span class="kw-2">mut </span>sink = <span class="self">self</span>.state.sink.as_mut();
+		<span class="kw">match </span>sink.send(data).<span class="kw">await </span>{
+			<span class="prelude-val">Ok</span>(()) =&gt; <span class="prelude-val">Ok</span>(M {
+				common: <span class="self">self</span>.common,
+				state: Active {
+					_sink: <span class="self">self</span>.state.sink,
+					stream: <span class="self">self</span>.state.stream,
+				},
+			}),
+			<span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>((
+				M {
+					common: <span class="self">self</span>.common,
+					state: Disconnected,
+				},
+				err,
+			)),
+		}
+	}
 }
 
 <span class="doccomment">/// Datafeed is active
 </span><span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Active {
-    _sink: Pin&lt;SlimeSink&gt;,
-    stream: SlimeStream,
+	_sink: Pin&lt;SlimeSink&gt;,
+	stream: SlimeStream,
 }
 <span class="kw">impl </span>M&lt;Active&gt; {
-    <span class="kw">pub async fn </span>recv(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; RecvResult {
-        <span class="kw">use </span>RecvError <span class="kw">as </span>E;
-        <span class="kw">match </span><span class="self">self</span>.state.stream.next().<span class="kw">await </span>{
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(v)) =&gt; <span class="prelude-val">Ok</span>((<span class="self">self</span>, FeedUpdate(v))),
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(DeserializeError::Ws(ws_err))) =&gt; {
-                <span class="prelude-val">Err</span>(E::CriticalWs(<span class="self">self</span>.into_state(Disconnected), ws_err))
-            }
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err)) =&gt; <span class="prelude-val">Err</span>(E::Deserialize(<span class="self">self</span>, err)),
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(E::None(<span class="self">self</span>.into_state(Disconnected))),
-        }
-    }
+	<span class="kw">pub async fn </span>recv(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; RecvResult {
+		<span class="kw">use </span>RecvError <span class="kw">as </span>E;
+		<span class="kw">match </span><span class="self">self</span>.state.stream.next().<span class="kw">await </span>{
+			<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(v)) =&gt; <span class="prelude-val">Ok</span>((<span class="self">self</span>, FeedUpdate(v))),
+			<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(DeserializeError::Ws(ws_err))) =&gt; {
+				<span class="prelude-val">Err</span>(E::CriticalWs(<span class="self">self</span>.into_state(Disconnected), ws_err))
+			}
+			<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err)) =&gt; <span class="prelude-val">Err</span>(E::Deserialize(<span class="self">self</span>, err)),
+			<span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(E::None(<span class="self">self</span>.into_state(Disconnected))),
+		}
+	}
 }
 
 <span class="attribute">#[derive(thiserror::Error, Debug)]
 </span><span class="kw">pub enum </span>RecvError {
-    <span class="attribute">#[error(<span class="string">&quot;Critical websocket error: {1}&quot;</span>)]
-    </span>CriticalWs(M&lt;Disconnected&gt;, WsError),
-    <span class="attribute">#[error(<span class="string">&quot;Error while deserializing: {1}&quot;</span>)]
-    </span>Deserialize(M&lt;Active&gt;, DeserializeError),
-    <span class="attribute">#[error(<span class="string">&quot;Stream produced `None`&quot;</span>)]
-    </span><span class="prelude-val">None</span>(M&lt;Disconnected&gt;),
+	<span class="attribute">#[error(<span class="string">&quot;Critical websocket error: {1}&quot;</span>)]
+	</span>CriticalWs(M&lt;Disconnected&gt;, WsError),
+	<span class="attribute">#[error(<span class="string">&quot;Error while deserializing: {1}&quot;</span>)]
+	</span>Deserialize(M&lt;Active&gt;, DeserializeError),
+	<span class="attribute">#[error(<span class="string">&quot;Stream produced `None`&quot;</span>)]
+	</span><span class="prelude-val">None</span>(M&lt;Disconnected&gt;),
 }
 
 <span class="kw">pub type </span>RecvResult = <span class="prelude-ty">Result</span>&lt;(M&lt;Active&gt;, FeedUpdate), RecvError&gt;;
