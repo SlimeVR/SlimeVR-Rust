@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["UART_PATH",""],["USB_SERIAL_PATH",""]],"fn":[["main",""]],"mod":[["errors","Contains all the error types used in the program."]]};
