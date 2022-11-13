@@ -61,11 +61,11 @@
 
 // These set linter options
 #![deny(
-    invalid_doc_attributes,
-    rustdoc::broken_intra_doc_links,
-    rustdoc::private_intra_doc_links,
-    unused_import_braces,
-    unused
+	invalid_doc_attributes,
+	rustdoc::broken_intra_doc_links,
+	rustdoc::private_intra_doc_links,
+	unused_import_braces,
+	unused
 )]
 
 pub mod bone;
