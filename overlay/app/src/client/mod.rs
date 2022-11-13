@@ -1,5 +1,6 @@
 mod data;
 mod state_machine;
+pub mod topic;
 
 use crate::client::state_machine::DeserializeError;
 

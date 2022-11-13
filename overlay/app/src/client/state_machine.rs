@@ -127,55 +127,82 @@ impl M<Connected> {
 		};
 		let fbb = &mut self.state.fbb;
 		let data = {
-			use solarxr_protocol::data_feed::tracker::{
-				TrackerDataMask, TrackerDataMaskArgs,
+			let data_feed_header = {
+				use solarxr_protocol::data_feed::tracker::{
+					TrackerDataMask, TrackerDataMaskArgs,
+				};
+				use solarxr_protocol::data_feed::{
+					DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
+					StartDataFeedArgs,
+				};
+
+				let _tracker_mask = TrackerDataMask::create(
+					fbb,
+					&TrackerDataMaskArgs {
+						// TODO: We only need the body part here, not the whole TrackerInfo
+						info: true,
+						rotation: true,
+						position: true,
+						..Default::default()
+					},
+				);
+
+				let data_feed_config = DataFeedConfig::create(
+					fbb,
+					&DataFeedConfigArgs {
+						minimum_time_since_last: 10,
+						// We don't care about anything but bones
+						bone_mask: true,
+						..Default::default()
+					},
+				);
+				let data_feed_config = fbb.create_vector(&[data_feed_config]);
+
+				let start_data_feed = StartDataFeed::create(
+					fbb,
+					&StartDataFeedArgs {
+						data_feeds: Some(data_feed_config),
+					},
+				);
+				let header = DataFeedMessageHeader::create(
+					fbb,
+					&DataFeedMessageHeaderArgs {
+						message_type: DataFeedMessage::StartDataFeed,
+						message: Some(start_data_feed.as_union_value()),
+						..Default::default()
+					},
+				);
+				let header = fbb.create_vector(&[header]);
+				header
 			};
-			use solarxr_protocol::data_feed::{
-				DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
-				StartDataFeedArgs,
+			let pub_sub_header = {
+				use solarxr_protocol::pub_sub::PubSubUnion;
+				use solarxr_protocol::pub_sub::{PubSubHeader, PubSubHeaderArgs};
+				use solarxr_protocol::pub_sub::{
+					SubscriptionRequest, SubscriptionRequestArgs,
+				};
+
+				let subscription_request = SubscriptionRequest::create(
+					fbb,
+					&SubscriptionRequestArgs {
+						..Default::default()
+					},
+				);
+
+				let header = PubSubHeader::create(
+					fbb,
+					&PubSubHeaderArgs {
+						u_type: PubSubUnion::SubscriptionRequest,
+						u: Some(subscription_request.as_union_value()),
+						..Default::default()
+					},
+				);
+				let header = fbb.create_vector(&[header]);
 			};
-
-			let _tracker_mask = TrackerDataMask::create(
-				fbb,
-				&TrackerDataMaskArgs {
-					// TODO: We only need the body part here, not the whole TrackerInfo
-					info: true,
-					rotation: true,
-					position: true,
-					..Default::default()
-				},
-			);
-
-			let data_feed_config = DataFeedConfig::create(
-				fbb,
-				&DataFeedConfigArgs {
-					minimum_time_since_last: 10,
-					// We don't care about anything but bones
-					bone_mask: true,
-					..Default::default()
-				},
-			);
-			let data_feed_config = fbb.create_vector(&[data_feed_config]);
-
-			let start_data_feed = StartDataFeed::create(
-				fbb,
-				&StartDataFeedArgs {
-					data_feeds: Some(data_feed_config),
-				},
-			);
-			let header = DataFeedMessageHeader::create(
-				fbb,
-				&DataFeedMessageHeaderArgs {
-					message_type: DataFeedMessage::StartDataFeed,
-					message: Some(start_data_feed.as_union_value()),
-					..Default::default()
-				},
-			);
-			let header = fbb.create_vector(&[header]);
 			let root = MessageBundle::create(
 				fbb,
 				&MessageBundleArgs {
-					data_feed_msgs: Some(header),
+					data_feed_msgs: Some(data_feed_header),
 					..Default::default()
 				},
 			);
