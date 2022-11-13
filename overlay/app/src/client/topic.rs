@@ -1,8 +1,8 @@
 use solarxr_protocol::pub_sub::Message;
 
-const TOPIC_ORG: &str = "slimevr.dev";
-const TOPIC_APP: &str = "overlay";
-const TOPIC_DISPLAY_SETTINGS: &str = "display_settings";
+pub const TOPIC_ORG: &str = "slimevr.dev";
+pub const TOPIC_APP: &str = "overlay";
+pub const TOPIC_DISPLAY_SETTINGS: &str = "display_settings";
 
 pub fn is_overlay_topic(msg: Message<'_>) -> bool {
 	if let Some(topic_id) = msg.topic_as_topic_id() {

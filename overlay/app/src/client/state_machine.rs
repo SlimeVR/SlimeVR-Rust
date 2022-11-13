@@ -9,6 +9,7 @@ use solarxr_protocol::MessageBundle;
 use std::fmt::Debug;
 use std::future;
 use std::pin::Pin;
+use std::time::Duration;
 use tokio_tungstenite::{connect_async, tungstenite};
 use tungstenite::error::Error as WsError;
 use tungstenite::Message;
@@ -118,9 +119,7 @@ pub struct Connected {
 	fbb: FlatBufferBuilder<'static>,
 }
 impl M<Connected> {
-	pub async fn request_feed(
-		mut self,
-	) -> Result<M<Active>, (M<Disconnected>, WsError)> {
+	pub async fn request_feed(mut self) -> Result<M<Active>, RecvError> {
 		use solarxr_protocol::{
 			data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
 			MessageBundleArgs,
@@ -176,15 +175,34 @@ impl M<Connected> {
 				header
 			};
 			let pub_sub_header = {
+				use crate::client::topic::{
+					TOPIC_APP, TOPIC_DISPLAY_SETTINGS, TOPIC_ORG,
+				};
 				use solarxr_protocol::pub_sub::PubSubUnion;
 				use solarxr_protocol::pub_sub::{PubSubHeader, PubSubHeaderArgs};
 				use solarxr_protocol::pub_sub::{
-					SubscriptionRequest, SubscriptionRequestArgs,
+					SubscriptionRequest, SubscriptionRequestArgs, Topic, TopicId,
+					TopicIdArgs,
 				};
+
+				let organization = fbb.create_string(TOPIC_ORG);
+				let app_name = fbb.create_string(TOPIC_APP);
+				let topic = fbb.create_string(TOPIC_DISPLAY_SETTINGS);
+				let topic = TopicId::create(
+					fbb,
+					&TopicIdArgs {
+						organization: Some(organization),
+						app_name: Some(app_name),
+						topic: Some(topic),
+						..Default::default()
+					},
+				);
 
 				let subscription_request = SubscriptionRequest::create(
 					fbb,
 					&SubscriptionRequestArgs {
+						topic_type: Topic::TopicId,
+						topic: Some(topic.as_union_value()),
 						..Default::default()
 					},
 				);
@@ -198,11 +216,13 @@ impl M<Connected> {
 					},
 				);
 				let header = fbb.create_vector(&[header]);
+				header
 			};
 			let root = MessageBundle::create(
 				fbb,
 				&MessageBundleArgs {
 					data_feed_msgs: Some(data_feed_header),
+					pub_sub_msgs: Some(pub_sub_header),
 					..Default::default()
 				},
 			);
@@ -218,21 +238,27 @@ impl M<Connected> {
 		};
 
 		let mut sink = self.state.sink.as_mut();
-		match sink.send(data).await {
-			Ok(()) => Ok(M {
-				common: self.common,
-				state: Active {
-					_sink: self.state.sink,
-					stream: self.state.stream,
-				},
-			}),
-			Err(err) => Err((
-				M {
-					common: self.common,
-					state: Disconnected,
-				},
-				err,
-			)),
+		if let Err(err) = sink.send(data).await {
+			return Err(RecvError::CriticalWs(self.into_state(Disconnected), err));
+		}
+
+		// Wait until we get a `TopicMapping` in response to our `SubscriptionRequest`
+		let first_attempt = std::time::Instant::now();
+		loop {
+			if first_attempt.elapsed() >= Duration::from_millis(1000) {
+				return Err(RecvError::NoTopicMapping(self.into_state(Disconnected)));
+			}
+
+			use RecvError as E;
+			match self.state.stream.next().await {
+				Some(Ok(v)) => {
+					todo!()
+				}
+				Some(Err(DeserializeError::Ws(ws_err))) => {
+					return Err(E::CriticalWs(self.into_state(Disconnected), ws_err))
+				}
+				None => return Err(RecvError::None(self.into_state(Disconnected))),
+			}
 		}
 	}
 }
@@ -242,6 +268,7 @@ impl M<Connected> {
 pub struct Active {
 	_sink: Pin<SlimeSink>,
 	stream: SlimeStream,
+	topic_handle: u32,
 }
 impl M<Active> {
 	pub async fn recv(mut self) -> RecvResult {
@@ -265,6 +292,8 @@ pub enum RecvError {
 	Deserialize(M<Active>, DeserializeError),
 	#[error("Stream produced `None`")]
 	None(M<Disconnected>),
+	#[error("No `TopicMapping` in response to `SubscriptionRequest`")]
+	NoTopicMapping(M<Disconnected>),
 }
 
 pub type RecvResult = Result<(M<Active>, FeedUpdate), RecvError>;
