@@ -19,7 +19,7 @@ jobs:
           override: true
 
       - name: Cache cargo dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: Build Internal Documentation
         uses: actions-rs/cargo@v1
@@ -55,7 +55,7 @@ jobs:
           override: true
 
       - name: Cache cargo dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: Build ${{ matrix.name }} release
         uses: actions-rs/cargo@v1
