@@ -9,6 +9,6 @@ pub use ඞ::get_peripherals;
 use crate::aliases::I2c;
 
 pub struct Peripherals<I: I2c, D: embedded_hal::blocking::delay::DelayMs<u32>> {
-    pub i2c: I,
-    pub delay: D,
+	pub i2c: I,
+	pub delay: D,
 }

@@ -1,2 +1,3 @@
 # Adopt python's `black` col limit for easier side-by-side and cli editing
 max_width = 88
+hard_tabs = true
