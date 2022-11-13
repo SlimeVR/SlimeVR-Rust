@@ -154,8 +154,6 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
 </pre><pre class="rust"><code><span class="kw">use </span>num_derive::{FromPrimitive, ToPrimitive};
 <span class="kw">use </span>num_traits::FromPrimitive;
 <span class="kw">use </span>solarxr_protocol::datatypes::BodyPart;
@@ -288,9 +286,7 @@
     <span class="kw">fn </span>try_from(other: BodyPart) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">use </span>BodyPart <span class="kw">as </span>O;
         <span class="prelude-val">Ok</span>(<span class="kw">match </span>other {
-            O::NONE | O::HMD | O::LEFT_CONTROLLER | O::RIGHT_CONTROLLER =&gt; {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(other)
-            }
+            O::NONE | O::LEFT_CONTROLLER | O::RIGHT_CONTROLLER =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(other),
 
             O::NECK =&gt; <span class="self">Self</span>::Neck,
             O::CHEST =&gt; <span class="self">Self</span>::Chest,
