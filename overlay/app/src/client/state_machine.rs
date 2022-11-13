@@ -9,7 +9,6 @@ use solarxr_protocol::MessageBundle;
 use std::fmt::Debug;
 use std::future;
 use std::pin::Pin;
-use std::time::Duration;
 use tokio_tungstenite::{connect_async, tungstenite};
 use tungstenite::error::Error as WsError;
 use tungstenite::Message;
@@ -19,8 +18,8 @@ type SlimeStream = futures_util::stream::Map<SplitStream<Wss>, DeserializeFn>;
 
 // The need for this trait object is cringe
 type SlimeSink = Box<dyn SlimeSinkT>;
-trait SlimeSinkT: Sink<Data, Error = WsError> + Send + Debug {}
-impl<T> SlimeSinkT for T where T: Sink<Data, Error = WsError> + Send + Debug {}
+trait SlimeSinkT: Sink<Data, Error = WsError> + Send + Sync + Debug {}
+impl<T> SlimeSinkT for T where T: Sink<Data, Error = WsError> + Send + Sync + Debug {}
 
 /// Data common to all states goes here
 #[derive(Debug)]
@@ -43,7 +42,7 @@ impl ClientStateMachine {
 }
 impl<S> ClientStateMachine<S> {
 	/// Helper function to transition to next state while preserving all common data
-	fn into_state<Next>(self, state: Next) -> ClientStateMachine<Next> {
+	pub(super) fn into_state<Next>(self, state: Next) -> ClientStateMachine<Next> {
 		ClientStateMachine {
 			common: self.common,
 			state,
@@ -120,10 +119,7 @@ pub struct Connected {
 }
 impl M<Connected> {
 	pub async fn request_feed(mut self) -> Result<M<Active>, RecvError> {
-		use solarxr_protocol::{
-			data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
-			MessageBundleArgs,
-		};
+		use solarxr_protocol::MessageBundleArgs;
 		let fbb = &mut self.state.fbb;
 		let data = {
 			let data_feed_header = {
@@ -131,7 +127,8 @@ impl M<Connected> {
 					TrackerDataMask, TrackerDataMaskArgs,
 				};
 				use solarxr_protocol::data_feed::{
-					DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
+					DataFeedConfig, DataFeedConfigArgs, DataFeedMessage,
+					DataFeedMessageHeader, DataFeedMessageHeaderArgs, StartDataFeed,
 					StartDataFeedArgs,
 				};
 
@@ -242,24 +239,35 @@ impl M<Connected> {
 			return Err(RecvError::CriticalWs(self.into_state(Disconnected), err));
 		}
 
-		// Wait until we get a `TopicMapping` in response to our `SubscriptionRequest`
-		let first_attempt = std::time::Instant::now();
-		loop {
-			if first_attempt.elapsed() >= Duration::from_millis(1000) {
-				return Err(RecvError::NoTopicMapping(self.into_state(Disconnected)));
-			}
+		// TODO: Actually get the TopicMapping
 
-			use RecvError as E;
-			match self.state.stream.next().await {
-				Some(Ok(v)) => {
-					todo!()
-				}
-				Some(Err(DeserializeError::Ws(ws_err))) => {
-					return Err(E::CriticalWs(self.into_state(Disconnected), ws_err))
-				}
-				None => return Err(RecvError::None(self.into_state(Disconnected))),
-			}
-		}
+		// Wait until we get a `TopicMapping` in response to our `SubscriptionRequest`
+		// let first_attempt = std::time::Instant::now();
+		// loop {
+		// 	if first_attempt.elapsed() >= Duration::from_millis(1000) {
+		// 		return Err(RecvError::NoTopicMapping(self.into_state(Disconnected)));
+		// 	}
+		//
+		// 	use RecvError as E;
+		// 	match self.state.stream.next().await {
+		// 		Some(Ok(v)) => {
+		// 			todo!()
+		// 		}
+		// 		Some(Err(DeserializeError::Ws(ws_err))) => {
+		// 			return Err(E::CriticalWs(self.into_state(Disconnected), ws_err))
+		// 		}
+		// 		None => return Err(RecvError::None(self.into_state(Disconnected))),
+		// 	}
+		// }
+
+		Ok(M {
+			common: self.common,
+			state: Active {
+				_sink: self.state.sink,
+				stream: self.state.stream,
+				topic_handle: 0,
+			},
+		})
 	}
 }
 
