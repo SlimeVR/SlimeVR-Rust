@@ -58,7 +58,7 @@ async fn overlay(
 
 	let loop_ = async {
 		let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
-		let mut is_skeleton_visible = true;
+		let mut is_skeleton_visible = false;
 		loop {
 			recv.changed()
 				.await
@@ -90,11 +90,14 @@ async fn overlay(
 								let Some(m) = m.u_as_message() else {
 									continue;
 								};
+								log::debug!(
+									"Received pub-sub message with topic: {:?}",
+									m.topic()
+								);
 
 								if !crate::client::topic::is_overlay_topic(m) {
 									continue;
 								}
-
 								let Some(kv) = m.payload_as_key_values() else {
 									continue;
 								};
@@ -179,7 +182,7 @@ async fn overlay(
 			);
 			log::trace!("Bone data: {bones:?}");
 
-			// Update all non-hidden bones
+			// Update all bones in datafeed
 			for BoneInfo {
 				kind,
 				pos,
@@ -193,19 +196,13 @@ async fn overlay(
 				};
 				skeleton.set_isometry(kind, iso);
 				skeleton.set_length(kind, length);
-				skeleton.set_visibility(kind, true);
+			}
+
+			// Update rendering state
+			for kind in BoneKind::iter() {
+				skeleton.set_visibility(kind, !hidden_bones.contains(&kind));
 				if let Err(e) = skeleton.update_render(kind, mngr) {
 					log::error!("Error updating render for bone {kind:?}: {:?}", e);
-				}
-			}
-			// Hide all hidden bones
-			for bone_kind in hidden_bones.iter() {
-				skeleton.set_visibility(*bone_kind, false);
-				if let Err(e) = skeleton.update_render(*bone_kind, mngr) {
-					log::error!(
-						"Error updating render for bone {bone_kind:?}: {:?}",
-						e
-					);
 				}
 			}
 		}

@@ -10,7 +10,8 @@ pub fn is_overlay_topic(msg: Message<'_>) -> bool {
 			&& matches!(topic_id.organization(), Some(TOPIC_ORG))
 			&& matches!(topic_id.app_name(), Some(TOPIC_APP));
 	} else if let Some(topic_handle) = msg.topic_as_topic_handle() {
-		todo!("Check for topic handle")
+		// TODO: Actually check topic handle
+		true
 	} else {
 		false
 	}
