@@ -1,5 +1,6 @@
 use super::data::FeedUpdate;
 use super::Wss;
+use crate::client::settings::DisplaySettings;
 use crate::client::{Data, DecodeError};
 
 use futures_util::stream::SplitStream;
@@ -175,11 +176,10 @@ impl M<Connected> {
 				use crate::client::topic::{
 					TOPIC_APP, TOPIC_DISPLAY_SETTINGS, TOPIC_ORG,
 				};
-				use solarxr_protocol::pub_sub::PubSubUnion;
-				use solarxr_protocol::pub_sub::{PubSubHeader, PubSubHeaderArgs};
 				use solarxr_protocol::pub_sub::{
-					SubscriptionRequest, SubscriptionRequestArgs, Topic, TopicId,
-					TopicIdArgs,
+					KeyValues, KeyValuesArgs, Message, MessageArgs, Payload,
+					PubSubHeader, PubSubHeaderArgs, PubSubUnion, SubscriptionRequest,
+					SubscriptionRequestArgs, Topic, TopicId, TopicIdArgs,
 				};
 
 				let organization = fbb.create_string(TOPIC_ORG);
@@ -195,24 +195,71 @@ impl M<Connected> {
 					},
 				);
 
-				let subscription_request = SubscriptionRequest::create(
-					fbb,
-					&SubscriptionRequestArgs {
-						topic_type: Topic::TopicId,
-						topic: Some(topic.as_union_value()),
-						..Default::default()
-					},
-				);
+				let subscription_request = {
+					let sr = SubscriptionRequest::create(
+						fbb,
+						&SubscriptionRequestArgs {
+							topic_type: Topic::TopicId,
+							topic: Some(topic.as_union_value()),
+							..Default::default()
+						},
+					);
+					PubSubHeader::create(
+						fbb,
+						&PubSubHeaderArgs {
+							u_type: PubSubUnion::SubscriptionRequest,
+							u: Some(sr.as_union_value()),
+							..Default::default()
+						},
+					)
+				};
 
-				let header = PubSubHeader::create(
-					fbb,
-					&PubSubHeaderArgs {
-						u_type: PubSubUnion::SubscriptionRequest,
-						u: Some(subscription_request.as_union_value()),
-						..Default::default()
-					},
-				);
-				let header = fbb.create_vector(&[header]);
+				let initial_state = {
+					let keys = fbb.create_vector_of_strings(&[
+						DisplaySettings::IS_VISIBLE,
+						DisplaySettings::IS_MIRRORED,
+					]);
+					let ds = DisplaySettings::default();
+					const fn as_str(b: bool) -> &'static str {
+						if b {
+							"true"
+						} else {
+							"false"
+						}
+					}
+					let values = fbb.create_vector_of_strings(&[
+						as_str(ds.is_visible),
+						as_str(ds.is_mirrored),
+					]);
+					let kv = KeyValues::create(
+						fbb,
+						&KeyValuesArgs {
+							keys: Some(keys),
+							values: Some(values),
+							..Default::default()
+						},
+					);
+					let m = Message::create(
+						fbb,
+						&MessageArgs {
+							topic_type: Topic::TopicId,
+							topic: Some(topic.as_union_value()),
+							payload_type: Payload::KeyValues,
+							payload: Some(kv.as_union_value()),
+							..Default::default()
+						},
+					);
+					PubSubHeader::create(
+						fbb,
+						&PubSubHeaderArgs {
+							u_type: PubSubUnion::Message,
+							u: Some(m.as_union_value()),
+							..Default::default()
+						},
+					)
+				};
+
+				let header = fbb.create_vector(&[initial_state, subscription_request]);
 				header
 			};
 			let root = MessageBundle::create(

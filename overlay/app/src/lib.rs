@@ -4,6 +4,7 @@ mod model;
 
 pub use self::color::RGBA;
 
+use crate::client::settings::DisplaySettings;
 use crate::client::{Client, FeedUpdate};
 use crate::model::skeleton::SkeletonBuilder;
 use crate::model::{BoneKind, Isometry};
@@ -58,7 +59,7 @@ async fn overlay(
 
 	let loop_ = async {
 		let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
-		let mut is_skeleton_visible = false;
+		let mut is_skeleton_visible = DisplaySettings::default().is_visible;
 		loop {
 			recv.changed()
 				.await
@@ -84,45 +85,46 @@ async fn overlay(
 
 				is_skeleton_visible = {
 					// Closure allows early return
-					let is_visible =
-						|| -> Option<bool> {
-							for m in table.pub_sub_msgs()? {
-								let Some(m) = m.u_as_message() else {
-									continue;
-								};
-								log::debug!(
-									"Received pub-sub message with topic: {:?}",
-									m.topic()
-								);
+					let is_visible = || -> Option<bool> {
+						let mut is_visible = None;
+						for m in table.pub_sub_msgs()? {
+							let Some(m) = m.u_as_message() else {
+								continue;
+							};
+							log::debug!(
+								"Received pub-sub message with topic: {:?}",
+								m.topic()
+							);
 
-								if !crate::client::topic::is_overlay_topic(m) {
-									continue;
-								}
-								let Some(kv) = m.payload_as_key_values() else {
-									continue;
-								};
-
-								let (Some(keys), Some(values)) = (kv.keys(), kv.values()) else {
-									continue;
-								};
-
-								if keys.len() != values.len() {
-									log::warn!("Keys and values were not same length!");
-								}
-
-								for i in 0..usize::min(keys.len(), values.len()) {
-									let key = keys.get(i);
-									let value = values.get(i);
-									if key.to_lowercase() == "is_visible" {
-										let is_visible = value.to_lowercase() == "true";
-										log::info!("Updating settings: is_visible={is_visible}");
-										return Some(is_visible);
-									}
-								}
+							if !crate::client::topic::is_overlay_topic(m) {
+								continue;
 							}
 
-							None
-						}();
+							// Check if they want to know current `DisplaySettings` (empty payload)
+							if m.payload().is_none() {
+								// TODO: We need to send messages but this task is the
+								// wrong place to do this. Will need to refactor and
+								// bring this functionality elsewhere.
+								continue;
+							}
+
+							let Some(kv) = m.payload_as_key_values() else {
+								continue;
+							};
+							let Some(ds) = DisplaySettings::from_fb(kv) else {
+								log::warn!("Unable to parse `DisplaySettings` from flatbuffer");
+								continue;
+							};
+							let v = ds.is_visible;
+							log::info!(
+								"Updating settings: {}={v}",
+								DisplaySettings::IS_VISIBLE,
+							);
+							is_visible = Some(v);
+						}
+
+						is_visible
+					}();
 					is_visible.unwrap_or(is_skeleton_visible)
 				};
 

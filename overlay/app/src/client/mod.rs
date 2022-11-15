@@ -1,4 +1,5 @@
 mod data;
+pub mod settings;
 mod state_machine;
 pub mod topic;
 
@@ -72,6 +73,7 @@ impl Client {
 					};
 
 					log::error!("{:?}", err.wrap_err("Error while requesting feed"));
+					disconnected = Some(d);
 					continue;
 				}
 			};
