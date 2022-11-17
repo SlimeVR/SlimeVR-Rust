@@ -1,4 +1,5 @@
 # Autoupdater
+
 The SlimeVR autoupdater manages updating all the software for SlimeVR on a user's
 computer. It does not handle updates of firmware.
 
@@ -9,4 +10,7 @@ Long term, we may use this to replace most or all of the business logic of the c
 [SlimeVR Web Installer](https://github.com/SlimeVR/SlimeVR-Installer).
 
 ## Project Status
-This is a work in progress. Yaml description and serialization is complete already.
+This is abandoned due to lack of interested developers.
+
+When being actively developed, the Yaml description and serialization was complete
+already.

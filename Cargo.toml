@@ -1,8 +1,8 @@
 [workspace]
 members = [
   "autoupdater",
-  "overlay/app",
-  "overlay/tokio_shutdown",
+  "overlay",
+  "networking/tokio_shutdown",
   "skeletal_model",
 ]
 exclude = ["nrf_demo", "firmware"]
