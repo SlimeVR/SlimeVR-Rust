@@ -10,7 +10,7 @@ impl DisplaySettings {
 
 	/// Builds `DisplaySettings` from a flatbuffer
 	pub fn from_fb(kv: KeyValues<'_>) -> Option<Self> {
-		let (Some(keys), Some(values)) = (kv.keys(), kv.values()) else { 
+		let (Some(keys), Some(values)) = (kv.keys(), kv.values()) else {
 			return None;
 		};
 
@@ -32,7 +32,7 @@ impl DisplaySettings {
 				Self::IS_MIRRORED => {
 					result.is_mirrored = v == "true";
 				}
-				_ => () // Ignore unexpected keys - publisher may be on a newer schema
+				_ => (), // Ignore unexpected keys - publisher may be on a newer schema
 			}
 		}
 
