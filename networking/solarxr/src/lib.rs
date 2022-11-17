@@ -3,10 +3,10 @@ pub mod settings;
 mod state_machine;
 pub mod topic;
 
-use crate::client::state_machine::DeserializeError;
+pub use crate::data::{Data, DecodeError, FeedUpdate};
+use crate::state_machine::{ClientStateMachine, DeserializeError, RecvError};
 
-pub use self::data::{Data, DecodeError, FeedUpdate};
-use self::state_machine::{ClientStateMachine, RecvError};
+pub use solarxr_protocol as protocol;
 
 use eyre::{Result, WrapErr};
 

@@ -11,7 +11,6 @@ rust-version.workspace = true
 
 [dependencies]
 color-eyre = "0.6"
-ctrlc = "3"
 eyre = "0.6"
 lazy_static = "1"
 log = "0.4"
@@ -21,12 +20,6 @@ num-traits = "0.2"
 ovr_overlay = { version = "=0.0.0", features = ["nalgebra"] }
 pretty_env_logger = "0.4"
 stackvec = "0.2"
-thiserror = "1"
-bytes = "1"
 tokio = { version = "1", features = ["full"] }
-tokio-tungstenite = "0.17"
-futures-util = "0.3"
-ouroboros = "0.15"
-solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "86eb9aa6b5126d363570250831663a7ba9920c23" }
-tokio-stream = "0.1"
+solarxr = { path = "../networking/solarxr/" }
 tokio-graceful-shutdown = "0.6"

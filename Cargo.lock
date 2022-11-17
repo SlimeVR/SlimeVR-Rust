@@ -445,16 +445,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ctrlc"
-version = "3.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d91974fbbe88ec1df0c24a4f00f99583667a7e2e6272b2b92d294d81e462173"
-dependencies = [
- "nix",
- "winapi",
-]
-
-[[package]]
 name = "cxx"
 version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1212,18 +1202,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nix"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e322c04a9e3440c327fca7b6c8a63e6890a32fa2ad689db972425f07e0d22abb"
-dependencies = [
- "autocfg",
- "bitflags",
- "cfg-if",
- "libc",
-]
-
-[[package]]
 name = "nom"
 version = "7.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1937,26 +1915,19 @@ checksum = "a4f120bb98cb4cb0dab21c882968c3cbff79dd23b46f07b1cf5c25044945ce84"
 name = "slimevr_overlay"
 version = "0.0.0"
 dependencies = [
- "bytes",
  "color-eyre",
- "ctrlc",
  "eyre",
- "futures-util",
  "lazy_static",
  "log",
  "nalgebra 0.30.1",
  "num-derive",
  "num-traits",
- "ouroboros",
  "ovr_overlay",
  "pretty_env_logger",
- "solarxr_protocol",
+ "solarxr",
  "stackvec",
- "thiserror",
  "tokio",
  "tokio-graceful-shutdown",
- "tokio-stream",
- "tokio-tungstenite",
 ]
 
 [[package]]
@@ -1973,6 +1944,22 @@ checksum = "02e2d2db9033d13a1567121ddd7a095ee144db4e1ca1b1bda3419bc0da294ebd"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "solarxr"
+version = "0.0.0"
+dependencies = [
+ "eyre",
+ "futures-util",
+ "log",
+ "ouroboros",
+ "solarxr_protocol",
+ "thiserror",
+ "tokio",
+ "tokio-graceful-shutdown",
+ "tokio-stream",
+ "tokio-tungstenite",
 ]
 
 [[package]]

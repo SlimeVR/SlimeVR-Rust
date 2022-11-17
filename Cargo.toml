@@ -4,6 +4,7 @@ members = [
   "overlay",
   "networking/tokio_shutdown",
   "skeletal_model",
+  "networking/solarxr",
 ]
 exclude = ["nrf_demo", "firmware"]
 

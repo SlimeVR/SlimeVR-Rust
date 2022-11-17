@@ -1,13 +1,12 @@
-mod client;
 mod color;
 mod model;
 
 pub use self::color::RGBA;
 
-use crate::client::settings::DisplaySettings;
-use crate::client::{Client, FeedUpdate};
 use crate::model::skeleton::SkeletonBuilder;
 use crate::model::{BoneKind, Isometry};
+use solarxr::settings::DisplaySettings;
+use solarxr::{Client, FeedUpdate};
 
 use eyre::{Result, WrapErr};
 use nalgebra::{Translation3, UnitQuaternion};
@@ -96,7 +95,7 @@ async fn overlay(
 								m.topic()
 							);
 
-							if !crate::client::topic::is_overlay_topic(m) {
+							if !solarxr::topic::is_overlay_topic(m) {
 								continue;
 							}
 
