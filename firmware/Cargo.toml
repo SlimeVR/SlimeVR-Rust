@@ -1,16 +1,27 @@
 [workspace]
 members = ["crates/panic_defmt"]
 
-[package]
-name = "firmware"
-version = "0.0.0"
 
+[workspace.package]
 license = "MIT OR Apache-2.0"
 authors = ["Ryan Butler <thebutlah@gmail.com>"]
 repository = "https://github.com/SlimeVR/SlimeVR-Rust"
 
 edition = "2021"
 rust-version = "1.65"
+
+
+[package]
+name = "firmware"
+version = "0.0.0"
+
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+edition.workspace = true
+rust.workspace = true
+
 
 [features]
 default = ["mcu-esp32c3", "imu-mpu6050"]
@@ -21,6 +32,7 @@ mcu-esp32c3 = []
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
+
 
 [dependencies]
 # Platform support
@@ -64,6 +76,7 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "libm",
 ] }
 fugit = "0.3"
+
 
 [patch.crates-io]
 # Enable non-default I2C addresses and InitError
