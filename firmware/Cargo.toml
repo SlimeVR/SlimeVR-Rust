@@ -4,9 +4,13 @@ members = ["crates/panic_defmt"]
 [package]
 name = "firmware"
 version = "0.0.0"
-authors = ["Ryan Butler <thebutlah@gmail.com>"]
-edition = "2021"
+
 license = "MIT OR Apache-2.0"
+authors = ["Ryan Butler <thebutlah@gmail.com>"]
+repository = "https://github.com/SlimeVR/SlimeVR-Rust"
+
+edition = "2021"
+rust-version = "1.65"
 
 [features]
 default = ["mcu-esp32c3", "imu-mpu6050"]
@@ -29,8 +33,8 @@ embedded-hal = "0.2"
 # Embassy stuff
 embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
-    "nightly",
-    # "integrated-timers",
+  "nightly",
+  # "integrated-timers",
 ] }
 # embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
 #     "tick-16mhz",
@@ -56,8 +60,8 @@ mpu6050-dmp = { version = "0.2", optional = true }
 static_cell = "1"
 nb = "1"
 nalgebra = { version = "0.31", default-features = false, features = [
-    "macros",
-    "libm",
+  "macros",
+  "libm",
 ] }
 fugit = "0.3"
 
