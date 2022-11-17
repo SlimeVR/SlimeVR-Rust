@@ -1,6 +1,6 @@
 [package]
 name = "tokio_shutdown"
-version = "0.1.0"
+version = "0.0.0"
 
 license.workspace = true
 authors.workspace = true
