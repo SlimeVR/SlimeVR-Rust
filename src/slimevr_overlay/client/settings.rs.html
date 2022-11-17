@@ -47,6 +47,7 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
 </pre><pre class="rust"><code><span class="kw">use </span>solarxr_protocol::pub_sub::KeyValues;
 
 <span class="kw">pub struct </span>DisplaySettings {
@@ -88,7 +89,8 @@
 		<span class="prelude-val">Some</span>(result)
 	}
 }
-<span class="kw">impl </span>Default <span class="kw">for </span>DisplaySettings {
+<span class="attribute">#[allow(clippy::derivable_impls)]
+</span><span class="kw">impl </span>Default <span class="kw">for </span>DisplaySettings {
 	<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{
 			is_visible: <span class="bool-val">false</span>,

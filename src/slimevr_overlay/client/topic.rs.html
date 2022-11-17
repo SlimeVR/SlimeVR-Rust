@@ -24,10 +24,10 @@
 
 <span class="kw">pub fn </span>is_overlay_topic(msg: Message&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; bool {
 	<span class="kw">if let </span><span class="prelude-val">Some</span>(topic_id) = msg.topic_as_topic_id() {
-		<span class="kw">return </span><span class="macro">matches!</span>(topic_id.topic(), <span class="prelude-val">Some</span>(TOPIC_DISPLAY_SETTINGS))
+		<span class="macro">matches!</span>(topic_id.topic(), <span class="prelude-val">Some</span>(TOPIC_DISPLAY_SETTINGS))
 			&amp;&amp; <span class="macro">matches!</span>(topic_id.organization(), <span class="prelude-val">Some</span>(TOPIC_ORG))
-			&amp;&amp; <span class="macro">matches!</span>(topic_id.app_name(), <span class="prelude-val">Some</span>(TOPIC_APP));
-	} <span class="kw">else if let </span><span class="prelude-val">Some</span>(topic_handle) = msg.topic_as_topic_handle() {
+			&amp;&amp; <span class="macro">matches!</span>(topic_id.app_name(), <span class="prelude-val">Some</span>(TOPIC_APP))
+	} <span class="kw">else if let </span><span class="prelude-val">Some</span>(_topic_handle) = msg.topic_as_topic_handle() {
 		<span class="comment">// TODO: Actually check topic handle
 		</span><span class="bool-val">true
 	</span>} <span class="kw">else </span>{

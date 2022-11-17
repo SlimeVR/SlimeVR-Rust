@@ -352,6 +352,7 @@
 <span id="352">352</span>
 <span id="353">353</span>
 <span id="354">354</span>
+<span id="355">355</span>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::data::FeedUpdate;
 <span class="kw">use </span><span class="kw">super</span>::Wss;
 <span class="kw">use </span><span class="kw">crate</span>::client::settings::DisplaySettings;
@@ -476,7 +477,8 @@
 	<span class="kw">pub async fn </span>request_feed(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;M&lt;Active&gt;, RecvError&gt; {
 		<span class="kw">use </span>solarxr_protocol::MessageBundleArgs;
 		<span class="kw">let </span>fbb = <span class="kw-2">&amp;mut </span><span class="self">self</span>.state.fbb;
-		<span class="kw">let </span>data = {
+		<span class="attribute">#[allow(clippy::needless_update)]
+		</span><span class="kw">let </span>data = {
 			<span class="kw">let </span>data_feed_header = {
 				<span class="kw">use </span>solarxr_protocol::data_feed::tracker::{
 					TrackerDataMask, TrackerDataMaskArgs,
@@ -523,8 +525,7 @@
 						..Default::default()
 					},
 				);
-				<span class="kw">let </span>header = fbb.create_vector(<span class="kw-2">&amp;</span>[header]);
-				header
+				fbb.create_vector(<span class="kw-2">&amp;</span>[header])
 			};
 			<span class="kw">let </span>pub_sub_header = {
 				<span class="kw">use </span><span class="kw">crate</span>::client::topic::{
@@ -613,8 +614,7 @@
 					)
 				};
 
-				<span class="kw">let </span>header = fbb.create_vector(<span class="kw-2">&amp;</span>[initial_state, subscription_request]);
-				header
+				fbb.create_vector(<span class="kw-2">&amp;</span>[initial_state, subscription_request])
 			};
 			<span class="kw">let </span>root = MessageBundle::create(
 				fbb,
@@ -677,7 +677,8 @@
 </span><span class="kw">pub struct </span>Active {
 	_sink: Pin&lt;SlimeSink&gt;,
 	stream: SlimeStream,
-	topic_handle: u32,
+	<span class="attribute">#[allow(unused)]
+	</span>topic_handle: u32,
 }
 <span class="kw">impl </span>M&lt;Active&gt; {
 	<span class="kw">pub async fn </span>recv(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; RecvResult {
@@ -701,7 +702,8 @@
 	</span>Deserialize(M&lt;Active&gt;, DeserializeError),
 	<span class="attribute">#[error(<span class="string">&quot;Stream produced `None`&quot;</span>)]
 	</span><span class="prelude-val">None</span>(M&lt;Disconnected&gt;),
-	<span class="attribute">#[error(<span class="string">&quot;No `TopicMapping` in response to `SubscriptionRequest`&quot;</span>)]
+	<span class="attribute">#[allow(unused)]
+	#[error(<span class="string">&quot;No `TopicMapping` in response to `SubscriptionRequest`&quot;</span>)]
 	</span>NoTopicMapping(M&lt;Disconnected&gt;),
 }
 

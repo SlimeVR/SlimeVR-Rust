@@ -40,6 +40,9 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>derive_more::From;
@@ -66,7 +69,8 @@
 		}
 	}
 
-	<span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>T&gt; {
+	<span class="attribute">#[allow(unused)]
+	</span><span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>T&gt; {
 		<span class="kw">match </span><span class="self">self </span>{
 			MaybeCrossPlatform::Cross(inner) =&gt; <span class="prelude-val">Some</span>(inner),
 			MaybeCrossPlatform::NotCross(map) =&gt; map.get_mut(Platform::current()),
@@ -80,7 +84,9 @@
 		}
 	}
 }
-<span class="doccomment">/// Type alias so we don&#39;t have long ass names
+
+<span class="attribute">#[allow(clippy::upper_case_acronyms)]
+</span><span class="doccomment">/// Type alias so we don&#39;t have long ass names
 </span><span class="kw">pub type </span>MCP&lt;T&gt; = MaybeCrossPlatform&lt;T&gt;;
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="autoupdater" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -183,6 +183,7 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
+<span id="186">186</span>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::RGBA;
 
 <span class="kw">use </span>eyre::{<span class="prelude-ty">Result</span>, WrapErr};
@@ -356,7 +357,8 @@
 		<span class="self">self</span>.length = length;
 	}
 
-	<span class="kw">pub fn </span>set_radius(<span class="kw-2">&amp;mut </span><span class="self">self</span>, radius: f32) {
+	<span class="attribute">#[allow(unused)]
+	</span><span class="kw">pub fn </span>set_radius(<span class="kw-2">&amp;mut </span><span class="self">self</span>, radius: f32) {
 		<span class="self">self</span>.radius = radius;
 	}
 

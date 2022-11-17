@@ -275,8 +275,8 @@
 		.<span class="kw">await
 		</span>.into_iter()
 		.map(|t| {
-			<span class="prelude-val">Ok</span>(t.wrap_err(<span class="string">&quot;couldn&#39;t join task&quot;</span>)<span class="question-mark">?
-				</span>.wrap_err(<span class="string">&quot;failed download of component&quot;</span>)<span class="question-mark">?</span>)
+			t.wrap_err(<span class="string">&quot;couldn&#39;t join task&quot;</span>)<span class="question-mark">?
+				</span>.wrap_err(<span class="string">&quot;failed download of component&quot;</span>)
 		})
 		.collect();
 	<span class="kw">let </span>downloads = downloads<span class="question-mark">?</span>;
