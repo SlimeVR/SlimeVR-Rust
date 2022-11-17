@@ -1,5 +1,6 @@
 use super::data::FeedUpdate;
 use super::Wss;
+use crate::client::settings::DisplaySettings;
 use crate::client::{Data, DecodeError};
 
 use futures_util::stream::SplitStream;
@@ -18,8 +19,8 @@ type SlimeStream = futures_util::stream::Map<SplitStream<Wss>, DeserializeFn>;
 
 // The need for this trait object is cringe
 type SlimeSink = Box<dyn SlimeSinkT>;
-trait SlimeSinkT: Sink<Data, Error = WsError> + Send + Debug {}
-impl<T> SlimeSinkT for T where T: Sink<Data, Error = WsError> + Send + Debug {}
+trait SlimeSinkT: Sink<Data, Error = WsError> + Send + Sync + Debug {}
+impl<T> SlimeSinkT for T where T: Sink<Data, Error = WsError> + Send + Sync + Debug {}
 
 /// Data common to all states goes here
 #[derive(Debug)]
@@ -42,7 +43,7 @@ impl ClientStateMachine {
 }
 impl<S> ClientStateMachine<S> {
 	/// Helper function to transition to next state while preserving all common data
-	fn into_state<Next>(self, state: Next) -> ClientStateMachine<Next> {
+	pub(super) fn into_state<Next>(self, state: Next) -> ClientStateMachine<Next> {
 		ClientStateMachine {
 			common: self.common,
 			state,
@@ -118,64 +119,154 @@ pub struct Connected {
 	fbb: FlatBufferBuilder<'static>,
 }
 impl M<Connected> {
-	pub async fn request_feed(
-		mut self,
-	) -> Result<M<Active>, (M<Disconnected>, WsError)> {
-		use solarxr_protocol::{
-			data_feed::{DataFeedMessageHeader, DataFeedMessageHeaderArgs},
-			MessageBundleArgs,
-		};
+	pub async fn request_feed(mut self) -> Result<M<Active>, RecvError> {
+		use solarxr_protocol::MessageBundleArgs;
 		let fbb = &mut self.state.fbb;
 		let data = {
-			use solarxr_protocol::data_feed::tracker::{
-				TrackerDataMask, TrackerDataMaskArgs,
+			let data_feed_header = {
+				use solarxr_protocol::data_feed::tracker::{
+					TrackerDataMask, TrackerDataMaskArgs,
+				};
+				use solarxr_protocol::data_feed::{
+					DataFeedConfig, DataFeedConfigArgs, DataFeedMessage,
+					DataFeedMessageHeader, DataFeedMessageHeaderArgs, StartDataFeed,
+					StartDataFeedArgs,
+				};
+
+				let _tracker_mask = TrackerDataMask::create(
+					fbb,
+					&TrackerDataMaskArgs {
+						// TODO: We only need the body part here, not the whole TrackerInfo
+						info: true,
+						rotation: true,
+						position: true,
+						..Default::default()
+					},
+				);
+
+				let data_feed_config = DataFeedConfig::create(
+					fbb,
+					&DataFeedConfigArgs {
+						minimum_time_since_last: 10,
+						// We don't care about anything but bones
+						bone_mask: true,
+						..Default::default()
+					},
+				);
+				let data_feed_config = fbb.create_vector(&[data_feed_config]);
+
+				let start_data_feed = StartDataFeed::create(
+					fbb,
+					&StartDataFeedArgs {
+						data_feeds: Some(data_feed_config),
+					},
+				);
+				let header = DataFeedMessageHeader::create(
+					fbb,
+					&DataFeedMessageHeaderArgs {
+						message_type: DataFeedMessage::StartDataFeed,
+						message: Some(start_data_feed.as_union_value()),
+						..Default::default()
+					},
+				);
+				let header = fbb.create_vector(&[header]);
+				header
 			};
-			use solarxr_protocol::data_feed::{
-				DataFeedConfig, DataFeedConfigArgs, DataFeedMessage, StartDataFeed,
-				StartDataFeedArgs,
+			let pub_sub_header = {
+				use crate::client::topic::{
+					TOPIC_APP, TOPIC_DISPLAY_SETTINGS, TOPIC_ORG,
+				};
+				use solarxr_protocol::pub_sub::{
+					KeyValues, KeyValuesArgs, Message, MessageArgs, Payload,
+					PubSubHeader, PubSubHeaderArgs, PubSubUnion, SubscriptionRequest,
+					SubscriptionRequestArgs, Topic, TopicId, TopicIdArgs,
+				};
+
+				let organization = fbb.create_string(TOPIC_ORG);
+				let app_name = fbb.create_string(TOPIC_APP);
+				let topic = fbb.create_string(TOPIC_DISPLAY_SETTINGS);
+				let topic = TopicId::create(
+					fbb,
+					&TopicIdArgs {
+						organization: Some(organization),
+						app_name: Some(app_name),
+						topic: Some(topic),
+						..Default::default()
+					},
+				);
+
+				let subscription_request = {
+					let sr = SubscriptionRequest::create(
+						fbb,
+						&SubscriptionRequestArgs {
+							topic_type: Topic::TopicId,
+							topic: Some(topic.as_union_value()),
+							..Default::default()
+						},
+					);
+					PubSubHeader::create(
+						fbb,
+						&PubSubHeaderArgs {
+							u_type: PubSubUnion::SubscriptionRequest,
+							u: Some(sr.as_union_value()),
+							..Default::default()
+						},
+					)
+				};
+
+				let initial_state = {
+					let keys = fbb.create_vector_of_strings(&[
+						DisplaySettings::IS_VISIBLE,
+						DisplaySettings::IS_MIRRORED,
+					]);
+					let ds = DisplaySettings::default();
+					const fn as_str(b: bool) -> &'static str {
+						if b {
+							"true"
+						} else {
+							"false"
+						}
+					}
+					let values = fbb.create_vector_of_strings(&[
+						as_str(ds.is_visible),
+						as_str(ds.is_mirrored),
+					]);
+					let kv = KeyValues::create(
+						fbb,
+						&KeyValuesArgs {
+							keys: Some(keys),
+							values: Some(values),
+							..Default::default()
+						},
+					);
+					let m = Message::create(
+						fbb,
+						&MessageArgs {
+							topic_type: Topic::TopicId,
+							topic: Some(topic.as_union_value()),
+							payload_type: Payload::KeyValues,
+							payload: Some(kv.as_union_value()),
+							..Default::default()
+						},
+					);
+					PubSubHeader::create(
+						fbb,
+						&PubSubHeaderArgs {
+							u_type: PubSubUnion::Message,
+							u: Some(m.as_union_value()),
+							..Default::default()
+						},
+					)
+				};
+
+				let header = fbb.create_vector(&[initial_state, subscription_request]);
+				header
 			};
-
-			let _tracker_mask = TrackerDataMask::create(
-				fbb,
-				&TrackerDataMaskArgs {
-					// TODO: We only need the body part here, not the whole TrackerInfo
-					info: true,
-					rotation: true,
-					position: true,
-					..Default::default()
-				},
-			);
-
-			let data_feed_config = DataFeedConfig::create(
-				fbb,
-				&DataFeedConfigArgs {
-					minimum_time_since_last: 10,
-					// We don't care about anything but bones
-					bone_mask: true,
-					..Default::default()
-				},
-			);
-			let data_feed_config = fbb.create_vector(&[data_feed_config]);
-
-			let start_data_feed = StartDataFeed::create(
-				fbb,
-				&StartDataFeedArgs {
-					data_feeds: Some(data_feed_config),
-				},
-			);
-			let header = DataFeedMessageHeader::create(
-				fbb,
-				&DataFeedMessageHeaderArgs {
-					message_type: DataFeedMessage::StartDataFeed,
-					message: Some(start_data_feed.as_union_value()),
-					..Default::default()
-				},
-			);
-			let header = fbb.create_vector(&[header]);
 			let root = MessageBundle::create(
 				fbb,
 				&MessageBundleArgs {
-					data_feed_msgs: Some(header),
+					data_feed_msgs: Some(data_feed_header),
+					pub_sub_msgs: Some(pub_sub_header),
 					..Default::default()
 				},
 			);
@@ -191,22 +282,39 @@ impl M<Connected> {
 		};
 
 		let mut sink = self.state.sink.as_mut();
-		match sink.send(data).await {
-			Ok(()) => Ok(M {
-				common: self.common,
-				state: Active {
-					_sink: self.state.sink,
-					stream: self.state.stream,
-				},
-			}),
-			Err(err) => Err((
-				M {
-					common: self.common,
-					state: Disconnected,
-				},
-				err,
-			)),
+		if let Err(err) = sink.send(data).await {
+			return Err(RecvError::CriticalWs(self.into_state(Disconnected), err));
 		}
+
+		// TODO: Actually get the TopicMapping
+
+		// Wait until we get a `TopicMapping` in response to our `SubscriptionRequest`
+		// let first_attempt = std::time::Instant::now();
+		// loop {
+		// 	if first_attempt.elapsed() >= Duration::from_millis(1000) {
+		// 		return Err(RecvError::NoTopicMapping(self.into_state(Disconnected)));
+		// 	}
+		//
+		// 	use RecvError as E;
+		// 	match self.state.stream.next().await {
+		// 		Some(Ok(v)) => {
+		// 			todo!()
+		// 		}
+		// 		Some(Err(DeserializeError::Ws(ws_err))) => {
+		// 			return Err(E::CriticalWs(self.into_state(Disconnected), ws_err))
+		// 		}
+		// 		None => return Err(RecvError::None(self.into_state(Disconnected))),
+		// 	}
+		// }
+
+		Ok(M {
+			common: self.common,
+			state: Active {
+				_sink: self.state.sink,
+				stream: self.state.stream,
+				topic_handle: 0,
+			},
+		})
 	}
 }
 
@@ -215,6 +323,7 @@ impl M<Connected> {
 pub struct Active {
 	_sink: Pin<SlimeSink>,
 	stream: SlimeStream,
+	topic_handle: u32,
 }
 impl M<Active> {
 	pub async fn recv(mut self) -> RecvResult {
@@ -238,6 +347,8 @@ pub enum RecvError {
 	Deserialize(M<Active>, DeserializeError),
 	#[error("Stream produced `None`")]
 	None(M<Disconnected>),
+	#[error("No `TopicMapping` in response to `SubscriptionRequest`")]
+	NoTopicMapping(M<Disconnected>),
 }
 
 pub type RecvResult = Result<(M<Active>, FeedUpdate), RecvError>;

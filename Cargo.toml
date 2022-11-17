@@ -8,3 +8,12 @@ members = [
 exclude = ["nrf_demo", "firmware"]
 
 resolver = "2"
+
+# These settings will apply to all members of the workspace that opt in to them
+[workspace.package]
+license = "MIT OR Apache-2.0"
+authors = ["Ryan Butler <thebutlah@gmail.com>"]
+repository = "https://github.com/SlimeVR/SlimeVR-Rust"
+
+edition = "2021"
+rust-version = "1.65" # GATs and let-else

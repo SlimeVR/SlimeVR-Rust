@@ -2,12 +2,12 @@
 name = "slimevr_overlay"
 version = "0.0.0"
 
-license = "MIT OR Apache-2.0"
-authors = ["Ryan Butler <thebutlah@gmail.com>"]
-repository = "https://github.com/SlimeVR/SlimeVR-Rust"
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
 
-edition = "2021"
-rust-version = "1.61"
+edition.workspace = true
+rust.workspace = true
 
 [dependencies]
 color-eyre = "0.6"

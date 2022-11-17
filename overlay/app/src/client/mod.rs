@@ -1,5 +1,7 @@
 mod data;
+pub mod settings;
 mod state_machine;
+pub mod topic;
 
 use crate::client::state_machine::DeserializeError;
 
@@ -55,11 +57,22 @@ impl Client {
 			};
 			let active = match ready.request_feed().await {
 				Ok(active) => active,
-				Err((d, err)) => {
-					log::error!(
-						"{:?}",
-						eyre::Report::new(err).wrap_err("Failed to request feed")
-					);
+				Err(err) => {
+					let (d, err) = match err {
+						RecvError::CriticalWs(d, err) => (d, eyre::Report::new(err)),
+						RecvError::Deserialize(a, err) => {
+							let d = a.into_state(self::state_machine::Disconnected);
+							(d, eyre::Report::new(err))
+						}
+						RecvError::None(d) => {
+							(d, eyre::eyre!("Stream produced `None`"))
+						}
+						RecvError::NoTopicMapping(d) => {
+							(d, eyre::eyre!("Failed to get a topic mapping"))
+						}
+					};
+
+					log::error!("{:?}", err.wrap_err("Error while requesting feed"));
 					disconnected = Some(d);
 					continue;
 				}
@@ -100,6 +113,9 @@ impl Client {
 								}
 								active = Some(a);
 							}
+							E::NoTopicMapping(_) => unreachable!(
+								"Topic mapping only relevant in Connected state"
+							),
 						}
 					}
 				}
