@@ -24,6 +24,7 @@ impl<T> MaybeCrossPlatform<T> {
 		}
 	}
 
+	#[allow(unused)]
 	pub fn get_mut(&mut self) -> Option<&mut T> {
 		match self {
 			MaybeCrossPlatform::Cross(inner) => Some(inner),
@@ -38,5 +39,7 @@ impl<T> MaybeCrossPlatform<T> {
 		}
 	}
 }
+
+#[allow(clippy::upper_case_acronyms)]
 /// Type alias so we don't have long ass names
 pub type MCP<T> = MaybeCrossPlatform<T>;

@@ -7,7 +7,7 @@ authors.workspace = true
 repository.workspace = true
 
 edition.workspace = true
-rust.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 color-eyre = "0.6"

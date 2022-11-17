@@ -171,6 +171,7 @@ impl Bone {
 		self.length = length;
 	}
 
+	#[allow(unused)]
 	pub fn set_radius(&mut self, radius: f32) {
 		self.radius = radius;
 	}
