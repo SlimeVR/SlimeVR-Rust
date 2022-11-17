@@ -122,6 +122,7 @@ impl M<Connected> {
 	pub async fn request_feed(mut self) -> Result<M<Active>, RecvError> {
 		use solarxr_protocol::MessageBundleArgs;
 		let fbb = &mut self.state.fbb;
+		#[allow(clippy::needless_update)]
 		let data = {
 			let data_feed_header = {
 				use solarxr_protocol::data_feed::tracker::{
@@ -169,8 +170,7 @@ impl M<Connected> {
 						..Default::default()
 					},
 				);
-				let header = fbb.create_vector(&[header]);
-				header
+				fbb.create_vector(&[header])
 			};
 			let pub_sub_header = {
 				use crate::client::topic::{
@@ -259,8 +259,7 @@ impl M<Connected> {
 					)
 				};
 
-				let header = fbb.create_vector(&[initial_state, subscription_request]);
-				header
+				fbb.create_vector(&[initial_state, subscription_request])
 			};
 			let root = MessageBundle::create(
 				fbb,
@@ -323,6 +322,7 @@ impl M<Connected> {
 pub struct Active {
 	_sink: Pin<SlimeSink>,
 	stream: SlimeStream,
+	#[allow(unused)]
 	topic_handle: u32,
 }
 impl M<Active> {
@@ -347,6 +347,7 @@ pub enum RecvError {
 	Deserialize(M<Active>, DeserializeError),
 	#[error("Stream produced `None`")]
 	None(M<Disconnected>),
+	#[allow(unused)]
 	#[error("No `TopicMapping` in response to `SubscriptionRequest`")]
 	NoTopicMapping(M<Disconnected>),
 }

@@ -1,7 +1,13 @@
 [package]
 name = "panic_defmt"
 version = "0.0.0"
-edition = "2021"
+
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 defmt = "0.3"

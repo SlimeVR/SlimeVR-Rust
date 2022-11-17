@@ -119,8 +119,8 @@ async fn main() -> Result<()> {
 		.await
 		.into_iter()
 		.map(|t| {
-			Ok(t.wrap_err("couldn't join task")?
-				.wrap_err("failed download of component")?)
+			t.wrap_err("couldn't join task")?
+				.wrap_err("failed download of component")
 		})
 		.collect();
 	let downloads = downloads?;

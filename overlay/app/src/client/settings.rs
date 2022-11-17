@@ -39,6 +39,7 @@ impl DisplaySettings {
 		Some(result)
 	}
 }
+#[allow(clippy::derivable_impls)]
 impl Default for DisplaySettings {
 	fn default() -> Self {
 		Self {
