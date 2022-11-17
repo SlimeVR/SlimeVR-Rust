@@ -163,12 +163,78 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
 </pre><pre class="rust"><code><span class="kw">mod </span>client;
 <span class="kw">mod </span>color;
 <span class="kw">mod </span>model;
 
 <span class="kw">pub use </span><span class="self">self</span>::color::RGBA;
 
+<span class="kw">use </span><span class="kw">crate</span>::client::settings::DisplaySettings;
 <span class="kw">use </span><span class="kw">crate</span>::client::{Client, FeedUpdate};
 <span class="kw">use </span><span class="kw">crate</span>::model::skeleton::SkeletonBuilder;
 <span class="kw">use </span><span class="kw">crate</span>::model::{BoneKind, Isometry};
@@ -223,6 +289,7 @@
 
 	<span class="kw">let </span>loop_ = <span class="kw">async </span>{
 		<span class="kw">let </span><span class="kw-2">mut </span>hidden_bones: HashSet&lt;BoneKind&gt; = HashSet::new();
+		<span class="kw">let </span><span class="kw-2">mut </span>is_skeleton_visible = DisplaySettings::default().is_visible;
 		<span class="kw">loop </span>{
 			recv.changed()
 				.<span class="kw">await
@@ -233,13 +300,68 @@
 			<span class="comment">// Mark all bones as &quot;need to hide&quot;
 			</span>hidden_bones.extend(BoneKind::iter());
 
-			<span class="kw">let </span>bones: Vec&lt;<span class="kw">_</span>&gt; = {
+			<span class="attribute">#[derive(Debug)]
+			</span><span class="kw">struct </span>BoneInfo {
+				kind: BoneKind,
+				pos: Translation3&lt;f32&gt;,
+				rot: UnitQuaternion&lt;f32&gt;,
+				length: f32,
+			}
+			<span class="comment">// Extract relevant data about bones from flatbuffers
+			</span><span class="kw">let </span>bones: Vec&lt;BoneInfo&gt; = {
 				<span class="kw">let </span>guard = recv.borrow_and_update();
 				<span class="kw">let </span>table = guard.as_ref().unwrap().<span class="number">0</span>.table();
 				<span class="macro">log::trace!</span>(<span class="string">&quot;update: {:#?}&quot;</span>, table);
 
+				is_skeleton_visible = {
+					<span class="comment">// Closure allows early return
+					</span><span class="kw">let </span>is_visible = || -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+						<span class="kw">let </span><span class="kw-2">mut </span>is_visible = <span class="prelude-val">None</span>;
+						<span class="kw">for </span>m <span class="kw">in </span>table.pub_sub_msgs()<span class="question-mark">? </span>{
+							<span class="kw">let </span><span class="prelude-val">Some</span>(m) = m.u_as_message() <span class="kw">else </span>{
+								<span class="kw">continue</span>;
+							};
+							<span class="macro">log::debug!</span>(
+								<span class="string">&quot;Received pub-sub message with topic: {:?}&quot;</span>,
+								m.topic()
+							);
+
+							<span class="kw">if </span>!<span class="kw">crate</span>::client::topic::is_overlay_topic(m) {
+								<span class="kw">continue</span>;
+							}
+
+							<span class="comment">// Check if they want to know current `DisplaySettings` (empty payload)
+							</span><span class="kw">if </span>m.payload().is_none() {
+								<span class="comment">// TODO: We need to send messages but this task is the
+								// wrong place to do this. Will need to refactor and
+								// bring this functionality elsewhere.
+								</span><span class="kw">continue</span>;
+							}
+
+							<span class="kw">let </span><span class="prelude-val">Some</span>(kv) = m.payload_as_key_values() <span class="kw">else </span>{
+								<span class="kw">continue</span>;
+							};
+							<span class="kw">let </span><span class="prelude-val">Some</span>(ds) = DisplaySettings::from_fb(kv) <span class="kw">else </span>{
+								<span class="macro">log::warn!</span>(<span class="string">&quot;Unable to parse `DisplaySettings` from flatbuffer&quot;</span>);
+								<span class="kw">continue</span>;
+							};
+							<span class="kw">let </span>v = ds.is_visible;
+							<span class="macro">log::info!</span>(
+								<span class="string">&quot;Updating settings: {}={v}&quot;</span>,
+								DisplaySettings::IS_VISIBLE,
+							);
+							is_visible = <span class="prelude-val">Some</span>(v);
+						}
+
+						is_visible
+					}();
+					is_visible.unwrap_or(is_skeleton_visible)
+				};
+
 				<span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(table.data_feed_msgs());
-				<span class="kw">let </span>m = m.get(<span class="number">0</span>);
+
+				<span class="comment">// TODO: handle multiple updates?
+				</span><span class="kw">let </span>m = m.get(<span class="number">0</span>);
 				<span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(m.message_as_data_feed_update());
 				<span class="kw">let </span>bones = <span class="macro">unwrap_or_continue!</span>(m.bones());
 				<span class="macro">log::debug!</span>(<span class="string">&quot;Got {} bones before filtering&quot;</span>, bones.len());
@@ -273,38 +395,46 @@
 						<span class="kw">let </span>rot = UnitQuaternion::from_quaternion(
 							[rot.x(), rot.y(), rot.z(), rot.w()].into(),
 						);
-						hidden_bones.remove(<span class="kw-2">&amp;</span>bone_kind);
-						<span class="prelude-val">Some</span>((bone_kind, pos, rot, length))
+						<span class="kw">if </span>is_skeleton_visible {
+							hidden_bones.remove(<span class="kw-2">&amp;</span>bone_kind);
+						}
+						<span class="prelude-val">Some</span>(BoneInfo {
+							kind: bone_kind,
+							pos,
+							rot,
+							length,
+						})
 					})
 					.collect()
 			};
+
 			<span class="macro">log::debug!</span>(
 				<span class="string">&quot;Bones after filtering: {:?}&quot;</span>,
-				bones.iter().map(|t| t.<span class="number">0</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+				bones.iter().map(|t| t.kind).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
 			);
 			<span class="macro">log::trace!</span>(<span class="string">&quot;Bone data: {bones:?}&quot;</span>);
-			<span class="kw">for </span>(bone_kind, pos, rot, length) <span class="kw">in </span>bones {
+
+			<span class="comment">// Update all bones in datafeed
+			</span><span class="kw">for </span>BoneInfo {
+				kind,
+				pos,
+				rot,
+				length,
+			} <span class="kw">in </span>bones
+			{
 				<span class="kw">let </span>iso = Isometry {
 					rotation: rot,
 					translation: pos,
 				};
-				skeleton.set_isometry(bone_kind, iso);
-				skeleton.set_length(bone_kind, length);
-				skeleton.set_visibility(bone_kind, <span class="bool-val">true</span>);
-				<span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(bone_kind, mngr) {
-					<span class="macro">log::error!</span>(
-						<span class="string">&quot;Error updating render for bone {bone_kind:?}: {:?}&quot;</span>,
-						e
-					);
-				}
+				skeleton.set_isometry(kind, iso);
+				skeleton.set_length(kind, length);
 			}
-			<span class="kw">for </span>bone_kind <span class="kw">in </span>hidden_bones.iter() {
-				skeleton.set_visibility(<span class="kw-2">*</span>bone_kind, <span class="bool-val">false</span>);
-				<span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(<span class="kw-2">*</span>bone_kind, mngr) {
-					<span class="macro">log::error!</span>(
-						<span class="string">&quot;Error updating render for bone {bone_kind:?}: {:?}&quot;</span>,
-						e
-					);
+
+			<span class="comment">// Update rendering state
+			</span><span class="kw">for </span>kind <span class="kw">in </span>BoneKind::iter() {
+				skeleton.set_visibility(kind, !hidden_bones.contains(<span class="kw-2">&amp;</span>kind));
+				<span class="kw">if let </span><span class="prelude-val">Err</span>(e) = skeleton.update_render(kind, mngr) {
+					<span class="macro">log::error!</span>(<span class="string">&quot;Error updating render for bone {kind:?}: {:?}&quot;</span>, e);
 				}
 			}
 		}

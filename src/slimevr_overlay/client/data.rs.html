@@ -54,6 +54,8 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
 </pre><pre class="rust"><code><span class="kw">use </span>solarxr_protocol::flatbuffers;
 <span class="kw">use </span>solarxr_protocol::flatbuffers::InvalidFlatbuffer;
 <span class="kw">use </span>solarxr_protocol::MessageBundle;
@@ -78,7 +80,8 @@
 	</span>table: MessageBundle&lt;<span class="lifetime">&#39;this</span>&gt;,
 }
 <span class="kw">impl </span>Data {
-	<span class="kw">pub unsafe fn </span>from_vec_unchecked(data: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
+	<span class="attribute">#[allow(unused)]
+	</span><span class="kw">pub unsafe fn </span>from_vec_unchecked(data: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::new(data, |v| flatbuffers::root_unchecked::&lt;MessageBundle&gt;(v))
 	}
 
@@ -91,7 +94,8 @@
 		<span class="self">self</span>.into_heads().data
 	}
 
-	<span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+	<span class="attribute">#[allow(unused)]
+	</span><span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
 		<span class="self">self</span>.with_data(|v| v.as_slice())
 	}
 
