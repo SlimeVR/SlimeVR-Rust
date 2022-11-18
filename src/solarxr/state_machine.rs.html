@@ -566,10 +566,11 @@
 				};
 
 				<span class="kw">let </span>initial_state = {
-					<span class="kw">let </span>keys = fbb.create_vector_of_strings(<span class="kw-2">&amp;</span>[
-						DisplaySettings::IS_VISIBLE,
-						DisplaySettings::IS_MIRRORED,
-					]);
+					<span class="kw">let </span>keys =
+						[DisplaySettings::IS_VISIBLE, DisplaySettings::IS_MIRRORED]
+							.map(|s| fbb.create_string(s));
+
+					<span class="kw">let </span>keys = fbb.create_vector(<span class="kw-2">&amp;</span>keys);
 					<span class="kw">let </span>ds = DisplaySettings::default();
 					<span class="kw">const fn </span>as_str(b: bool) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
 						<span class="kw">if </span>b {
@@ -578,10 +579,9 @@
 							<span class="string">&quot;false&quot;
 						</span>}
 					}
-					<span class="kw">let </span>values = fbb.create_vector_of_strings(<span class="kw-2">&amp;</span>[
-						as_str(ds.is_visible),
-						as_str(ds.is_mirrored),
-					]);
+					<span class="kw">let </span>values = [as_str(ds.is_visible), as_str(ds.is_mirrored)]
+						.map(|s| fbb.create_string(s));
+					<span class="kw">let </span>values = fbb.create_vector(<span class="kw-2">&amp;</span>values);
 					<span class="kw">let </span>kv = KeyValues::create(
 						fbb,
 						<span class="kw-2">&amp;</span>KeyValuesArgs {
