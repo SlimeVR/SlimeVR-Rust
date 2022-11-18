@@ -1,13 +1,12 @@
-mod client;
 mod color;
 mod model;
 
 pub use self::color::RGBA;
 
-use crate::client::settings::DisplaySettings;
-use crate::client::{Client, FeedUpdate};
 use crate::model::skeleton::SkeletonBuilder;
 use crate::model::{BoneKind, Isometry};
+use solarxr::settings::DisplaySettings;
+use solarxr::FeedUpdate;
 
 use eyre::{Result, WrapErr};
 use nalgebra::{Translation3, UnitQuaternion};
@@ -41,6 +40,7 @@ pub async fn main() -> Result<()> {
 		.catch_signals()
 		.handle_shutdown_requests(Duration::from_millis(1000))
 		.await
+		.wrap_err("system shutdown")
 }
 
 async fn overlay(
@@ -96,7 +96,7 @@ async fn overlay(
 								m.topic()
 							);
 
-							if !crate::client::topic::is_overlay_topic(m) {
+							if !solarxr::topic::is_overlay_topic(m) {
 								continue;
 							}
 
@@ -223,8 +223,17 @@ async fn overlay(
 }
 
 async fn networking(subsys: SubsystemHandle) -> Result<()> {
-	let (client, recv) = Client::new(CONNECT_STR.to_string(), subsys.clone())
-		.wrap_err("Failed to start client")?;
-	subsys.start("Overlay", |s| overlay(recv, s));
-	client.join().await
+	let (sender, reciever) = watch::channel(None);
+	subsys.start("Overlay", |s| overlay(reciever, s));
+
+	let run_future = solarxr::run(CONNECT_STR.to_string(), |update| async {
+		sender.send_replace(Some(update));
+	});
+	tokio::select! {
+		_ = run_future => { unreachable!("This future never returns") },
+		_ = subsys.on_shutdown_requested() => {
+			log::debug!("networking shutdown requested");
+			Ok(())
+		}
+	}
 }

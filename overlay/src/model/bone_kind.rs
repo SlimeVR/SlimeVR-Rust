@@ -1,6 +1,6 @@
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::FromPrimitive;
-use solarxr_protocol::datatypes::BodyPart;
+use solarxr::protocol::datatypes::BodyPart;
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]

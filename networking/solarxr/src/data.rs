@@ -22,7 +22,8 @@ pub struct Data {
 	table: MessageBundle<'this>,
 }
 impl Data {
-	#[allow(unused)]
+	/// # Safety
+	/// `data` must have already been verified to be a valid [`MessageBundle`] flatbuffer
 	pub unsafe fn from_vec_unchecked(data: Vec<u8>) -> Self {
 		Self::new(data, |v| flatbuffers::root_unchecked::<MessageBundle>(v))
 	}
@@ -36,7 +37,6 @@ impl Data {
 		self.into_heads().data
 	}
 
-	#[allow(unused)]
 	pub fn as_slice(&self) -> &[u8] {
 		self.with_data(|v| v.as_slice())
 	}

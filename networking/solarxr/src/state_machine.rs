@@ -1,7 +1,7 @@
 use super::data::FeedUpdate;
 use super::Wss;
-use crate::client::settings::DisplaySettings;
-use crate::client::{Data, DecodeError};
+use crate::settings::DisplaySettings;
+use crate::{Data, DecodeError};
 
 use futures_util::stream::SplitStream;
 use futures_util::{Sink, SinkExt, StreamExt};
@@ -173,9 +173,7 @@ impl M<Connected> {
 				fbb.create_vector(&[header])
 			};
 			let pub_sub_header = {
-				use crate::client::topic::{
-					TOPIC_APP, TOPIC_DISPLAY_SETTINGS, TOPIC_ORG,
-				};
+				use crate::topic::{TOPIC_APP, TOPIC_DISPLAY_SETTINGS, TOPIC_ORG};
 				use solarxr_protocol::pub_sub::{
 					KeyValues, KeyValuesArgs, Message, MessageArgs, Payload,
 					PubSubHeader, PubSubHeaderArgs, PubSubUnion, SubscriptionRequest,

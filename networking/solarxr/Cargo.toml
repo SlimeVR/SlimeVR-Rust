@@ -1,0 +1,22 @@
+[package]
+name = "solarxr"
+version = "0.0.0"
+
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+edition.workspace = true
+rust-version.workspace = true
+
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.17"
+solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "86eb9aa6b5126d363570250831663a7ba9920c23" }
+ouroboros = "0.15"
+thiserror = "1"
+futures-util = "0.3"
+
+log.workspace = true
+eyre.workspace = true
