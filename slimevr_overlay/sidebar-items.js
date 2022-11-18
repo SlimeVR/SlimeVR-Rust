@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["CONNECT_STR",""]],"enum":[["ShutdownReason",""]],"fn":[["main",""],["networking",""],["overlay",""]],"macro":[["unwrap_or_continue",""]],"mod":[["client",""],["color",""],["model",""]],"struct":[["RGBA",""]]};
+window.SIDEBAR_ITEMS = {"constant":[["CONNECT_STR",""]],"enum":[["ShutdownReason",""]],"fn":[["main",""],["networking",""],["overlay",""]],"macro":[["unwrap_or_continue",""]],"mod":[["color",""],["model",""]],"struct":[["RGBA",""]]};

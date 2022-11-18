@@ -228,16 +228,24 @@
 <span id="228">228</span>
 <span id="229">229</span>
 <span id="230">230</span>
-</pre><pre class="rust"><code><span class="kw">mod </span>client;
-<span class="kw">mod </span>color;
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+</pre><pre class="rust"><code><span class="kw">mod </span>color;
 <span class="kw">mod </span>model;
 
 <span class="kw">pub use </span><span class="self">self</span>::color::RGBA;
 
-<span class="kw">use </span><span class="kw">crate</span>::client::settings::DisplaySettings;
-<span class="kw">use </span><span class="kw">crate</span>::client::{Client, FeedUpdate};
 <span class="kw">use </span><span class="kw">crate</span>::model::skeleton::SkeletonBuilder;
 <span class="kw">use </span><span class="kw">crate</span>::model::{BoneKind, Isometry};
+<span class="kw">use </span>solarxr::settings::DisplaySettings;
+<span class="kw">use </span>solarxr::FeedUpdate;
 
 <span class="kw">use </span>eyre::{<span class="prelude-ty">Result</span>, WrapErr};
 <span class="kw">use </span>nalgebra::{Translation3, UnitQuaternion};
@@ -271,7 +279,8 @@
 		.catch_signals()
 		.handle_shutdown_requests(Duration::from_millis(<span class="number">1000</span>))
 		.<span class="kw">await
-</span>}
+		</span>.wrap_err(<span class="string">&quot;system shutdown&quot;</span>)
+}
 
 <span class="kw">async fn </span>overlay(
 	<span class="kw-2">mut </span>recv: watch::Receiver&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;,
@@ -326,7 +335,7 @@
 								m.topic()
 							);
 
-							<span class="kw">if </span>!<span class="kw">crate</span>::client::topic::is_overlay_topic(m) {
+							<span class="kw">if </span>!solarxr::topic::is_overlay_topic(m) {
 								<span class="kw">continue</span>;
 							}
 
@@ -453,10 +462,19 @@
 }
 
 <span class="kw">async fn </span>networking(subsys: SubsystemHandle) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-	<span class="kw">let </span>(client, recv) = Client::new(CONNECT_STR.to_string(), subsys.clone())
-		.wrap_err(<span class="string">&quot;Failed to start client&quot;</span>)<span class="question-mark">?</span>;
-	subsys.start(<span class="string">&quot;Overlay&quot;</span>, |s| overlay(recv, s));
-	client.join().<span class="kw">await
-</span>}
+	<span class="kw">let </span>(sender, reciever) = watch::channel(<span class="prelude-val">None</span>);
+	subsys.start(<span class="string">&quot;Overlay&quot;</span>, |s| overlay(reciever, s));
+
+	<span class="kw">let </span>run_future = solarxr::run(CONNECT_STR.to_string(), |update| <span class="kw">async </span>{
+		sender.send_replace(<span class="prelude-val">Some</span>(update));
+	});
+	<span class="macro">tokio::select! </span>{
+		<span class="kw">_ </span>= run_future =&gt; { <span class="macro">unreachable!</span>(<span class="string">&quot;This future never returns&quot;</span>) },
+		<span class="kw">_ </span>= subsys.on_shutdown_requested() =&gt; {
+			<span class="macro">log::debug!</span>(<span class="string">&quot;networking shutdown requested&quot;</span>);
+			<span class="prelude-val">Ok</span>(())
+		}
+	}
+}
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

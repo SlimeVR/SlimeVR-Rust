@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["DecodeError",""]],"fn":[["run","Returns a future that will run forever, continually callin the callbacks as necessary"]],"mod":[["data",""],["settings",""],["state_machine",""],["topic",""]],"struct":[["Data","The self-referencing struct."],["FeedUpdate",""]],"type":[["Wss",""]]};
