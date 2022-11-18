@@ -40,6 +40,7 @@ pub async fn main() -> Result<()> {
 		.catch_signals()
 		.handle_shutdown_requests(Duration::from_millis(1000))
 		.await
+		.wrap_err("system shutdown")
 }
 
 async fn overlay(
