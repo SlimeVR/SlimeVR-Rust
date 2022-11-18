@@ -3,7 +3,7 @@ A monorepo for [SlimeVR's](https://github.com/SlimeVR) Rust code.
 
 
 ## Project Structure
-A monorepo stores mutliple librares and apps all in one git repo. This one contains:
+A monorepo stores mutliple librares and apps all in one git repo. The main projects are:
 
 
 * [SlimeVR Overlay](overlay/): An OpenVR Overlay that displays the skeletal model of
@@ -15,6 +15,8 @@ A monorepo stores mutliple librares and apps all in one git repo. This one conta
   instead of Arduino. Targets the ESP32-C3.
 * [NRF Demo](nrf_demo/): A small blinky program to demonstrate use of the nrf52840 in
   embedded rust.
+* [SolarXR Client](networking/solarxr/): A rust client for the [solarxr protocol](https://github.com/SlimeVR/SolarXR-Protocol).
+  
 
 ## Motivation
 * Fulfill the Rewrite It In Rust meme
