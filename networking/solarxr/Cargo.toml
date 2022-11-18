@@ -17,5 +17,6 @@ solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = 
 ouroboros = "0.15"
 thiserror = "1"
 futures-util = "0.3"
-log = "0.4"
-eyre = "0.6"
+
+log.workspace = true
+eyre.workspace = true

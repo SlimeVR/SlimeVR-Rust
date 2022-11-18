@@ -11,9 +11,7 @@ rust-version.workspace = true
 
 [dependencies]
 color-eyre = "0.6"
-eyre = "0.6"
 lazy_static = "1"
-log = "0.4"
 nalgebra = "0.30"
 num-derive = "0.3"
 num-traits = "0.2"
@@ -21,5 +19,8 @@ ovr_overlay = { version = "=0.0.0", features = ["nalgebra"] }
 pretty_env_logger = "0.4"
 stackvec = "0.2"
 tokio = { version = "1", features = ["full"] }
-solarxr = { path = "../networking/solarxr/" }
+solarxr = { path = "../networking/solarxr" }
 tokio-graceful-shutdown = "0.6"
+
+eyre.workspace = true
+log.workspace = true

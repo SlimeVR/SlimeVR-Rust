@@ -9,17 +9,17 @@ pub use crate::data::{Data, DecodeError, FeedUpdate};
 use crate::state_machine::{ClientStateMachine, DeserializeError, RecvError};
 
 use core::future::Future;
-use eyre::Result;
 use tokio::net::TcpStream;
 use tokio_tungstenite::MaybeTlsStream;
 use tokio_tungstenite::WebSocketStream;
 
 type Wss = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
+/// Returns a future that will run forever, continually callin the callbacks as necessary
 pub async fn run<Fut>(
 	connect_to: String,
 	data_feed_callback: impl Fn(FeedUpdate) -> Fut,
-) -> Result<()>
+) -> !
 where
 	Fut: Future<Output = ()>,
 {

@@ -6,7 +6,7 @@ pub use self::color::RGBA;
 use crate::model::skeleton::SkeletonBuilder;
 use crate::model::{BoneKind, Isometry};
 use solarxr::settings::DisplaySettings;
-use solarxr::{Client, FeedUpdate};
+use solarxr::FeedUpdate;
 
 use eyre::{Result, WrapErr};
 use nalgebra::{Translation3, UnitQuaternion};
@@ -222,8 +222,17 @@ async fn overlay(
 }
 
 async fn networking(subsys: SubsystemHandle) -> Result<()> {
-	let (client, recv) = Client::new(CONNECT_STR.to_string(), subsys.clone())
-		.wrap_err("Failed to start client")?;
-	subsys.start("Overlay", |s| overlay(recv, s));
-	client.join().await
+	let (sender, reciever) = watch::channel(None);
+	subsys.start("Overlay", |s| overlay(reciever, s));
+
+	let run_future = solarxr::run(CONNECT_STR.to_string(), |update| async {
+		sender.send_replace(Some(update));
+	});
+	tokio::select! {
+		_ = run_future => { unreachable!("This future never returns") },
+		_ = subsys.on_shutdown_requested() => {
+			log::debug!("networking shutdown requested");
+			Ok(())
+		}
+	}
 }
