@@ -13,7 +13,7 @@ rust-version.workspace = true
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.17"
-solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "86eb9aa6b5126d363570250831663a7ba9920c23" }
+solarxr_protocol = { git = "https://github.com/SlimeVR/SolarXR-Protocol", rev = "f68b86125f4cddf9a95919b813f67bc067de6b1a" }
 ouroboros = "0.15"
 thiserror = "1"
 futures-util = "0.3"

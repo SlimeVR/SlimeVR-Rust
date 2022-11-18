@@ -213,10 +213,11 @@ impl M<Connected> {
 				};
 
 				let initial_state = {
-					let keys = fbb.create_vector_of_strings(&[
-						DisplaySettings::IS_VISIBLE,
-						DisplaySettings::IS_MIRRORED,
-					]);
+					let keys =
+						[DisplaySettings::IS_VISIBLE, DisplaySettings::IS_MIRRORED]
+							.map(|s| fbb.create_string(s));
+
+					let keys = fbb.create_vector(&keys);
 					let ds = DisplaySettings::default();
 					const fn as_str(b: bool) -> &'static str {
 						if b {
@@ -225,10 +226,9 @@ impl M<Connected> {
 							"false"
 						}
 					}
-					let values = fbb.create_vector_of_strings(&[
-						as_str(ds.is_visible),
-						as_str(ds.is_mirrored),
-					]);
+					let values = [as_str(ds.is_visible), as_str(ds.is_mirrored)]
+						.map(|s| fbb.create_string(s));
+					let values = fbb.create_vector(&values);
 					let kv = KeyValues::create(
 						fbb,
 						&KeyValuesArgs {
