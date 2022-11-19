@@ -22,11 +22,20 @@ dependencies = [
 
 [[package]]
 name = "atomic-polyfill"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c041a8d9751a520ee19656232a18971f18946a7900f1520ee4400002244dd89"
+dependencies = [
+ "critical-section 0.2.7",
+]
+
+[[package]]
+name = "atomic-polyfill"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d299f547288d6db8d5c3a2916f7b2f66134b15b8c1ac1c4357dd3b8752af7bb2"
 dependencies = [
- "critical-section",
+ "critical-section 1.1.1",
 ]
 
 [[package]]
@@ -34,6 +43,15 @@ name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
+
+[[package]]
+name = "bare-metal"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5deb64efa5bd81e31fcd1938615a6d98c82eafcbcd787162b6f63b91d6bac5b3"
+dependencies = [
+ "rustc_version 0.2.3",
+]
 
 [[package]]
 name = "bare-metal"
@@ -48,16 +66,52 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dcb6dd1c2376d2e096796e234a70e17e94cc2d5d54ff8ce42b28cef1d0d359a4"
 
 [[package]]
+name = "bitfield"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46afbd2983a5d5a7bd740ccb198caf5b82f45c40c09c0eed36052d91cb92e719"
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
+name = "byteorder"
+version = "1.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "cortex-m"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70858629a458fdfd39f9675c4dc309411f2a3f83bede76988d81bf1a0ecee9e0"
+dependencies = [
+ "bare-metal 0.2.5",
+ "bitfield",
+ "embedded-hal 0.2.7",
+ "volatile-register",
+]
+
+[[package]]
+name = "critical-section"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95da181745b56d4bd339530ec393508910c909c784e8962d15d722bacf0bcbcd"
+dependencies = [
+ "bare-metal 1.0.0",
+ "cfg-if",
+ "cortex-m",
+ "riscv 0.7.0",
+]
 
 [[package]]
 name = "critical-section"
@@ -166,20 +220,21 @@ name = "defmt-rtt"
 version = "0.3.2"
 source = "git+https://github.com/knurling-rs/defmt?rev=8f465a0db78a8f7759452ecba5d1ad3d7d171098#8f465a0db78a8f7759452ecba5d1ad3d7d171098"
 dependencies = [
- "atomic-polyfill",
- "critical-section",
+ "atomic-polyfill 1.0.1",
+ "critical-section 1.1.1",
  "defmt",
 ]
 
 [[package]]
 name = "embassy-executor"
 version = "0.1.0"
-source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
+source = "git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2#2528f451387e6c7b27c3140cd87d47521d1971a2"
 dependencies = [
- "atomic-polyfill",
+ "atomic-polyfill 1.0.1",
  "cfg-if",
- "critical-section",
+ "critical-section 1.1.1",
  "embassy-macros",
+ "embassy-time 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2)",
  "futures-util",
  "static_cell",
 ]
@@ -187,17 +242,76 @@ dependencies = [
 [[package]]
 name = "embassy-futures"
 version = "0.1.0"
-source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47e5367165d347c039360f784812f493b001583ab6a3dd8622f4ce9c30374ec3"
 
 [[package]]
 name = "embassy-macros"
 version = "0.1.0"
-source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
+source = "git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2#2528f451387e6c7b27c3140cd87d47521d1971a2"
 dependencies = [
  "darling 0.13.4",
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "embassy-sync"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6ea38e6ea5d0361d087680f786c19a1454becb06174790280534a3be05ed839"
+dependencies = [
+ "atomic-polyfill 1.0.1",
+ "cfg-if",
+ "critical-section 1.1.1",
+ "embedded-io",
+ "futures-util",
+ "heapless",
+]
+
+[[package]]
+name = "embassy-sync"
+version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2#2528f451387e6c7b27c3140cd87d47521d1971a2"
+dependencies = [
+ "atomic-polyfill 1.0.1",
+ "cfg-if",
+ "critical-section 1.1.1",
+ "embedded-io",
+ "futures-util",
+ "heapless",
+]
+
+[[package]]
+name = "embassy-time"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81c0c57d163dba8ff55a874966d9a1ae755859028308833923a1edeec1a6c215"
+dependencies = [
+ "atomic-polyfill 1.0.1",
+ "cfg-if",
+ "critical-section 1.1.1",
+ "embassy-sync 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "embedded-hal 0.2.7",
+ "embedded-hal 1.0.0-alpha.9",
+ "embedded-hal-async",
+ "futures-util",
+ "heapless",
+]
+
+[[package]]
+name = "embassy-time"
+version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2#2528f451387e6c7b27c3140cd87d47521d1971a2"
+dependencies = [
+ "atomic-polyfill 1.0.1",
+ "cfg-if",
+ "critical-section 1.1.1",
+ "embassy-sync 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2)",
+ "embedded-hal 0.2.7",
+ "futures-util",
+ "heapless",
 ]
 
 [[package]]
@@ -220,12 +334,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-hal"
+version = "1.0.0-alpha.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "129b101ddfee640565f7c07b301a31d95aa21e5acef21a491c307139f5fa4c91"
+
+[[package]]
+name = "embedded-hal-async"
+version = "0.1.0-alpha.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c913f631bd08c253b85fdf0077061c64763d70e27803b04da5a49c5fb2a65057"
+dependencies = [
+ "embedded-hal 1.0.0-alpha.9",
+]
+
+[[package]]
+name = "embedded-io"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33dfba9e6c113f2fd8537c943780a7345945e66c86972e356b1152e19481bcf5"
+
+[[package]]
 name = "esp-alloc"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "747141836aa66f690bb8434f7044781b629c686fa699581aa3940f1b8ffee4ea"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "linked_list_allocator",
  "riscv 0.8.0",
  "xtensa-lx",
@@ -238,9 +373,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fc976d16f2d2b6870077118a0bc41d886fff659becf2f705df4a843d56e019f"
 dependencies = [
  "cfg-if",
- "critical-section",
+ "critical-section 1.1.1",
+ "embassy-time 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embedded-dma",
- "embedded-hal",
+ "embedded-hal 0.2.7",
  "esp-hal-procmacros",
  "esp32c3",
  "fugit",
@@ -270,7 +406,7 @@ version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "677b6cc003e2f7384c5bd02286e5ee04d9ac0adc875abff6c3316175af20eaa8"
 dependencies = [
- "critical-section",
+ "critical-section 1.1.1",
  "riscv 0.10.0",
  "riscv-rt 0.10.0",
  "vcell",
@@ -283,7 +419,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98fbc9b407fa1d70e9241d6d0baf016dc76383cf1d9cc9c6b3880d9c75291298"
 dependencies = [
  "cfg-if",
- "embedded-hal",
+ "embassy-time 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "embedded-hal 0.2.7",
  "esp-hal-common",
  "r0",
  "riscv 0.10.0",
@@ -298,7 +435,8 @@ dependencies = [
  "defmt-rtt",
  "embassy-executor",
  "embassy-futures",
- "embedded-hal",
+ "embassy-time 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "embedded-hal 0.2.7",
  "esp-alloc",
  "esp32c3-hal",
  "fugit",
@@ -360,6 +498,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "hash32"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0c35f58762feb77d74ebe43bdbc3210f09be9fe6742234d573bacc26ed92b67"
+dependencies = [
+ "byteorder",
+]
+
+[[package]]
+name = "heapless"
+version = "0.7.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db04bc24a18b9ea980628ecf00e6c0264f3c1426dac36c00cb49b6fbad8b0743"
+dependencies = [
+ "atomic-polyfill 0.1.10",
+ "hash32",
+ "rustc_version 0.4.0",
+ "spin",
+ "stable_deref_trait",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -407,7 +567,7 @@ name = "mpu6050-dmp"
 version = "0.2.0"
 source = "git+https://github.com/TheButlah/mpu6050-dmp-rs?rev=77128a75a51547baadc0f0ef99aba4432e848f10#77128a75a51547baadc0f0ef99aba4432e848f10"
 dependencies = [
- "embedded-hal",
+ "embedded-hal 0.2.7",
  "libm",
 ]
 
@@ -502,7 +662,7 @@ dependencies = [
 name = "panic_defmt"
 version = "0.0.0"
 dependencies = [
- "atomic-polyfill",
+ "atomic-polyfill 1.0.1",
  "defmt",
 ]
 
@@ -591,13 +751,24 @@ checksum = "456c603be3e8d448b072f410900c09faf164fbce2d480456f50eea6e25f9c848"
 
 [[package]]
 name = "riscv"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6907ccdd7a31012b70faf2af85cd9e5ba97657cc3987c4f13f8e4d2c2a088aba"
+dependencies = [
+ "bare-metal 1.0.0",
+ "bit_field",
+ "riscv-target",
+]
+
+[[package]]
+name = "riscv"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e2856a701069e2d262b264750d382407d272d5527f7a51d3777d1805b4e2d3c"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "bit_field",
- "embedded-hal",
+ "embedded-hal 0.2.7",
 ]
 
 [[package]]
@@ -606,9 +777,9 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73fc4bc7113424814738fe79755a5764e392b3d4d1bc757e6aa6f61cede32095"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "bit_field",
- "embedded-hal",
+ "embedded-hal 0.2.7",
 ]
 
 [[package]]
@@ -618,8 +789,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "169fa82a2be03db484b13863f6a88f7f154a027a332c471cc164775671e81a5a"
 dependencies = [
  "bit_field",
- "critical-section",
- "embedded-hal",
+ "critical-section 1.1.1",
+ "embedded-hal 0.2.7",
 ]
 
 [[package]]
@@ -679,10 +850,49 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustc_version"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
+dependencies = [
+ "semver 0.9.0",
+]
+
+[[package]]
+name = "rustc_version"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
+dependencies = [
+ "semver 1.0.14",
+]
+
+[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "semver"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
+dependencies = [
+ "semver-parser",
+]
+
+[[package]]
+name = "semver"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e25dfac463d778e353db5be2449d1cce89bd6fd23c9f1ea21310ce6e5a1b29c4"
+
+[[package]]
+name = "semver-parser"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "simba"
@@ -726,7 +936,7 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4c37c250d21f53fa7165e76e5401d7e6539c211a8d2cf449e3962956a5cc2ce"
 dependencies = [
- "atomic-polyfill",
+ "atomic-polyfill 1.0.1",
 ]
 
 [[package]]
@@ -777,12 +987,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 
 [[package]]
+name = "volatile-register"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ee8f19f9d74293faf70901bc20ad067dc1ad390d2cbf1e3f75f721ffee908b6"
+dependencies = [
+ "vcell",
+]
+
+[[package]]
 name = "xtensa-lx"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b874b2b60f9c25682e0961fd53a802053e6950f7567bc6f2d6c734fb6d93f45a"
 dependencies = [
- "bare-metal",
+ "bare-metal 1.0.0",
  "mutex-trait",
  "r0",
  "spin",

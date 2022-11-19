@@ -35,24 +35,26 @@ imu-mpu6050 = ["mpu6050-dmp"]
 
 
 [dependencies]
-# Platform support
-esp32c3-hal = { version = "0.3", features = ["direct-boot"] }
+esp32c3-hal = { version = "0.3", features = [
+  "embassy",
+  "embassy-time-systick",
+  "direct-boot",
+] }
 riscv-rt = "0.10"
 riscv = "0.10"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 embedded-hal = "0.2"
 
 # Embassy stuff
-embassy-futures = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b" }
-embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
+embassy-futures = "0.1.0"
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "2528f451387e6c7b27c3140cd87d47521d1971a2", features = [
+  "integrated-timers",
   "nightly",
-  # "integrated-timers",
 ] }
-# embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
-#     "tick-16mhz",
-#     "nightly",
-#     "unstable-traits",
-# ] }
+embassy-time = { version = "0.1.0", features = [
+  "tick-hz-16_000_000",
+  "unstable-traits",
+] }
 
 # Logging
 defmt = "0.3"
@@ -85,3 +87,4 @@ mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "7712
 # Works on non atomic targets
 defmt-rtt = { git = "https://github.com/knurling-rs/defmt", rev = "8f465a0db78a8f7759452ecba5d1ad3d7d171098" }
 defmt = { git = "https://github.com/knurling-rs/defmt", rev = "8f465a0db78a8f7759452ecba5d1ad3d7d171098" }
+# Platform support
