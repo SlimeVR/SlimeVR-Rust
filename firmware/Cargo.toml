@@ -68,6 +68,12 @@ embassy-time = { version = "0.1.0", features = [
   "unstable-traits",
 ] }
 
+# Wi-Fi
+#esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "ee9ea0d", features = [
+#  "esp32c3",
+#  "wifi"
+#] }
+
 # Logging
 defmt = "0.3"
 defmt-rtt = { version = "0.4", optional = true }
@@ -76,12 +82,6 @@ defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
-# esp-wifi doesn't seem to be updated for the latest ecosystem crates
-# esp-wifi = { git = "https://github.com/esp-rs/esp-wifi", rev = "e8adb3153f9757986b2a6af09cbfb622c485dcfc", features = [
-# esp-wifi = { path = "../../../External/esp-wifi", features = [
-#     "esp32c3",
-#     "wifi",
-# ] }
 
 # Other crates
 static_cell = "1"

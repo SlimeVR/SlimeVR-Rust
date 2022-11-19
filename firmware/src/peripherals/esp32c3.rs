@@ -3,17 +3,26 @@ use crate::aliases::ඞ::I2cConcrete;
 
 use fugit::RateExtU32;
 
-use esp32c3_hal::{clock::ClockControl, prelude::*, timer::TimerGroup, Rtc};
+use esp32c3_hal::{
+	clock::{ClockControl, CpuClock},
+	embassy,
+	prelude::*,
+	timer::TimerGroup,
+	Rtc,
+};
 
 pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 	let p = esp32c3_hal::pac::Peripherals::take().unwrap();
 
 	let mut system = p.SYSTEM.split();
-	let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
+	// The ESP-Wifi module requires 160MHz for cpu clock speeed
+	let clocks =
+		ClockControl::configure(system.clock_control, CpuClock::Clock160MHz).freeze();
+	embassy::init(&clocks);
+	let mut rtc = Rtc::new(p.RTC_CNTL);
 
 	// Disable the RTC and TIMG watchdog timers
 	{
-		let mut rtc = Rtc::new(p.RTC_CNTL);
 		let timer_group0 = TimerGroup::new(p.TIMG0, &clocks);
 		let mut wdt0 = timer_group0.wdt;
 		let timer_group1 = TimerGroup::new(p.TIMG1, &clocks);
@@ -39,5 +48,8 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
 
-	Peripherals { i2c, delay }
+	Peripherals {
+		i2c,
+		delay,
+	}
 }
