@@ -69,10 +69,11 @@ embassy-time = { version = "0.1.0", features = [
 ] }
 
 # Wi-Fi
-#esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "ee9ea0d", features = [
-#  "esp32c3",
-#  "wifi"
-#] }
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "b876a9c", features = [
+  "esp32c3",
+  "wifi",
+  "embedded-svc",
+] }
 
 # Logging
 defmt = "0.3"
