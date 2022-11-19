@@ -1,0 +1,31 @@
+[package]
+name = "defmt_esp_println"
+version = "0.0.0"
+
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+edition.workspace = true
+rust-version.workspace = true
+
+[features]
+
+# You must enable exactly 1 of the below features
+uart = ["esp-println/uart"]
+jtag_serial = ["esp-println/jtag_serial"]
+
+# You must enable exactly 1 of the below features to support the correct chip:
+esp32 = ["esp-println/esp32"]
+esp32c2 = ["esp-println/esp32c2"]
+esp32c3 = ["esp-println/esp32c3"]
+esp32s2 = ["esp-println/esp32s2"]
+esp32s3 = ["esp-println/esp32s3"]
+esp8266 = ["esp-println/esp8266"]
+
+
+[dependencies]
+critical-section = "1"
+atomic-polyfill = "1"
+defmt = "0.3"
+esp-println = { version = "0.3", no-default-features = true }

@@ -226,6 +226,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "defmt_esp_println"
+version = "0.0.0"
+dependencies = [
+ "atomic-polyfill 1.0.1",
+ "critical-section 1.1.1",
+ "defmt",
+ "esp-println",
+]
+
+[[package]]
 name = "embassy-executor"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2#2528f451387e6c7b27c3140cd87d47521d1971a2"
@@ -401,6 +411,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "esp-println"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adcfe5d532cf2029b11996cab6b4af948f41c24b131c76422115634711549aaa"
+
+[[package]]
 name = "esp32c3"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -438,6 +454,7 @@ dependencies = [
  "embassy-time 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embedded-hal 0.2.7",
  "esp-alloc",
+ "esp-println",
  "esp32c3-hal",
  "fugit",
  "mpu6050-dmp",
