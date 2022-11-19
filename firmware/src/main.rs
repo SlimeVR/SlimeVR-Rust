@@ -20,7 +20,7 @@ fn main() -> ! {
 	self::globals::setup();
 	debug!("Booted");
 
-	let p = self::peripherals::get_peripherals();
+	let p = self::peripherals::ඞ::get_peripherals();
 	debug!("Initialized peripherals");
 	p.delay.delay(1000);
 
@@ -44,8 +44,8 @@ async fn network_task() {
 
 #[task]
 async fn imu_task(
-	i2c: crate::aliases::I2cConcrete,
-	delay: crate::aliases::DelayConcrete,
+	i2c: crate::aliases::ඞ::I2cConcrete,
+	delay: crate::aliases::ඞ::DelayConcrete,
 ) {
 	crate::imu::imu_task(i2c, delay).await
 }
