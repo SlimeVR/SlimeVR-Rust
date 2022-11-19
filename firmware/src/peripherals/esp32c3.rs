@@ -1,5 +1,5 @@
 use super::Peripherals;
-use crate::aliases::I2cConcrete;
+use crate::aliases::ඞ::I2cConcrete;
 
 use fugit::RateExtU32;
 

@@ -2,9 +2,7 @@
 
 #[cfg(feature = "mcu-esp32c3")]
 #[path = "esp32c3.rs"]
-mod ඞ;
-
-pub use ඞ::get_peripherals;
+pub mod ඞ;
 
 use crate::aliases::I2c;
 
