@@ -11,7 +11,7 @@ mod utils;
 
 use defmt::{debug, trace};
 use embassy_executor::{task, Executor};
-use embassy_futures::yield_now;
+use embassy_time::{Duration, Timer};
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
@@ -38,7 +38,7 @@ async fn network_task() {
 	loop {
 		trace!("In main(), i was {}", i);
 		i += 1;
-		yield_now().await // Yield to ensure fairness
+		Timer::after(Duration::from_millis(1000)).await
 	}
 }
 
