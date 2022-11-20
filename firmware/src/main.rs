@@ -7,12 +7,13 @@
 mod aliases;
 mod globals;
 mod imu;
+mod networking;
 mod peripherals;
 mod utils;
 
 use defmt::{debug, trace};
 use embassy_executor::{task, Executor};
-use embassy_time::{Duration, Timer};
+use embassy_futures::yield_now;
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
@@ -39,7 +40,8 @@ async fn network_task() {
 	loop {
 		trace!("In main(), i was {}", i);
 		i += 1;
-		Timer::after(Duration::from_millis(1000)).await
+		yield_now().await
+		//Timer::after(Duration::from_millis(1000)).await
 	}
 }
 

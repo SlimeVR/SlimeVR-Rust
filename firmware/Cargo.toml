@@ -49,8 +49,9 @@ direct-boot = ["esp32c3-hal/direct-boot"]
 
 [dependencies]
 esp32c3-hal = { version = "0.3", features = [
-  "embassy",
-  "embassy-time-systick",
+  #"embassy",
+  #"embassy-time-systick",
+  #"direct-boot",
 ] }
 riscv-rt = "0.10"
 riscv = "0.10"
@@ -60,13 +61,13 @@ embedded-hal = "0.2"
 # Embassy stuff
 embassy-futures = "0.1.0"
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "2528f451387e6c7b27c3140cd87d47521d1971a2", features = [
-  "integrated-timers",
+  #"integrated-timers",
   "nightly",
 ] }
-embassy-time = { version = "0.1.0", features = [
-  "tick-hz-16_000_000",
-  "unstable-traits",
-] }
+#embassy-time = { version = "0.1.0", features = [
+#  "tick-hz-16_000_000",
+#  "unstable-traits",
+#] }
 
 # Wi-Fi
 esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "b876a9c", features = [
