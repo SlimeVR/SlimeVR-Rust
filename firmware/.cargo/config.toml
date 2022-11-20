@@ -1,12 +1,18 @@
-[build]
+[target.riscv32imc-unknown-none-elf]
 rustflags = [
-  "-C",
-  "link-arg=-Tlinkall.x",
+    "-C",
+    "link-arg=-Tlinkall.x",
+    "-C",
+    "link-arg=-Tesp32c3_rom_functions.x",
 
-  # For defmt
-  "-C",
-  "link-arg=-Tdefmt.x",
+    "-C",
+    "force-frame-pointers",
+    # For defmt
+    "-C",
+    "link-arg=-Tdefmt.x",
 ]
+
+[build]
 # We compile without atomics, because its faster than using atomic trap handler
 target = "riscv32imc-unknown-none-elf"
 
