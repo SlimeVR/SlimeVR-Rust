@@ -623,6 +623,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "feature_macros"
+version = "0.0.0"
+
+[[package]]
 name = "fixedbitset"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

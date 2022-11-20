@@ -1,9 +1,5 @@
 [workspace]
-members = [
-  "crates/panic_defmt",
-  "crates/defmt_esp_println",
-  "crates/feature_macros",
-]
+members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
 
 [workspace.package]
@@ -91,7 +87,7 @@ fugit = "0.3"
 
 
 [build-dependencies]
-feature_macros.path = "crates/feature_macros"
+feature_macros.path = "../feature_macros"
 
 
 [patch.crates-io]
