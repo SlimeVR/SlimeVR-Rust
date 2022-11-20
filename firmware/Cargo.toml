@@ -38,12 +38,14 @@ log-rtt = ["dep:defmt-rtt"]
 log-usb-serial = ["defmt_esp_println/jtag_serial"]
 log-uart = ["defmt_esp_println/uart"]
 
+# Enable to flash without needing `espflash`
+direct-boot = ["esp32c3-hal?/direct-boot"]
+
 
 [dependencies]
 esp32c3-hal = { version = "0.3", features = [
   "embassy",
   "embassy-time-systick",
-  "direct-boot",
 ] }
 riscv-rt = "0.10"
 riscv = "0.10"
@@ -63,7 +65,7 @@ embassy-time = { version = "0.1.0", features = [
 
 # Logging
 defmt = "0.3"
-defmt-rtt = { version = "0.3.2", optional = true }
+defmt-rtt = { version = "0.4", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
@@ -94,7 +96,5 @@ feature_macros.path = "../feature_macros"
 # Enable non-default I2C addresses and InitError
 mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
 
-# Works on non atomic targets
-defmt-rtt = { git = "https://github.com/knurling-rs/defmt", rev = "8f465a0db78a8f7759452ecba5d1ad3d7d171098" }
-defmt = { git = "https://github.com/knurling-rs/defmt", rev = "8f465a0db78a8f7759452ecba5d1ad3d7d171098" }
-# Platform support
+defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
+defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }

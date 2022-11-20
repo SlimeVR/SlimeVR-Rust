@@ -192,7 +192,7 @@ dependencies = [
 [[package]]
 name = "defmt"
 version = "0.3.2"
-source = "git+https://github.com/knurling-rs/defmt?rev=8f465a0db78a8f7759452ecba5d1ad3d7d171098#8f465a0db78a8f7759452ecba5d1ad3d7d171098"
+source = "git+https://github.com/TheButlah/defmt?rev=b5d5e316ea56250dcb25b3549bcf4bfdb1687796#b5d5e316ea56250dcb25b3549bcf4bfdb1687796"
 dependencies = [
  "bitflags",
  "defmt-macros",
@@ -200,8 +200,8 @@ dependencies = [
 
 [[package]]
 name = "defmt-macros"
-version = "0.3.2"
-source = "git+https://github.com/knurling-rs/defmt?rev=8f465a0db78a8f7759452ecba5d1ad3d7d171098#8f465a0db78a8f7759452ecba5d1ad3d7d171098"
+version = "0.3.3"
+source = "git+https://github.com/TheButlah/defmt?rev=b5d5e316ea56250dcb25b3549bcf4bfdb1687796#b5d5e316ea56250dcb25b3549bcf4bfdb1687796"
 dependencies = [
  "defmt-parser",
  "proc-macro-error",
@@ -213,12 +213,12 @@ dependencies = [
 [[package]]
 name = "defmt-parser"
 version = "0.3.1"
-source = "git+https://github.com/knurling-rs/defmt?rev=8f465a0db78a8f7759452ecba5d1ad3d7d171098#8f465a0db78a8f7759452ecba5d1ad3d7d171098"
+source = "git+https://github.com/TheButlah/defmt?rev=b5d5e316ea56250dcb25b3549bcf4bfdb1687796#b5d5e316ea56250dcb25b3549bcf4bfdb1687796"
 
 [[package]]
 name = "defmt-rtt"
-version = "0.3.2"
-source = "git+https://github.com/knurling-rs/defmt?rev=8f465a0db78a8f7759452ecba5d1ad3d7d171098#8f465a0db78a8f7759452ecba5d1ad3d7d171098"
+version = "0.4.0"
+source = "git+https://github.com/TheButlah/defmt?rev=b5d5e316ea56250dcb25b3549bcf4bfdb1687796#b5d5e316ea56250dcb25b3549bcf4bfdb1687796"
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section 1.1.1",
