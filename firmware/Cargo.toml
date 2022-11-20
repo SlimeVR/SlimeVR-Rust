@@ -39,7 +39,7 @@ log-usb-serial = ["defmt_esp_println/jtag_serial"]
 log-uart = ["defmt_esp_println/uart"]
 
 # Enable to flash without needing `espflash`
-direct-boot = ["esp32c3-hal?/direct-boot"]
+direct-boot = ["esp32c3-hal/direct-boot"]
 
 
 [dependencies]
