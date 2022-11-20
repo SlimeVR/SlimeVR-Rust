@@ -1,3 +1,4 @@
+################
 # Default config
 [default.probe]
 protocol = "Jtag"
@@ -7,8 +8,9 @@ chip = "esp32c3"
 
 [default.rtt]
 enabled = true
+up_mode = "NoBlockTrim"
 channels = [
-    { up = 0, down = 0, name = "Firmware logs via defmt", up_mode = "BlockIfFull", format = "Defmt" },
+  { up = 0, down = 0, name = "Firmware logs via defmt", format = "Defmt" },
 ]
 
 [default.gdb]
@@ -17,13 +19,29 @@ channels = [
 enabled = true
 gdb_connection_string = "127.0.0.1:1337"
 
+
+################
 # Monitor config (doesn't flash)
 [monitor.flashing]
 enabled = false
 
+
+################
 # Flash-only config
 [flash.rtt]
 enabled = false
 
 [flash.gdb]
+enabled = false
+
+
+################
+# This fixes rtt logs from not showing up. Run it once.
+[fixrtt.reset]
+halt_afterwards = true # This is the magic sauce, but WHY? 
+
+[fixrtt.gdb]
+enabled = false
+
+[fixrtt.flashing]
 enabled = false
