@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["at_least_one_provided","Asserts that at least one of the comma-separated features is active."],["mandatory_and_unique","Asserts that there is exactly one feature in the comma separated feature set active."],["unique","Asserts that no more than one of the comma-separated features is active at once."]]};
