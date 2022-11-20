@@ -233,6 +233,7 @@ dependencies = [
  "critical-section 1.1.1",
  "defmt",
  "esp-println",
+ "feature_macros",
 ]
 
 [[package]]
@@ -444,6 +445,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "feature_macros"
+version = "0.0.0"
+
+[[package]]
 name = "firmware"
 version = "0.0.0"
 dependencies = [
@@ -456,6 +461,7 @@ dependencies = [
  "embedded-hal 0.2.7",
  "esp-alloc",
  "esp32c3-hal",
+ "feature_macros",
  "fugit",
  "mpu6050-dmp",
  "nalgebra",

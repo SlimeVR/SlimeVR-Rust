@@ -5,7 +5,6 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 
 mod aliases;
-mod features;
 mod globals;
 mod imu;
 mod peripherals;

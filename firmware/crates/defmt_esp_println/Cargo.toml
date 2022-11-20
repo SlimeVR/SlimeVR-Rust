@@ -11,14 +11,11 @@ rust-version.workspace = true
 
 [features]
 
-# You must enable exactly 1 of the below features
+# You must enable exactly 1 of the below features.
 uart = ["esp-println/uart"]
 jtag_serial = ["esp-println/jtag_serial"]
 
-# uart = []
-# jtag_serial = []
-
-# You must enable exactly 1 of the below features to support the correct chip:
+# You must enable exactly 1 of the below features to support the correct chip.
 esp32 = ["esp-println/esp32"]
 esp32c2 = ["esp-println/esp32c2"]
 esp32c3 = ["esp-println/esp32c3"]
@@ -26,16 +23,13 @@ esp32s2 = ["esp-println/esp32s2"]
 esp32s3 = ["esp-println/esp32s3"]
 esp8266 = ["esp-println/esp8266"]
 
-# esp32 = []
-# esp32c2 = []
-# esp32c3 = []
-# esp32s2 = []
-# esp32s3 = []
-# esp8266 = []
-
 
 [dependencies]
 critical-section = "1"
 atomic-polyfill = "1"
 defmt = "0.3"
 esp-println = { version = "0.3", default-features = false }
+
+
+[build-dependencies]
+feature_macros.path = "../feature_macros"

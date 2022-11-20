@@ -1,5 +1,9 @@
 [workspace]
-members = ["crates/panic_defmt", "crates/defmt_esp_println"]
+members = [
+  "crates/panic_defmt",
+  "crates/defmt_esp_println",
+  "crates/feature_macros",
+]
 
 
 [workspace.package]
@@ -84,6 +88,10 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "libm",
 ] }
 fugit = "0.3"
+
+
+[build-dependencies]
+feature_macros.path = "crates/feature_macros"
 
 
 [patch.crates-io]
