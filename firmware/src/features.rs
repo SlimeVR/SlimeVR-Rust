@@ -13,5 +13,3 @@ macro_rules! assert_unique_features {
 assert_unique_features!("mcu-esp32c3");
 assert_unique_features!("imu-mpu6050");
 assert_unique_features!("log-rtt", "log-usb-serial");
-
-fn main() {}

@@ -449,12 +449,12 @@ version = "0.0.0"
 dependencies = [
  "defmt",
  "defmt-rtt",
+ "defmt_esp_println",
  "embassy-executor",
  "embassy-futures",
  "embassy-time 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embedded-hal 0.2.7",
  "esp-alloc",
- "esp-println",
  "esp32c3-hal",
  "fugit",
  "mpu6050-dmp",

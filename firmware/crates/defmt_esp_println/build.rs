@@ -10,8 +10,23 @@ macro_rules! assert_unique_features {
     }
 }
 
-assert_unique_features!("uart", "jtag_serial");
+// this one is mine :)
+macro_rules! assert_one_provided {
+    ($($feature:literal),*) => {
+        #[cfg(not(any(
+            $(feature = $feature),*
+        )))]
+        compile_error!("You must provide one of the mandatory features!");
+    }
+}
 
-assert_unique_features!("esp32", "esp32c2", "esp32c3", "esp32s2", "esp32s3", "esp8266");
+macro_rules! features {
+    ($($feature:literal),*) => {
+        assert_one_provided!($($feature),*);
+        assert_unique_features!($($feature),*);
+    }
+}
+features!("uart", "jtag_serial");
+features!("esp32", "esp32c2", "esp32c3", "esp32s2", "esp32s3", "esp8266");
 
 fn main() {}

@@ -2,8 +2,10 @@
 #![no_main]
 // Needed for embassy macros
 #![feature(type_alias_impl_trait)]
+#![deny(unsafe_op_in_unsafe_fn)]
 
 mod aliases;
+mod features;
 mod globals;
 mod imu;
 mod peripherals;

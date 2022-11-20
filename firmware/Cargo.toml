@@ -28,15 +28,15 @@ default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt"]
 
 # todo: actually support another microcontroller
 # Supported microcontrollers
-mcu-esp32c3 = []
+mcu-esp32c3 = ["defmt_esp_println?/esp32c3"]
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
 
 # Supported defmt loggers
 log-rtt = ["dep:defmt-rtt"]
-log-usb-serial = ["esp-println/jtag_serial"]
-log-uart = ["esp-println/uart"]
+log-usb-serial = ["defmt_esp_println/jtag_serial"]
+log-uart = ["defmt_esp_println/uart"]
 
 
 [dependencies]
@@ -65,7 +65,7 @@ embassy-time = { version = "0.1.0", features = [
 defmt = "0.3"
 defmt-rtt = { version = "0.3.2", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
-esp-println = { version = "0.3", optional = true }
+defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
