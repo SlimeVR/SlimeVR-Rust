@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/panic_defmt"]
+members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
 
 [workspace.package]
@@ -24,14 +24,19 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-mpu6050"]
+default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt"]
 
 # todo: actually support another microcontroller
 # Supported microcontrollers
-mcu-esp32c3 = []
+mcu-esp32c3 = ["defmt_esp_println?/esp32c3"]
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
+
+# Supported defmt loggers
+log-rtt = ["dep:defmt-rtt"]
+log-usb-serial = ["defmt_esp_println/jtag_serial"]
+log-uart = ["defmt_esp_println/uart"]
 
 
 [dependencies]
@@ -58,8 +63,9 @@ embassy-time = { version = "0.1.0", features = [
 
 # Logging
 defmt = "0.3"
-defmt-rtt = "0.3.2"
+defmt-rtt = { version = "0.3.2", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
+defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
@@ -78,6 +84,10 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "libm",
 ] }
 fugit = "0.3"
+
+
+[build-dependencies]
+feature_macros.path = "../feature_macros"
 
 
 [patch.crates-io]

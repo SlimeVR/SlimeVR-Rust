@@ -6,9 +6,16 @@ static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 
 // Set up backtraces
 // use esp_backtrace as _;
+
 use panic_defmt as _;
 
 // Set up global defmt logger
+#[cfg(all(
+	any(feature = "mcu-esp32c3"),
+	any(feature = "log-usb-serial", feature = "log-uart")
+))]
+use defmt_esp_println as _;
+#[cfg(feature = "log-rtt")]
 use defmt_rtt as _;
 
 // Choose the embedded hal based on the hardware (for now its just esp32c3)
