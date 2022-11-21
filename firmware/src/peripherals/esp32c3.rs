@@ -6,8 +6,9 @@ use fugit::RateExtU32;
 use esp32c3_hal::{
 	clock::{ClockControl, CpuClock},
 	prelude::*,
+	systimer::SystemTimer,
 	timer::TimerGroup,
-	Rtc, systimer::SystemTimer,
+	Rtc,
 };
 
 pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
@@ -36,7 +37,8 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 
 	// Initialize esp-wifi stuff
 	let systimer = SystemTimer::new(p.SYSTIMER);
-	esp_wifi::initialize(systimer.alarm0, p.RNG, &clocks).expect("Couldn't initialize esp-wifi");
+	esp_wifi::initialize(systimer.alarm0, p.RNG, &clocks)
+		.expect("Couldn't initialize esp-wifi");
 
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
 	// let hz =

@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
 
@@ -33,7 +34,10 @@ default = ["mcu-esp32c3", "imu-mpu6050", "log-usb-serial"]
 
 # todo: actually support another microcontroller
 # Supported microcontrollers
-mcu-esp32c3 = ["defmt_esp_println?/esp32c3"]
+mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "esp-wifi"]
+
+# Wi-fi dependencies
+esp-wifi = ["dep:esp-wifi"]
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
@@ -57,6 +61,10 @@ riscv-rt = "0.10"
 riscv = "0.10"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 embedded-hal = "0.2"
+embedded-svc = { version = "0.22", default-features = false, features = [
+#  "nightly",
+  "use_strum"
+] }
 
 # Embassy stuff
 embassy-futures = "0.1.0"
@@ -74,6 +82,21 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "b876a9c", fe
   "esp32c3",
   "wifi",
   "embedded-svc",
+], optional = true }
+smoltcp = { version = "0.8.0", default-features = false, features = [
+  "async",
+  "defmt",
+#FIXME: alloc feature spits errors out because defmt isnt 
+#  "alloc",
+  "socket-raw",
+  "socket-udp",
+  "socket-tcp",
+  "socket-icmp",
+  "socket-dhcpv4",
+  "medium-ethernet",
+  "proto-dhcpv4",
+  "proto-igmp",
+  "proto-ipv4"
 ] }
 
 # Logging
@@ -86,6 +109,7 @@ defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 mpu6050-dmp = { version = "0.2", optional = true }
 
 # Other crates
+strum = { version = "0.24", default-features = false }
 static_cell = "1"
 nb = "1"
 nalgebra = { version = "0.31", default-features = false, features = [
@@ -93,6 +117,7 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "libm",
 ] }
 fugit = "0.3"
+cfg-if = "0.1"
 
 
 [build-dependencies]

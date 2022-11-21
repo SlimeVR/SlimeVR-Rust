@@ -85,6 +85,12 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 
 [[package]]
 name = "cfg-if"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
+
+[[package]]
+name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
@@ -108,7 +114,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95da181745b56d4bd339530ec393508910c909c784e8962d15d722bacf0bcbcd"
 dependencies = [
  "bare-metal 1.0.0",
- "cfg-if",
+ "cfg-if 1.0.0",
  "cortex-m",
  "riscv 0.7.0",
 ]
@@ -242,7 +248,7 @@ version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=2528f451387e6c7b27c3140cd87d47521d1971a2#2528f451387e6c7b27c3140cd87d47521d1971a2"
 dependencies = [
  "atomic-polyfill 1.0.1",
- "cfg-if",
+ "cfg-if 1.0.0",
  "critical-section 1.1.1",
  "embassy-macros",
  "futures-util",
@@ -303,6 +309,8 @@ dependencies = [
  "log",
  "no-std-net",
  "serde",
+ "strum 0.23.0",
+ "strum_macros",
 ]
 
 [[package]]
@@ -344,7 +352,7 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fc976d16f2d2b6870077118a0bc41d886fff659becf2f705df4a843d56e019f"
 dependencies = [
- "cfg-if",
+ "cfg-if 1.0.0",
  "critical-section 1.1.1",
  "embedded-dma",
  "embedded-hal",
@@ -422,7 +430,7 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98fbc9b407fa1d70e9241d6d0baf016dc76383cf1d9cc9c6b3880d9c75291298"
 dependencies = [
- "cfg-if",
+ "cfg-if 1.0.0",
  "embedded-hal",
  "esp-hal-common",
  "r0",
@@ -440,12 +448,14 @@ checksum = "535edfc411b7b1c07e47f94b20706fbf1344ffe8bdc722fce17ba25cddeef052"
 name = "firmware"
 version = "0.0.0"
 dependencies = [
+ "cfg-if 0.1.10",
  "defmt",
  "defmt-rtt",
  "defmt_esp_println",
  "embassy-executor",
  "embassy-futures",
  "embedded-hal",
+ "embedded-svc",
  "esp-alloc",
  "esp-wifi",
  "esp32c3-hal",
@@ -457,7 +467,9 @@ dependencies = [
  "panic_defmt",
  "riscv 0.10.0",
  "riscv-rt 0.10.0",
+ "smoltcp",
  "static_cell",
+ "strum 0.24.1",
 ]
 
 [[package]]
@@ -531,6 +543,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "heck"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d621efb26863f0e9924c6ac577e8275e5e6b77455db64ffa6c65c904e9e132c"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -573,7 +594,7 @@ version = "0.4.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
- "cfg-if",
+ "cfg-if 1.0.0",
 ]
 
 [[package]]
@@ -900,6 +921,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustversion"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97477e48b4cf8603ad5f7aaf897467cf42ab4218a38ef76fb14c2d6773a6d6a8"
+
+[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -966,6 +993,7 @@ checksum = "72165c4af59f5f19c7fb774b88b95660591b612380305b5f4503157341a9f7ee"
 dependencies = [
  "bitflags",
  "byteorder",
+ "defmt",
  "managed",
 ]
 
@@ -1009,6 +1037,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
+name = "strum"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cae14b91c7d11c9a851d3fbc80a963198998c2a64eec840477fa92d8ce9b70bb"
+dependencies = [
+ "strum_macros",
+]
+
+[[package]]
+name = "strum"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
+
+[[package]]
+name = "strum_macros"
+version = "0.23.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5bb0dc7ee9c15cea6199cde9a127fa16a4c5819af85395457ad72d68edc85a38"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn",
+]
+
+[[package]]
 name = "syn"
 version = "1.0.103"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1030,6 +1086,12 @@ name = "unicode-ident"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ceab39d59e4c9499d4e5a8ee0e2735b891bb7308ac83dfb4e80cad195c9f6f3"
+
+[[package]]
+name = "unicode-segmentation"
+version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fdbf052a0783de01e944a6ce7a8cb939e295b1e7be835a1112c3b9a7f047a5a"
 
 [[package]]
 name = "vcell"
