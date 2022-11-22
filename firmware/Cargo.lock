@@ -339,6 +339,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "esp-backtrace"
+version = "0.3.0"
+source = "git+https://github.com/esp-rs/esp-backtrace.git?rev=312f8ea#312f8eaa3fdaa8237723f3927b58ec2dc0bdecac"
+dependencies = [
+ "esp-println",
+ "riscv 0.8.0",
+]
+
+[[package]]
 name = "esp-hal-common"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -449,6 +458,7 @@ dependencies = [
  "embedded-hal",
  "embedded-svc",
  "esp-alloc",
+ "esp-backtrace",
  "esp-wifi",
  "esp32c3-hal",
  "feature_utils",

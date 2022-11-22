@@ -34,7 +34,7 @@ default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt"]
 
 # todo: actually support another microcontroller
 # Supported microcontrollers
-mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "esp-wifi"]
+mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "esp-wifi", "esp-backtrace/esp32c3"]
 
 # Wi-fi dependencies
 esp-wifi = ["dep:esp-wifi"]
@@ -103,6 +103,7 @@ defmt = "0.3"
 defmt-rtt = { version = "0.4", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
+esp-backtrace = { git = "https://github.com/esp-rs/esp-backtrace.git", rev = "312f8ea", default-features = false, optional = true }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
