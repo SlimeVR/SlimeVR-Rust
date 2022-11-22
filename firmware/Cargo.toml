@@ -89,7 +89,7 @@ fugit = "0.3"
 
 
 [build-dependencies]
-feature_macros.path = "../feature_macros"
+feature_utils = "0.0.0"
 
 
 [patch.crates-io]

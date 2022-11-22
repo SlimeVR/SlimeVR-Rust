@@ -233,7 +233,7 @@ dependencies = [
  "critical-section 1.1.1",
  "defmt",
  "esp-println",
- "feature_macros",
+ "feature_utils",
 ]
 
 [[package]]
@@ -445,8 +445,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "feature_macros"
+name = "feature_utils"
 version = "0.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "535edfc411b7b1c07e47f94b20706fbf1344ffe8bdc722fce17ba25cddeef052"
 
 [[package]]
 name = "firmware"
@@ -461,7 +463,7 @@ dependencies = [
  "embedded-hal 0.2.7",
  "esp-alloc",
  "esp32c3-hal",
- "feature_macros",
+ "feature_utils",
  "fugit",
  "mpu6050-dmp",
  "nalgebra",

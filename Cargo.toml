@@ -5,7 +5,6 @@ members = [
   "networking/tokio_shutdown",
   "skeletal_model",
   "networking/solarxr",
-  "feature_macros",
 ]
 exclude = ["nrf_demo", "firmware"]
 
@@ -27,3 +26,4 @@ rust-version = "1.65" # GATs and let-else
 log = "0.4"
 eyre = "0.6"
 nalgebra = "0.31"
+feature_macros = { git = "https://github.com/TheButlah/feature_macros" }
