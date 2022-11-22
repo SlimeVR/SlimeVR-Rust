@@ -1,4 +1,4 @@
-use feature_macros::mandatory_and_unique;
+use feature_utils::mandatory_and_unique;
 
 mandatory_and_unique!("mcu-esp32c3");
 mandatory_and_unique!("imu-mpu6050");
