@@ -1,10 +1,6 @@
-use core::str::FromStr;
-
 use defmt::debug;
 use embassy_futures::yield_now;
-use embedded_svc::wifi::{AuthMethod, ClientConfiguration, Configuration, Wifi, Status, ClientStatus};
-
-use crate::utils;
+use embedded_svc::wifi::{ClientConfiguration, Configuration, Wifi};
 
 #[cfg(feature = "esp-wifi")]
 #[path = "esp.rs"]
@@ -12,6 +8,7 @@ pub mod ඞ;
 
 const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
+const EXPECTED_NEIGHBOURS: usize = 10;
 
 pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 	if !wifi.is_started()? {
@@ -19,7 +16,7 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 	}
 
 	debug!("wifi scanning...");
-	let (scan_list, count) = wifi.scan_n()?;
+	let (scan_list, count) = wifi.scan_n::<EXPECTED_NEIGHBOURS>()?;
 	debug!("found {} APs", count);
 	// we yield because scan_n is blocking
 	yield_now().await;
@@ -35,12 +32,14 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 		password: PASSWORD.into(),
 		bssid: Some(ap.bssid),
 		auth_method: ap.auth_method,
-		channel: Some(ap.channel)
+		channel: Some(ap.channel),
 	});
 	wifi.set_configuration(&client_config)?;
 
 	loop {
-		if wifi.is_connected()? { break; }
+		if wifi.is_connected()? {
+			break;
+		}
 		//FIXME: Maybe a ticker would be better in this case.
 		yield_now().await;
 	}

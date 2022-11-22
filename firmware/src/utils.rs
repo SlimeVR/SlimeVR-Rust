@@ -47,13 +47,3 @@ pub async fn nb2a<T, E>(mut f: impl FnMut() -> nb::Result<T, E>) -> Result<T, E>
 		}
 	}
 }
-
-// Currently iter isn't const and it's unstable (the PR is in draft though)
-pub const fn position<T: PartialEq>(slice: &[T], find: &T) -> Option<usize> {
-	for i in 0..slice.len() {
-		if slice[i] == find {
-			return Some(i);
-		}
-	}
-	None
-}
