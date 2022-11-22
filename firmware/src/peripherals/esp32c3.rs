@@ -38,6 +38,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 
 	trace!("maybe its here");
 	// Initialize esp-wifi stuff
+	esp_wifi::init_heap();
 	let systimer = SystemTimer::new(p.SYSTIMER);
 	trace!("{}", "that would be funny");
 	if let Err(err) = esp_wifi::initialize(systimer.alarm0, p.RNG, &clocks) {
@@ -45,7 +46,6 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 	}
 
 	trace!("maybe its here");
-
 
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
 	// let hz =

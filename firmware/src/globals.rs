@@ -36,45 +36,23 @@ pub fn setup() {
 #[export_name = "ExceptionHandler"]
 pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	let mepc = riscv::register::mepc::read();
-	let code = riscv::register::mcause::read().code() & 0xff;
+	let mcause = riscv::register::mcause::read();
 	let mtval = riscv::register::mtval::read();
-	let code = match code {
-        0 => "Instruction address misaligned",
-        1 => "Instruction access fault",
-        2 => "Illegal instruction",
-        3 => "Breakpoint",
-        4 => "Load address misaligned",
-        5 => "Load access fault",
-        6 => "Store/AMO address misaligned",
-        7 => "Store/AMO access fault",
-        8 => "Environment call from U-mode",
-        9 => "Environment call from S-mode",
-        10 => "Reserved",
-        11 => "Environment call from M-mode",
-        12 => "Instruction page fault",
-        13 => "Load page fault",
-        14 => "Reserved",
-        15 => "Store/AMO page fault",
-        _ => "UNKNOWN",
-    };
-	
 	#[cfg(feature = "mcu-esp32c3")]
 	{
-		let backtrace = esp_backtrace::arch::backtrace_internal(context.s0 as u32, 0);
+		let backtrace = esp_backtrace::arch::backtrace();
 		for e in backtrace {
 			if let Some(addr) = e {
 				debug!("0x{:x}", addr);
 			}
 		}
 	}
-
-	panic!(
-		"Unexpected hardware exception.\nMCAUSE: {:?}, RA: {:#x}, MEPC: {:#b} MTVAL: {:#x}",
-		code,
+	debug!(
+		"MCAUSE: {:?}, RA: {:#x}, MEPC: {:#b} MTVAL: {:#x}",
+		mcause.cause(),
 		trap_frame.ra,
 		mepc,
-		mtval,
+		mtval
 	);
-
-	loop {}
+	panic!("Unexpected hardware exception.");
 }
