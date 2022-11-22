@@ -10,6 +10,11 @@ repository = "https://github.com/SlimeVR/SlimeVR-Rust"
 edition = "2021"
 rust-version = "1.65"
 
+[workspace.dependencies]
+esp-println = { version = "0.3", default-features = false, features = [
+  "critical-section", # Necessary because otherwise I'm very sus of the soundness
+] }
+
 
 [package]
 name = "firmware"

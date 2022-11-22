@@ -28,8 +28,7 @@ esp8266 = ["esp-println/esp8266"]
 critical-section = "1"
 atomic-polyfill = "1"
 defmt = "0.3"
-esp-println = { version = "0.3", default-features = false }
-
+esp-println.workspace = true
 
 [build-dependencies]
 feature_utils = "0.0.0"
