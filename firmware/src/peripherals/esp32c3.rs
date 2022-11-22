@@ -1,6 +1,7 @@
 use super::Peripherals;
 use crate::aliases::ඞ::I2cConcrete;
 
+use defmt::trace;
 use fugit::RateExtU32;
 
 use esp32c3_hal::{
@@ -35,10 +36,16 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 		wdt1.disable();
 	}
 
+	trace!("maybe its here");
 	// Initialize esp-wifi stuff
 	let systimer = SystemTimer::new(p.SYSTIMER);
-	esp_wifi::initialize(systimer.alarm0, p.RNG, &clocks)
-		.expect("Couldn't initialize esp-wifi");
+	trace!("{}", "that would be funny");
+	if let Err(err) = esp_wifi::initialize(systimer.alarm0, p.RNG, &clocks) {
+		trace!("{}", "an error happened");
+	}
+
+	trace!("maybe its here");
+
 
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
 	// let hz =
@@ -53,6 +60,8 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
 	.expect("Failed to set up i2c");
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
+
+	trace!("maybe its here");
 
 	Peripherals { i2c, delay }
 }

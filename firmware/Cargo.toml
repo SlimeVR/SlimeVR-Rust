@@ -30,7 +30,7 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-mpu6050", "log-usb-serial"]
+default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt"]
 
 # todo: actually support another microcontroller
 # Supported microcontrollers
