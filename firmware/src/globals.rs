@@ -47,12 +47,12 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 			}
 		}
 	}
-	debug!(
+	debug!("Unexpected hardware exception.");
+	panic!(
 		"MCAUSE: {:?}, RA: {:#x}, MEPC: {:#b} MTVAL: {:#x}",
 		mcause.cause(),
 		trap_frame.ra,
 		mepc,
 		mtval
 	);
-	panic!("Unexpected hardware exception.");
 }
