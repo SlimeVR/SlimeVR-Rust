@@ -416,6 +416,9 @@ name = "esp-println"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adcfe5d532cf2029b11996cab6b4af948f41c24b131c76422115634711549aaa"
+dependencies = [
+ "critical-section 1.1.1",
+]
 
 [[package]]
 name = "esp32c3"
