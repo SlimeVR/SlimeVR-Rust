@@ -18,7 +18,7 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 
 	let mut i = 0;
 	let ap = loop {
-		i+=1;
+		i += 1;
 		debug!("wifi scanning, retry {}...", i);
 		let (mut scan_list, count) = wifi.scan_n::<EXPECTED_NEIGHBOURS>()?;
 		debug!("found {} APs", count);
@@ -26,9 +26,7 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 		// we yield because scan_n is blocking
 		// this also requires a ticker
 		//yield_now().await;
-		let pos = scan_list
-			.iter()
-			.position(|ap| ap.ssid == SSID);
+		let pos = scan_list.iter().position(|ap| ap.ssid == SSID);
 
 		if let Some(ap) = pos {
 			break scan_list.swap_remove(ap);
