@@ -77,7 +77,7 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "2528f
 #] }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/imurx/esp-wifi.git", rev = "001dbfb", features = [
+esp-wifi = { git = "https://github.com/imurx/esp-wifi.git", rev = "1ef5759", features = [
   "esp32c3",
   "wifi",
   "embedded-svc",
