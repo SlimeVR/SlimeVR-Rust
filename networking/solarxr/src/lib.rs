@@ -1,28 +1,29 @@
-mod data;
+pub mod prelude;
 pub mod settings;
-mod state_machine;
 pub mod topic;
+
+mod data;
+mod data_feed;
+mod pub_sub;
+mod state_machine;
 
 pub use solarxr_protocol as protocol;
 
 pub use crate::data::{Data, DecodeError, FeedUpdate};
+use crate::data_feed::DataFeedCallback;
 use crate::state_machine::{ClientStateMachine, DeserializeError, RecvError};
 
-use core::future::Future;
 use tokio::net::TcpStream;
 use tokio_tungstenite::MaybeTlsStream;
 use tokio_tungstenite::WebSocketStream;
 
 type Wss = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
-/// Returns a future that will run forever, continually callin the callbacks as necessary
+/// Returns a future that will run forever, continually calling the callbacks as necessary
 pub async fn run<Fut>(
 	connect_to: String,
-	data_feed_callback: impl Fn(FeedUpdate) -> Fut,
-) -> !
-where
-	Fut: Future<Output = ()>,
-{
+	mut data_feed_callback: impl DataFeedCallback,
+) -> ! {
 	let mut disconnected = Some(ClientStateMachine::new(connect_to));
 	loop {
 		let ready = match disconnected.take().unwrap().connect().await {
@@ -58,9 +59,18 @@ where
 			use RecvError as E;
 			match active.take().unwrap().recv().await {
 				Ok((a, update)) => {
-					log::trace!("Sending data to watchers: {:#?}", update);
+					let bundle = update.0.table();
+					if let Some(msgs) = bundle.data_feed_msgs() {
+						self::data_feed::handle_data_feed(
+							&mut data_feed_callback,
+							msgs.into_iter(),
+						)
+						.await
+					}
+					if let Some(msgs) = bundle.pub_sub_msgs() {
+						self::pub_sub::handle_pub_sub(msgs.into_iter()).await
+					}
 					active = Some(a);
-					data_feed_callback(update).await;
 				}
 				Err(err) => {
 					let display = format!("{}", &err);
