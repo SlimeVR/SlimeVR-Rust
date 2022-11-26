@@ -342,7 +342,7 @@
 	</span><span class="kw">pub fn </span>new(config: <span class="kw-2">&amp;</span>SkeletonConfig) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span><span class="kw-2">mut </span>g = Dag::new();
 
-		<span class="comment">// Option is used for resiliance against bugs while the map is being built
+		<span class="comment">// Option is used for resilience against bugs while the map is being built
 		</span><span class="kw">let </span><span class="kw-2">mut </span>bone_map: BoneMap&lt;<span class="prelude-ty">Option</span>&lt;EdgeIndex&gt;&gt; = BoneMap::default();
 
 		<span class="comment">// Create root skeletal bone: edge (bone) connects to nodes (joints)
@@ -414,7 +414,7 @@
 		<span class="kw">let </span>skeleton = Skeleton::new(<span class="kw-2">&amp;</span>config);
 
 		<span class="kw">for </span>(bone, length) <span class="kw">in </span>bone_lengths.iter() {
-			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>skeleton[bone].length(), length);
+			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>skeleton[bone].length, length);
 		}
 	}
 }
