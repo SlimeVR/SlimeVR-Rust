@@ -132,7 +132,7 @@ impl Skeleton {
 	pub fn new(config: &SkeletonConfig) -> Self {
 		let mut g = Dag::new();
 
-		// Option is used for resiliance against bugs while the map is being built
+		// Option is used for resilience against bugs while the map is being built
 		let mut bone_map: BoneMap<Option<EdgeIndex>> = BoneMap::default();
 
 		// Create root skeletal bone: edge (bone) connects to nodes (joints)
@@ -204,7 +204,7 @@ mod test {
 		let skeleton = Skeleton::new(&config);
 
 		for (bone, length) in bone_lengths.iter() {
-			assert_eq!(&skeleton[bone].length(), length);
+			assert_eq!(&skeleton[bone].length, length);
 		}
 	}
 }

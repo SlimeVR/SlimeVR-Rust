@@ -30,17 +30,18 @@ pub enum EdgeKind {
 /// For more information, see the [`skeleton`](crate::skeleton) module.
 ///
 /// [`Node`]: crate::skeleton::Node
+#[non_exhaustive]
 pub struct Edge {
-	kind: EdgeKind,
+	pub kind: EdgeKind,
 	/// Input rotation in global space. If it is unconstrained, it is `None`.
-	input_rot_g: Option<Global<UnitQuat>>,
+	pub input_rot_g: Option<Global<UnitQuat>>,
 	/// Local rotation of the edge with respect to the parent edge at calibration time.
 	/// Maps from parent frame to child frame.
-	calib_rot_l: Local<UnitQuat>,
+	pub calib_rot_l: Local<UnitQuat>,
 	/// Length of the edge. May be set by the user, or may be computed at calibration.
-	length: f32,
+	pub length: f32,
 	/// The output rotation of the edge. Solving the skeleton updates this.
-	output_rot_g: Global<UnitQuat>,
+	pub output_rot_g: Global<UnitQuat>,
 }
 impl Edge {
 	pub fn new(kind: impl Into<EdgeKind>, length: f32) -> Self {
@@ -56,29 +57,5 @@ impl Edge {
 			length,
 			output_rot_g: Default::default(),
 		}
-	}
-
-	pub fn input_rotation_mut(&mut self) -> Option<&mut Global<UnitQuat>> {
-		self.input_rot_g.as_mut()
-	}
-
-	pub fn output_rotation(&self) -> &Global<UnitQuat> {
-		&self.output_rot_g
-	}
-
-	pub fn length(&self) -> f32 {
-		self.length
-	}
-
-	pub fn length_mut(&mut self) -> &mut f32 {
-		&mut self.length
-	}
-
-	pub fn calibration_rotation(&self) -> &Local<UnitQuat> {
-		&self.calib_rot_l
-	}
-
-	pub fn kind(&self) -> EdgeKind {
-		self.kind
 	}
 }
