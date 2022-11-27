@@ -322,6 +322,7 @@
 
 </span><span class="kw">mod </span>edge;
 <span class="kw">mod </span>node;
+<span class="kw">mod </span>solver;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>edge::Edge;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>node::Node;
@@ -408,7 +409,6 @@
 	}
 
 	<span class="doccomment">/// Get the nodes of the graph that have a `Some(_)` [`Node::input_pos_g`]
-	</span><span class="attribute">#[allow(dead_code)]
 	</span><span class="kw">fn </span>find_root_nodes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = NodeIndex&gt; + <span class="lifetime">&#39;_ </span>{
 		<span class="self">self</span>.graph
 			.node_indices()
