@@ -10,9 +10,8 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-daggy = "0.8"
+petgraph = "0.6"
 derive_more = "0.99"
-ghost-cell = "0.2"
 num-derive = "0.3"
 num-traits = "0.2"
 thiserror = "1"

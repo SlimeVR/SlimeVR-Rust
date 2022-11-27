@@ -64,8 +64,7 @@
 	invalid_doc_attributes,
 	rustdoc::broken_intra_doc_links,
 	rustdoc::private_intra_doc_links,
-	unused_import_braces,
-	unused
+	unused_import_braces
 )]
 
 pub mod bone;
