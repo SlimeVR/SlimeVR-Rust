@@ -106,7 +106,9 @@ pub(crate) use node::Node;
 use crate::prelude::*;
 
 use core::ops::Index;
-use daggy::{Dag, EdgeIndex};
+use petgraph::graph::{EdgeIndex, NodeIndex};
+
+pub(crate) type Graph = petgraph::graph::UnGraph<Node, Edge>;
 
 /// Used to initialize the [`Skeleton`] with its initial parameters
 pub struct SkeletonConfig {
@@ -124,24 +126,25 @@ impl SkeletonConfig {
 /// See the [`crate::skeleton`] module for more information.
 pub struct Skeleton {
 	bone_map: BoneMap<EdgeIndex>,
-	graph: Dag<Node, Edge>,
+	graph: Graph,
 }
 impl Skeleton {
 	/// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
 	/// not have any input trackers or output trackers.
 	pub fn new(config: &SkeletonConfig) -> Self {
-		let mut g = Dag::new();
+		let mut g = Graph::new_undirected();
 
 		// Option is used for resilience against bugs while the map is being built
 		let mut bone_map: BoneMap<Option<EdgeIndex>> = BoneMap::default();
 
 		// Create root skeletal bone: edge (bone) connects to nodes (joints)
 		{
-			let head = g.add_node(Node::new());
-			let (edge, _tail) = g.add_child(
-				head,
+			let parent = g.add_node(Node::new());
+			let child = g.add_node(Node::new());
+			let edge = g.update_edge(
+				parent,
+				child,
 				Edge::new(BoneKind::Neck, config.bone_lengths[BoneKind::Neck]),
-				Node::new(),
 			);
 			bone_map[BoneKind::Neck] = Some(edge);
 		}
@@ -150,15 +153,17 @@ impl Skeleton {
 		let mut add_child_bones = |parent_bone: BoneKind| {
 			let parent_edge =
 				bone_map[parent_bone].expect("Bone was not yet added to graph");
-			let head = g.edge_endpoints(parent_edge).unwrap().1; // Get child node of edge
-			for child_kind in parent_bone.children() {
-				// No need to work with a ref, `child_kind` is `Copy`
-				let child_kind = *child_kind;
+			let (_parent_node, child_node) = g.edge_endpoints(parent_edge).unwrap(); // Get child node of edge
 
-				let (edge, _tail) = g.add_child(
-					head,
+			// The old child (old target) becomes the new parent (new source).
+			let new_parent = child_node;
+			let new_child = g.add_node(Node::new());
+
+			for &child_kind in parent_bone.children() {
+				let edge = g.update_edge(
+					new_parent,
+					new_child,
 					Edge::new(child_kind, config.bone_lengths[child_kind]),
-					Node::new(),
 				);
 
 				bone_map[child_kind] = Some(edge);
@@ -177,6 +182,14 @@ impl Skeleton {
 		let bone_map: BoneMap<EdgeIndex> = bone_map.map(|_kind, bone| bone.unwrap());
 
 		Self { graph: g, bone_map }
+	}
+
+	/// Get the nodes of the graph that have a `Some(_)` [`Node::input_pos_g`]
+	#[allow(dead_code)]
+	fn find_root_nodes(&self) -> impl Iterator<Item = NodeIndex> + '_ {
+		self.graph
+			.node_indices()
+			.filter(|idx| self.graph[*idx].input_pos_g.is_some())
 	}
 }
 impl Index<BoneKind> for Skeleton {

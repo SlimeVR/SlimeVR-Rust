@@ -497,15 +497,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "daggy"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91a9304e55e9d601a39ae4deaba85406d5c0980e106f65afcf0460e9af1e7602"
-dependencies = [
- "petgraph",
-]
-
-[[package]]
 name = "darling"
 version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -777,12 +768,6 @@ dependencies = [
  "libc",
  "wasi",
 ]
-
-[[package]]
-name = "ghost-cell"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5fdd3f2182d5fad2c97a25af8992c30e844a775f8fc7339dae5328377d164e6"
 
 [[package]]
 name = "gimli"
@@ -1919,12 +1904,11 @@ name = "skeletal_model"
 version = "0.0.0"
 dependencies = [
  "approx",
- "daggy",
  "derive_more",
- "ghost-cell",
  "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
+ "petgraph",
  "stackvec",
  "thiserror",
 ]
