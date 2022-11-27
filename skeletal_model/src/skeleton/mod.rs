@@ -185,6 +185,7 @@ impl Skeleton {
 	}
 
 	/// Get the nodes of the graph that have a `Some(_)` [`Node::input_pos_g`]
+	#[allow(dead_code)]
 	fn find_root_nodes(&self) -> impl Iterator<Item = NodeIndex> + '_ {
 		self.graph
 			.node_indices()
