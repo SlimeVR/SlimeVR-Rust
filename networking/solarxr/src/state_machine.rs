@@ -119,6 +119,8 @@ pub struct Connected {
 	fbb: FlatBufferBuilder<'static>,
 }
 impl M<Connected> {
+	/// Sends a `StartDataFeed`, `pub_sub::SubscriptionRequest`, `pub_sub::Message` with
+	/// the initial [`DisplaySettings`]
 	pub async fn request_feed(mut self) -> Result<M<Active>, RecvError> {
 		use solarxr_protocol::MessageBundleArgs;
 		let fbb = &mut self.state.fbb;

@@ -61,6 +61,7 @@ pub async fn main() -> Result<()> {
 
 async fn overlay(
 	mut recv: watch::Receiver<Option<FeedUpdate>>,
+	display_settings: watch::Receiver<DisplaySettings>,
 	subsys: SubsystemHandle,
 ) -> Result<()> {
 	log::info!("Initializing OpenVR context");
@@ -75,11 +76,11 @@ async fn overlay(
 
 	let loop_ = async {
 		let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
-		let mut is_skeleton_visible = DisplaySettings::default().is_visible;
 		loop {
 			recv.changed()
 				.await
 				.wrap_err("Error while attempting to watch for feed update")?;
+			let is_skeleton_visible = display_settings.borrow().is_visible;
 
 			log::trace!("Got a feed update");
 
@@ -98,51 +99,6 @@ async fn overlay(
 				let guard = recv.borrow_and_update();
 				let table = guard.as_ref().unwrap().0.table();
 				log::trace!("update: {:#?}", table);
-
-				is_skeleton_visible = {
-					// Closure allows early return
-					let is_visible = || -> Option<bool> {
-						let mut is_visible = None;
-						for m in table.pub_sub_msgs()? {
-							let Some(m) = m.u_as_message() else {
-								continue;
-							};
-							log::debug!(
-								"Received pub-sub message with topic: {:?}",
-								m.topic()
-							);
-
-							if !solarxr::topic::is_overlay_topic(m) {
-								continue;
-							}
-
-							// Check if they want to know current `DisplaySettings` (empty payload)
-							if m.payload().is_none() {
-								// TODO: We need to send messages but this task is the
-								// wrong place to do this. Will need to refactor and
-								// bring this functionality elsewhere.
-								continue;
-							}
-
-							let Some(kv) = m.payload_as_key_values() else {
-								continue;
-							};
-							let Some(ds) = DisplaySettings::from_fb(kv) else {
-								log::warn!("Unable to parse `DisplaySettings` from flatbuffer");
-								continue;
-							};
-							let v = ds.is_visible;
-							log::info!(
-								"Updating settings: {}={v}",
-								DisplaySettings::IS_VISIBLE,
-							);
-							is_visible = Some(v);
-						}
-
-						is_visible
-					}();
-					is_visible.unwrap_or(is_skeleton_visible)
-				};
 
 				let m = unwrap_or_continue!(table.data_feed_msgs());
 
@@ -239,11 +195,19 @@ async fn overlay(
 }
 
 async fn networking(subsys: SubsystemHandle) -> Result<()> {
-	let (sender, reciever) = watch::channel(None);
-	subsys.start("Overlay", |s| overlay(reciever, s));
+	let (data_sender, data_reciever) = watch::channel(None);
+	let (settings_sender, settings_receiver) =
+		watch::channel(DisplaySettings::default());
+
+	subsys.start("Overlay", |s| overlay(data_reciever, settings_receiver, s));
 
 	let run_future = solarxr::run(CONNECT_STR.to_string(), |update| async {
-		sender.send_replace(Some(update));
+		let ds = get_display_settings(&update).await;
+		if let Some(ds) = ds {
+			log::info!("Updating settings: {:?}", ds);
+			settings_sender.send_replace(ds);
+		}
+		data_sender.send_replace(Some(update));
 	});
 	tokio::select! {
 		_ = run_future => { unreachable!("This future never returns") },
@@ -252,4 +216,38 @@ async fn networking(subsys: SubsystemHandle) -> Result<()> {
 			Ok(())
 		}
 	}
+}
+
+async fn get_display_settings<'a>(update: &FeedUpdate) -> Option<DisplaySettings> {
+	let mut result = None;
+	let Some(msgs) = update.0.table().pub_sub_msgs() else {
+		return None;
+	};
+	for m in msgs {
+		let Some(m) = m.u_as_message() else {
+			continue;
+		};
+		log::debug!("Received pub-sub message with topic: {:?}", m.topic());
+
+		if !solarxr::topic::is_overlay_topic(m) {
+			continue;
+		}
+
+		// Check if they want to know current `DisplaySettings` (empty payload)
+		if m.payload().is_none() {
+			// TODO: Implement publishing the current settings
+			continue;
+		}
+
+		let Some(kv) = m.payload_as_key_values() else {
+			continue;
+		};
+		let ds = DisplaySettings::from_fb(kv);
+		if ds.is_none() {
+			log::warn!("Unable to parse `DisplaySettings` from flatbuffer");
+			continue;
+		};
+		result = ds;
+	}
+	result
 }

@@ -1,5 +1,6 @@
 use solarxr_protocol::pub_sub::KeyValues;
 
+#[derive(Debug)]
 pub struct DisplaySettings {
 	pub is_visible: bool,
 	pub is_mirrored: bool,
