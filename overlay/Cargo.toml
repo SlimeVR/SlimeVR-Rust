@@ -10,6 +10,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+clap = { version = "4", features = ["derive"] }
 color-eyre = "0.6"
 lazy_static = "1"
 nalgebra = "0.30"
@@ -21,6 +22,7 @@ stackvec = "0.2"
 tokio = { version = "1", features = ["full"] }
 solarxr = { path = "../networking/solarxr" }
 tokio-graceful-shutdown = "0.11"
+git-version = "0.3"
 
 eyre.workspace = true
 log.workspace = true
