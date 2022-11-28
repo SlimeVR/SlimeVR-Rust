@@ -251,8 +251,6 @@
 <span id="251">251</span>
 <span id="252">252</span>
 <span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
 </pre><pre class="rust"><code><span class="kw">mod </span>color;
 <span class="kw">mod </span>model;
 
@@ -316,6 +314,7 @@
 
 <span class="kw">async fn </span>overlay(
 	<span class="kw-2">mut </span>recv: watch::Receiver&lt;<span class="prelude-ty">Option</span>&lt;FeedUpdate&gt;&gt;,
+	display_settings: watch::Receiver&lt;DisplaySettings&gt;,
 	subsys: SubsystemHandle,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
 	<span class="macro">log::info!</span>(<span class="string">&quot;Initializing OpenVR context&quot;</span>);
@@ -330,11 +329,11 @@
 
 	<span class="kw">let </span>loop_ = <span class="kw">async </span>{
 		<span class="kw">let </span><span class="kw-2">mut </span>hidden_bones: HashSet&lt;BoneKind&gt; = HashSet::new();
-		<span class="kw">let </span><span class="kw-2">mut </span>is_skeleton_visible = DisplaySettings::default().is_visible;
 		<span class="kw">loop </span>{
 			recv.changed()
 				.<span class="kw">await
 				</span>.wrap_err(<span class="string">&quot;Error while attempting to watch for feed update&quot;</span>)<span class="question-mark">?</span>;
+			<span class="kw">let </span>is_skeleton_visible = display_settings.borrow().is_visible;
 
 			<span class="macro">log::trace!</span>(<span class="string">&quot;Got a feed update&quot;</span>);
 
@@ -353,51 +352,6 @@
 				<span class="kw">let </span>guard = recv.borrow_and_update();
 				<span class="kw">let </span>table = guard.as_ref().unwrap().<span class="number">0</span>.table();
 				<span class="macro">log::trace!</span>(<span class="string">&quot;update: {:#?}&quot;</span>, table);
-
-				is_skeleton_visible = {
-					<span class="comment">// Closure allows early return
-					</span><span class="kw">let </span>is_visible = || -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-						<span class="kw">let </span><span class="kw-2">mut </span>is_visible = <span class="prelude-val">None</span>;
-						<span class="kw">for </span>m <span class="kw">in </span>table.pub_sub_msgs()<span class="question-mark">? </span>{
-							<span class="kw">let </span><span class="prelude-val">Some</span>(m) = m.u_as_message() <span class="kw">else </span>{
-								<span class="kw">continue</span>;
-							};
-							<span class="macro">log::debug!</span>(
-								<span class="string">&quot;Received pub-sub message with topic: {:?}&quot;</span>,
-								m.topic()
-							);
-
-							<span class="kw">if </span>!solarxr::topic::is_overlay_topic(m) {
-								<span class="kw">continue</span>;
-							}
-
-							<span class="comment">// Check if they want to know current `DisplaySettings` (empty payload)
-							</span><span class="kw">if </span>m.payload().is_none() {
-								<span class="comment">// TODO: We need to send messages but this task is the
-								// wrong place to do this. Will need to refactor and
-								// bring this functionality elsewhere.
-								</span><span class="kw">continue</span>;
-							}
-
-							<span class="kw">let </span><span class="prelude-val">Some</span>(kv) = m.payload_as_key_values() <span class="kw">else </span>{
-								<span class="kw">continue</span>;
-							};
-							<span class="kw">let </span><span class="prelude-val">Some</span>(ds) = DisplaySettings::from_fb(kv) <span class="kw">else </span>{
-								<span class="macro">log::warn!</span>(<span class="string">&quot;Unable to parse `DisplaySettings` from flatbuffer&quot;</span>);
-								<span class="kw">continue</span>;
-							};
-							<span class="kw">let </span>v = ds.is_visible;
-							<span class="macro">log::info!</span>(
-								<span class="string">&quot;Updating settings: {}={v}&quot;</span>,
-								DisplaySettings::IS_VISIBLE,
-							);
-							is_visible = <span class="prelude-val">Some</span>(v);
-						}
-
-						is_visible
-					}();
-					is_visible.unwrap_or(is_skeleton_visible)
-				};
 
 				<span class="kw">let </span>m = <span class="macro">unwrap_or_continue!</span>(table.data_feed_msgs());
 
@@ -494,11 +448,19 @@
 }
 
 <span class="kw">async fn </span>networking(subsys: SubsystemHandle) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-	<span class="kw">let </span>(sender, reciever) = watch::channel(<span class="prelude-val">None</span>);
-	subsys.start(<span class="string">&quot;Overlay&quot;</span>, |s| overlay(reciever, s));
+	<span class="kw">let </span>(data_sender, data_reciever) = watch::channel(<span class="prelude-val">None</span>);
+	<span class="kw">let </span>(settings_sender, settings_receiver) =
+		watch::channel(DisplaySettings::default());
+
+	subsys.start(<span class="string">&quot;Overlay&quot;</span>, |s| overlay(data_reciever, settings_receiver, s));
 
 	<span class="kw">let </span>run_future = solarxr::run(CONNECT_STR.to_string(), |update| <span class="kw">async </span>{
-		sender.send_replace(<span class="prelude-val">Some</span>(update));
+		<span class="kw">let </span>ds = get_display_settings(<span class="kw-2">&amp;</span>update).<span class="kw">await</span>;
+		<span class="kw">if let </span><span class="prelude-val">Some</span>(ds) = ds {
+			<span class="macro">log::info!</span>(<span class="string">&quot;Updating settings: {:?}&quot;</span>, ds);
+			settings_sender.send_replace(ds);
+		}
+		data_sender.send_replace(<span class="prelude-val">Some</span>(update));
 	});
 	<span class="macro">tokio::select! </span>{
 		<span class="kw">_ </span>= run_future =&gt; { <span class="macro">unreachable!</span>(<span class="string">&quot;This future never returns&quot;</span>) },
@@ -507,6 +469,40 @@
 			<span class="prelude-val">Ok</span>(())
 		}
 	}
+}
+
+<span class="kw">async fn </span>get_display_settings&lt;<span class="lifetime">&#39;a</span>&gt;(update: <span class="kw-2">&amp;</span>FeedUpdate) -&gt; <span class="prelude-ty">Option</span>&lt;DisplaySettings&gt; {
+	<span class="kw">let </span><span class="kw-2">mut </span>result = <span class="prelude-val">None</span>;
+	<span class="kw">let </span><span class="prelude-val">Some</span>(msgs) = update.<span class="number">0</span>.table().pub_sub_msgs() <span class="kw">else </span>{
+		<span class="kw">return </span><span class="prelude-val">None</span>;
+	};
+	<span class="kw">for </span>m <span class="kw">in </span>msgs {
+		<span class="kw">let </span><span class="prelude-val">Some</span>(m) = m.u_as_message() <span class="kw">else </span>{
+			<span class="kw">continue</span>;
+		};
+		<span class="macro">log::debug!</span>(<span class="string">&quot;Received pub-sub message with topic: {:?}&quot;</span>, m.topic());
+
+		<span class="kw">if </span>!solarxr::topic::is_overlay_topic(m) {
+			<span class="kw">continue</span>;
+		}
+
+		<span class="comment">// Check if they want to know current `DisplaySettings` (empty payload)
+		</span><span class="kw">if </span>m.payload().is_none() {
+			<span class="comment">// TODO: Implement publishing the current settings
+			</span><span class="kw">continue</span>;
+		}
+
+		<span class="kw">let </span><span class="prelude-val">Some</span>(kv) = m.payload_as_key_values() <span class="kw">else </span>{
+			<span class="kw">continue</span>;
+		};
+		<span class="kw">let </span>ds = DisplaySettings::from_fb(kv);
+		<span class="kw">if </span>ds.is_none() {
+			<span class="macro">log::warn!</span>(<span class="string">&quot;Unable to parse `DisplaySettings` from flatbuffer&quot;</span>);
+			<span class="kw">continue</span>;
+		};
+		result = ds;
+	}
+	result
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="slimevr_overlay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
