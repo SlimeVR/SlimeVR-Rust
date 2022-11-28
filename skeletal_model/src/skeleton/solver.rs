@@ -8,14 +8,9 @@
 //! The goal of the solver is to solve for all the outputs, using the inputs. For more
 //! info, see the [`skeleton`](crate::skeleton) module.
 
-#[cfg(doc)]
-use crate::skeleton::Edge;
-
-use crate::skeleton::Graph;
+use crate::skeleton::{Edge, Node};
 use crate::Skeleton;
 
-use derive_more::From;
-use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::visit::{VisitMap, Visitable};
 use std::collections::{HashSet, VecDeque};
 
@@ -29,9 +24,12 @@ impl Skeleton {
 
 	/// Traverses all edges and nodes in the graph in a breadth-first search. Calls `f` at the
 	/// start of each traversal.
-	fn traverse(
-		&mut self,
-		mut f: impl FnMut(&mut Graph, PoppedNode, Neighbors),
+	fn traverse<'a>(
+		&'a mut self,
+		mut f: impl FnMut(
+			Solved<&'a mut Node, &'a mut Edge>,
+			Neighbors<&'a mut Node, &'a mut Edge>,
+		),
 	) -> Result<(), SolveError> {
 		// We want to "expand outward" from root nodes with constrained position.
 		// This means we perform a breadth-first traversal with these root nodes in the
@@ -39,7 +37,7 @@ impl Skeleton {
 		let root_nodes: VecDeque<_> = self.find_root_nodes().collect();
 		if root_nodes.is_empty() {
 			return Err(SolveError::NoRootNode);
-		}
+		};
 
 		let mut bfs = petgraph::visit::Bfs {
 			stack: root_nodes,
@@ -63,11 +61,13 @@ impl Skeleton {
 				}
 				let is_solved = bfs.discovered.is_visited(&node);
 				f(
-					&mut self.graph,
-					popped.into(),
+					Solved {
+						node: &mut self.graph[popped],
+						edge: todo!(),
+					},
 					Neighbors {
-						edge,
-						node: MaybeSolvedNode::new(node, is_solved),
+						edge: &mut self.graph[edge],
+						node: MaybeSolvedNode::new(&mut self.graph[node], is_solved),
 					},
 				);
 
@@ -78,21 +78,30 @@ impl Skeleton {
 	}
 }
 
-/// Argument to [`do_fk`]. Represents the neighbors of a [`PoppedNode`].
-#[derive(From)]
-struct Neighbors {
-	pub edge: EdgeIndex,
-	pub node: MaybeSolvedNode,
+/// Argument to [`do_fk`]. Represents the neighbors of [`Solved::node`].
+#[derive(Debug)]
+struct Neighbors<N, E> {
+	node: MaybeSolvedNode<N>,
+	edge: E,
 }
 
-/// A node neighboring [`PoppedNode`]. This node may or may not already be solved, which
-/// is why this is an enum.
-enum MaybeSolvedNode {
-	Solved(NodeIndex),
-	Unsolved(NodeIndex),
+/// Argument to [`do_fk`]. Represents the solved node that was just popped off of the
+/// traversal queue, along with the solved edge connected to it.
+#[derive(Debug)]
+struct Solved<N, E> {
+	node: N,
+	edge: E,
 }
-impl MaybeSolvedNode {
-	fn new(n: NodeIndex, solved: bool) -> Self {
+
+/// A node neighboring [`Solved::node`]. This node may or may not already be solved,
+/// which is why this is an enum.
+#[derive(Debug)]
+enum MaybeSolvedNode<N> {
+	Solved(N),
+	Unsolved(N),
+}
+impl<N> MaybeSolvedNode<N> {
+	fn new(n: N, solved: bool) -> Self {
 		if solved {
 			Self::Solved(n)
 		} else {
@@ -101,27 +110,26 @@ impl MaybeSolvedNode {
 	}
 }
 
-/// Argument to [`do_fk`]. Represents the node that was just popped off of the traversal
-/// queue. This node is already solved.
-#[derive(From)]
-struct PoppedNode(pub NodeIndex);
-
-/// Solves `Neighbors` by applying forward-kinematics from `PoppedNode`. This actually
+/// Solves `Neighbors` by applying forward-kinematics from `solved`. This actually
 /// mutates the weights of the graph.
 ///
 /// For more info, see [`crate::skeleton`].
-fn do_fk(
-	_g: &mut Graph,
-	PoppedNode(_popped): PoppedNode,
-	Neighbors { edge, node }: Neighbors,
-) {
-	let _edge = edge; // unused
-	match node {
+fn do_fk<N, E>(solved: Solved<N, E>, neighbors: Neighbors<N, E>) {
+	let Solved {
+		node: _s_node,
+		edge: _s_edge,
+	} = solved;
+	let Neighbors {
+		node: n_node,
+		edge: _n_edge,
+	} = neighbors;
+
+	match n_node {
 		MaybeSolvedNode::Solved(_node) => {
-			todo!("popped -> edge <- node")
+			todo!()
 		}
 		MaybeSolvedNode::Unsolved(_node) => {
-			todo!("popped -> edge + node")
+			todo!()
 		}
 	}
 }
