@@ -18,7 +18,7 @@ type Wss = WebSocketStream<MaybeTlsStream<TcpStream>>;
 /// Returns a future that will run forever, continually callin the callbacks as necessary
 pub async fn run<Fut>(
 	connect_to: String,
-	data_feed_callback: impl Fn(FeedUpdate) -> Fut,
+	mut data_feed_callback: impl FnMut(FeedUpdate) -> Fut,
 ) -> !
 where
 	Fut: Future<Output = ()>,
