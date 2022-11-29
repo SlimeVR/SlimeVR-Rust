@@ -118,7 +118,7 @@
 <span class="doccomment">/// Returns a future that will run forever, continually callin the callbacks as necessary
 </span><span class="kw">pub async fn </span>run&lt;Fut&gt;(
 	connect_to: String,
-	data_feed_callback: <span class="kw">impl </span>Fn(FeedUpdate) -&gt; Fut,
+	<span class="kw-2">mut </span>data_feed_callback: <span class="kw">impl </span>FnMut(FeedUpdate) -&gt; Fut,
 ) -&gt; !
 <span class="kw">where
 	</span>Fut: Future&lt;Output = ()&gt;,
