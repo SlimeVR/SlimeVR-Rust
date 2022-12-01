@@ -1,3 +1,6 @@
+extern crate alloc;
+use alloc::format;
+
 use defmt::{debug, error, info, trace};
 use embassy_executor::task;
 use embassy_futures::yield_now;
@@ -6,6 +9,8 @@ use esp_wifi::{
 	create_network_stack_storage, current_millis, network_stack_storage,
 	wifi::utils::create_network_interface, wifi_interface::Network,
 };
+use smoltcp::socket::UdpPacketMetadata;
+use smoltcp::wire::Ipv4Address;
 
 #[task]
 pub async fn network_task() {
@@ -16,25 +21,43 @@ pub async fn network_task() {
 		.await
 		.expect("Couldn't connect to wifi");
 
-	// wait for getting an ip address
-	debug!("Wait to get an ip address");
-	let network = Network::new(wifi, current_millis);
-	loop {
-		network.poll_dhcp().unwrap();
+	let mut network = Network::new(wifi, current_millis);
+	poll_dhcp(&mut network).await;
 
-		network.work();
-
-		if network.is_iface_up() {
-			info!("got ip {:?}", defmt::Debug2Format(&network.get_ip_info()));
-			break;
-		}
-	}
+	// I think its better for each arch to make it's buffers
+	let mut rx_buffer = [0u8; 1536];
+	let mut tx_buffer = [0u8; 1536];
+	let mut rx_meta = [UdpPacketMetadata::EMPTY];
+	let mut tx_meta = [UdpPacketMetadata::EMPTY];
+	let mut socket = network.get_udp_socket(
+		&mut rx_meta,
+		&mut rx_buffer,
+		&mut tx_meta,
+		&mut tx_buffer,
+	);
 
 	let mut i = 0;
 	loop {
-		trace!("In main(), i was {}", i);
+		socket.work();
+
+		socket.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes());
 		i += 1;
 		yield_now().await
 		//Timer::after(Duration::from_millis(1000)).await
+	}
+}
+
+pub async fn poll_dhcp(net: &mut Network<'_>) {
+	// wait for getting an ip address
+	debug!("Wait to get an ip address");
+	loop {
+		net.poll_dhcp().unwrap();
+
+		net.work();
+
+		if net.is_iface_up() {
+			info!("got ip {:?}", defmt::Debug2Format(&net.get_ip_info()));
+			break;
+		}
 	}
 }

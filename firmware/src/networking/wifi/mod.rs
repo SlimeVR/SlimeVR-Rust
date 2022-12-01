@@ -1,6 +1,7 @@
 use defmt::debug;
 use embassy_futures::yield_now;
 use embedded_svc::wifi::{ClientConfiguration, Configuration, Wifi};
+use smoltcp::wire::Ipv4Address;
 
 #[cfg(feature = "esp-wifi")]
 #[path = "esp.rs"]
@@ -8,6 +9,7 @@ pub mod ඞ;
 
 const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
+static SERVER_IP: Ipv4Address = Ipv4Address::new(192, 168, 10, 121);
 const EXPECTED_NEIGHBOURS: usize = 10;
 const WIFI_FIND_RETRIES: usize = 10;
 
@@ -48,11 +50,10 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 	wifi.connect()?;
 
 	loop {
-		if wifi.is_connected()? {
-			break;
+		let res = wifi.is_connected();
+        if let Ok(connected) = res {
+			if connected { break }
 		}
-		//FIXME: Maybe a ticker would be better in this case.
-		//yield_now().await;
 	}
 
 	Ok(())

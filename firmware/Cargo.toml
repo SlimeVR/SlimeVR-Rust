@@ -77,12 +77,12 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "2528f
 #] }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/imurx/esp-wifi.git", rev = "1ef5759", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "2df9af", features = [
   "esp32c3",
   "wifi",
   "embedded-svc",
 ], optional = true }
-smoltcp = { version = "0.8.0", default-features = false, features = [
+smoltcp = { version = "0.8", default-features = false, features = [
   "async",
   "defmt",
 #FIXME: alloc feature spits errors out because defmt isnt 
@@ -130,3 +130,6 @@ mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "7712
 
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
+
+[profile.dev.package.esp-wifi]
+opt-level = 3
