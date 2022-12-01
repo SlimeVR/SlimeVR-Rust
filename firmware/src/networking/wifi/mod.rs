@@ -51,8 +51,10 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 
 	loop {
 		let res = wifi.is_connected();
-        if let Ok(connected) = res {
-			if connected { break }
+		if let Ok(connected) = res {
+			if connected {
+				break;
+			}
 		}
 	}
 

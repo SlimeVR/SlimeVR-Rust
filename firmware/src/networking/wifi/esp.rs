@@ -10,7 +10,6 @@ use esp_wifi::{
 	wifi::utils::create_network_interface, wifi_interface::Network,
 };
 use smoltcp::socket::UdpPacketMetadata;
-use smoltcp::wire::Ipv4Address;
 
 #[task]
 pub async fn network_task() {
@@ -40,7 +39,8 @@ pub async fn network_task() {
 	loop {
 		socket.work();
 
-		socket.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes());
+		socket.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes())
+			.expect("failed to send");
 		i += 1;
 		yield_now().await
 		//Timer::after(Duration::from_millis(1000)).await
