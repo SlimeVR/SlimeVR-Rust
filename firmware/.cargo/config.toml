@@ -5,7 +5,7 @@ rustflags = [
     # For esp-wifi
     "-C",
     "link-arg=-Tesp32c3_rom_functions.x",
-
+    # For esp-backtrace
     "-C",
     "force-frame-pointers",
     # For defmt

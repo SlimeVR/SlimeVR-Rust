@@ -34,10 +34,10 @@ default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt"]
 
 # todo: actually support another microcontroller
 # Supported microcontrollers
-mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "esp-wifi", "esp-backtrace/esp32c3"]
+mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "net-wifi", "esp-backtrace/esp32c3"]
 
 # Wi-fi dependencies
-esp-wifi = ["dep:esp-wifi"]
+net-wifi = ["dep:esp-wifi"]
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
@@ -127,6 +127,7 @@ mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "7712
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 
-[profile.dev.package.esp-wifi]
 # https://github.com/esp-rs/esp-wifi#important
+# https://github.com/esp-rs/esp-wifi/issues/88#issuecomment-1332363697
+[profile.dev.package.esp-wifi]
 opt-level = 3

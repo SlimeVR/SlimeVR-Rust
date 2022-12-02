@@ -3,7 +3,7 @@ use embassy_futures::yield_now;
 use embedded_svc::wifi::{ClientConfiguration, Configuration, Wifi};
 use smoltcp::wire::Ipv4Address;
 
-#[cfg(feature = "esp-wifi")]
+#[cfg(feature = "net-wifi")]
 #[path = "esp.rs"]
 pub mod ඞ;
 
@@ -25,9 +25,6 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 		let (mut scan_list, count) = wifi.scan_n::<EXPECTED_NEIGHBOURS>()?;
 		debug!("found {} APs", count);
 
-		// we yield because scan_n is blocking
-		// this also should require a ticker
-		yield_now().await;
 		let pos = scan_list.iter().position(|ap| ap.ssid == SSID);
 
 		if let Some(ap) = pos {
@@ -35,6 +32,9 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 		} else if i == WIFI_FIND_RETRIES {
 			panic!("Couldn't find SSID {}", SSID);
 		}
+		// we yield because scan_n is blocking
+		// this also should require a ticker
+		yield_now().await;
 	};
 	info!("found SSID {}", SSID);
 	let client_config = Configuration::Client(ClientConfiguration {
