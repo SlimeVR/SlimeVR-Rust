@@ -7,7 +7,8 @@ use embassy_futures::yield_now;
 use embedded_svc::ipv4::Interface;
 use esp_wifi::{
 	create_network_stack_storage, current_millis, network_stack_storage,
-	wifi::utils::create_network_interface, wifi_interface::{Network, IoError as WifiError},
+	wifi::utils::create_network_interface,
+	wifi_interface::{IoError as WifiError, Network},
 };
 use smoltcp::socket::UdpPacketMetadata;
 
@@ -41,16 +42,20 @@ pub async fn network_task() {
 	loop {
 		socket.work();
 
-		socket.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes())
+		socket
+			.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes())
 			.expect("failed to send");
-		
+
 		match socket.receive(&mut buffer) {
 			Ok((len, _addr, _port)) => unsafe {
-				info!("Received packet: \"{}\"", str::from_utf8_unchecked(&buffer[0..len]));
+				info!(
+					"Received packet: \"{}\"",
+					str::from_utf8_unchecked(&buffer[0..len])
+				);
 			},
-			Err(WifiError::Other(smoltcp::Error::Exhausted)) => {},
+			Err(WifiError::Other(smoltcp::Error::Exhausted)) => {}
 			Err(WifiError::Other(e)) => error!("smoltcp error {}", e),
-			Err(e) => error!("esp-wifi error {}", defmt::Debug2Format(&e))
+			Err(e) => error!("esp-wifi error {}", defmt::Debug2Format(&e)),
 		}
 		i += 1;
 		yield_now().await

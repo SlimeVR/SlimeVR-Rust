@@ -27,9 +27,7 @@ fn main() -> ! {
 
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |spawner| {
-		spawner
-			.spawn(network_task())
-			.unwrap();
+		spawner.spawn(network_task()).unwrap();
 		spawner.spawn(imu_task(p.i2c, p.delay)).unwrap();
 	});
 }
