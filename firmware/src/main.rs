@@ -7,12 +7,12 @@
 mod aliases;
 mod globals;
 mod imu;
+mod networking;
 mod peripherals;
 mod utils;
 
-use defmt::{debug, trace};
+use defmt::debug;
 use embassy_executor::{task, Executor};
-use embassy_time::{Duration, Timer};
 use riscv_rt::entry;
 use static_cell::StaticCell;
 
@@ -34,13 +34,7 @@ fn main() -> ! {
 
 #[task]
 async fn network_task() {
-	debug!("Started network_task");
-	let mut i = 0;
-	loop {
-		trace!("In main(), i was {}", i);
-		i += 1;
-		Timer::after(Duration::from_millis(1000)).await
-	}
+	networking::wifi::ඞ::network_task().await
 }
 
 #[task]

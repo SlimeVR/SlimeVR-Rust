@@ -7,6 +7,7 @@ static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 // Set up backtraces
 // use esp_backtrace as _;
 
+use defmt::error;
 use panic_defmt as _;
 
 // Set up global defmt logger
@@ -33,13 +34,25 @@ pub fn setup() {
 
 /// This will be called when a hardware exception occurs
 #[export_name = "ExceptionHandler"]
-pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) {
+pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	let mepc = riscv::register::mepc::read();
 	let mcause = riscv::register::mcause::read();
+	let mtval = riscv::register::mtval::read();
+	#[cfg(feature = "mcu-esp32c3")]
+	{
+		let backtrace = esp_backtrace::arch::backtrace();
+		for e in backtrace {
+			if let Some(addr) = e {
+				error!("0x{:x}", addr);
+			}
+		}
+	}
+	error!("Unexpected hardware exception.");
 	panic!(
-		"Unexpected hardware exception. MCAUSE: {:?}, RA: {:#x}, MEPC: {:#b}",
+		"MCAUSE: {:?}, RA: {:#x}, MEPC: {:#b} MTVAL: {:#x}",
 		mcause.cause(),
 		trap_frame.ra,
 		mepc,
-	)
+		mtval
+	);
 }

@@ -13,6 +13,7 @@
                 "resetAfterFlashing": true,
                 "haltAfterReset": true,
             },
+            "runtimeExecutable": "/home/uri/.cargo/bin/probe-rs-debugger",
             "consoleLogLevel": "Debug",
             "name": "probe_rs Executable Test",
             "chip": "esp32c3", //!MODIFY
@@ -20,7 +21,7 @@
             "cwd": "${workspaceFolder}",
             "coreConfigs": [
                 {
-                    "programBinary": "${workspaceFolder}/target/riscv32imac-unknown-none-elf/debug/firmware", //!MODIFY
+                    "programBinary": "${workspaceFolder}/target/riscv32imc-unknown-none-elf/debug/firmware", //!MODIFY
                     "rttEnabled": true,
                 }
             ]

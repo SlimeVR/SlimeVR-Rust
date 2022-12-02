@@ -1,12 +1,19 @@
-[build]
+[target.riscv32imc-unknown-none-elf]
 rustflags = [
-  "-C",
-  "link-arg=-Tlinkall.x",
-
-  # For defmt
-  "-C",
-  "link-arg=-Tdefmt.x",
+    "-C",
+    "link-arg=-Tlinkall.x",
+    # For esp-wifi
+    "-C",
+    "link-arg=-Tesp32c3_rom_functions.x",
+    # For esp-backtrace
+    "-C",
+    "force-frame-pointers",
+    # For defmt
+    "-C",
+    "link-arg=-Tdefmt.x",
 ]
+
+[build]
 # We compile without atomics, because its faster than using atomic trap handler
 target = "riscv32imc-unknown-none-elf"
 
@@ -16,3 +23,7 @@ build-std = ["core", "alloc"]
 [env]
 # You can override this via environment variable when building or by changing it here
 DEFMT_LOG = "trace"
+
+# Change to your wifi's or override with environment variables.
+SSID = "ssid"
+PASSWORD = "password"
