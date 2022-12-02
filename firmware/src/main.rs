@@ -28,10 +28,15 @@ fn main() -> ! {
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |spawner| {
 		spawner
-			.spawn(self::networking::wifi::ඞ::network_task())
+			.spawn(network_task())
 			.unwrap();
 		spawner.spawn(imu_task(p.i2c, p.delay)).unwrap();
 	});
+}
+
+#[task]
+async fn network_task() {
+	networking::wifi::ඞ::network_task().await
 }
 
 #[task]

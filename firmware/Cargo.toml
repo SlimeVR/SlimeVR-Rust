@@ -85,8 +85,6 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "34b5d0d", fe
 smoltcp = { version = "0.8", default-features = false, features = [
   "async",
   "defmt",
-#FIXME: alloc feature spits errors out because defmt isnt 
-#  "alloc",
   "socket-raw",
   "socket-udp",
   "socket-tcp",
@@ -109,7 +107,6 @@ esp-backtrace = { git = "https://github.com/esp-rs/esp-backtrace.git", rev = "31
 mpu6050-dmp = { version = "0.2", optional = true }
 
 # Other crates
-strum = { version = "0.24", default-features = false }
 static_cell = "1"
 nb = "1"
 nalgebra = { version = "0.31", default-features = false, features = [
@@ -117,7 +114,6 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "libm",
 ] }
 fugit = "0.3"
-cfg-if = "1"
 
 
 [build-dependencies]
@@ -132,4 +128,5 @@ defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb2
 defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 
 [profile.dev.package.esp-wifi]
+# https://github.com/esp-rs/esp-wifi#important
 opt-level = 3

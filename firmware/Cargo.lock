@@ -449,7 +449,6 @@ checksum = "535edfc411b7b1c07e47f94b20706fbf1344ffe8bdc722fce17ba25cddeef052"
 name = "firmware"
 version = "0.0.0"
 dependencies = [
- "cfg-if",
  "defmt",
  "defmt-rtt",
  "defmt_esp_println",
@@ -471,7 +470,6 @@ dependencies = [
  "riscv-rt 0.10.0",
  "smoltcp",
  "static_cell",
- "strum",
 ]
 
 [[package]]
@@ -1022,12 +1020,6 @@ name = "strsim"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
-
-[[package]]
-name = "strum"
-version = "0.24.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
 
 [[package]]
 name = "syn"

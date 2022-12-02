@@ -2,8 +2,7 @@ extern crate alloc;
 use alloc::format;
 use core::str;
 
-use defmt::{debug, error, info, trace};
-use embassy_executor::task;
+use defmt::{debug, error, info};
 use embassy_futures::yield_now;
 use embedded_svc::ipv4::Interface;
 use esp_wifi::{
@@ -12,8 +11,9 @@ use esp_wifi::{
 };
 use smoltcp::socket::UdpPacketMetadata;
 
-#[task]
 pub async fn network_task() {
+	// TODO: Maybe we should look at the macros in the future for better config
+	// (socket_count, neighbour_cache_count, routes_store_count, multicast_store_count)
 	let mut storage = create_network_stack_storage!(3, 8, 1, 1);
 	let ethernet = create_network_interface(network_stack_storage!(storage));
 	let mut wifi = esp_wifi::wifi_interface::Wifi::new(ethernet);

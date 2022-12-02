@@ -7,7 +7,7 @@ static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 // Set up backtraces
 // use esp_backtrace as _;
 
-use defmt::debug;
+use defmt::error;
 use panic_defmt as _;
 
 // Set up global defmt logger
@@ -43,11 +43,11 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 		let backtrace = esp_backtrace::arch::backtrace();
 		for e in backtrace {
 			if let Some(addr) = e {
-				debug!("0x{:x}", addr);
+				error!("0x{:x}", addr);
 			}
 		}
 	}
-	debug!("Unexpected hardware exception.");
+	error!("Unexpected hardware exception.");
 	panic!(
 		"MCAUSE: {:?}, RA: {:#x}, MEPC: {:#b} MTVAL: {:#x}",
 		mcause.cause(),

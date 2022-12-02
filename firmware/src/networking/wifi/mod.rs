@@ -1,4 +1,4 @@
-use defmt::debug;
+use defmt::{debug, info};
 use embassy_futures::yield_now;
 use embedded_svc::wifi::{ClientConfiguration, Configuration, Wifi};
 use smoltcp::wire::Ipv4Address;
@@ -26,8 +26,8 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 		debug!("found {} APs", count);
 
 		// we yield because scan_n is blocking
-		// this also requires a ticker
-		//yield_now().await;
+		// this also should require a ticker
+		yield_now().await;
 		let pos = scan_list.iter().position(|ap| ap.ssid == SSID);
 
 		if let Some(ap) = pos {
@@ -36,7 +36,7 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 			panic!("Couldn't find SSID {}", SSID);
 		}
 	};
-	debug!("found SSID {}", SSID);
+	info!("found SSID {}", SSID);
 	let client_config = Configuration::Client(ClientConfiguration {
 		ssid: SSID.into(),
 		password: PASSWORD.into(),
@@ -51,11 +51,10 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 
 	loop {
 		let res = wifi.is_connected();
-		if let Ok(connected) = res {
-			if connected {
-				break;
-			}
+		if matches!(res, Ok(true)) {
+			break; // connected successfully
 		}
+		yield_now().await;
 	}
 
 	Ok(())
