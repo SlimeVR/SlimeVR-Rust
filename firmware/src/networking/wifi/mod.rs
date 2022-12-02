@@ -32,7 +32,7 @@ pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
 		} else if i == WIFI_FIND_RETRIES {
 			panic!("Couldn't find SSID {}", SSID);
 		}
-		// FIXME: this also should require a ticker
+		// TODO: this also should require a ticker
 		yield_now().await;
 	};
 	info!("found SSID {}", SSID);
