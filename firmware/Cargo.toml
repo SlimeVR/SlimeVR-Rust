@@ -2,6 +2,12 @@
 resolver = "2"
 members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
+[profile.dev]
+# Flashing takes significantly longer than lto
+# note: for some reason setting this to `true` causes riscv-rt to appear as two 
+# incompatible versions!!?
+lto = "thin"
+
 
 [workspace.package]
 license = "MIT OR Apache-2.0"
