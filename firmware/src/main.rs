@@ -34,7 +34,7 @@ fn main() -> ! {
 
 #[task]
 async fn network_task() {
-	networking::wifi::ඞ::network_task().await
+	networking::network_task().await
 }
 
 #[task]

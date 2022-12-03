@@ -2,6 +2,12 @@
 resolver = "2"
 members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
+[profile.dev]
+# Flashing takes significantly longer than lto
+# note: for some reason setting this to `true` causes riscv-rt to appear as two 
+# incompatible versions!!?
+lto = "thin"
+
 
 [workspace.package]
 license = "MIT OR Apache-2.0"
@@ -32,12 +38,13 @@ rust-version.workspace = true
 [features]
 default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
 
-# todo: actually support another microcontroller
+# TODO: actually support another microcontroller
 # Supported microcontrollers
 mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "esp-backtrace/esp32c3"]
 
 # Wi-fi dependencies
-net-wifi = ["dep:esp-wifi"]
+net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
+net-stubbed = []                           # stub out network calls
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
@@ -62,7 +69,7 @@ riscv = "0.10"
 esp-alloc = { version = "0.1", features = ["oom-handler"] }
 embedded-hal = "0.2"
 embedded-svc = { version = "0.23", default-features = false, features = [
-#  "nightly",
+  #  "nightly",
 ] }
 
 # Embassy stuff
@@ -93,8 +100,8 @@ smoltcp = { version = "0.8", default-features = false, features = [
   "medium-ethernet",
   "proto-dhcpv4",
   "proto-igmp",
-  "proto-ipv4"
-] }
+  "proto-ipv4",
+], optional = true }
 
 # Logging
 defmt = "0.3"
