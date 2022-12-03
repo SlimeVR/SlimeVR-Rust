@@ -1,16 +1,13 @@
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
-    "-C",
-    "link-arg=-Tlinkall.x",
-    # For esp-wifi
-    "-C",
-    "link-arg=-Tesp32c3_rom_functions.x",
-    # For esp-backtrace
-    "-C",
-    "force-frame-pointers",
-    # For defmt
-    "-C",
-    "link-arg=-Tdefmt.x",
+  "-C",
+  "link-arg=-Tlinkall.x",
+  # For esp-backtrace
+  "-C",
+  "force-frame-pointers",
+  # For defmt
+  "-C",
+  "link-arg=-Tdefmt.x",
 ]
 
 [build]
