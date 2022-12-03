@@ -40,7 +40,14 @@ default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
 
 # TODO: actually support another microcontroller
 # Supported microcontrollers
-mcu-esp32c3 = ["defmt_esp_println?/esp32c3", "esp-backtrace/esp32c3"]
+mcu-esp32c3 = [
+  "defmt_esp_println?/esp32c3",
+  "esp-backtrace/esp32c3",
+  "dep:riscv",
+  "dep:riscv-rt",
+  "dep:esp-alloc",
+]
+mcu-nrf52840 = []
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
@@ -64,9 +71,9 @@ esp32c3-hal = { version = "0.3", features = [
   #"embassy-time-systick",
   #"direct-boot",
 ] }
-riscv-rt = "0.10"
-riscv = "0.10"
-esp-alloc = { version = "0.1", features = ["oom-handler"] }
+riscv-rt = { verison = "0.10", optional = true }
+riscv = { version = "0.10", optional = true }
+esp-alloc = { version = "0.1", features = ["oom-handler"], optional = true }
 embedded-hal = "0.2"
 embedded-svc = { version = "0.23", default-features = false, features = [
   #  "nightly",
