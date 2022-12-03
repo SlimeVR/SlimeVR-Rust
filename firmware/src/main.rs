@@ -46,7 +46,7 @@ async fn network_task() {
 
 #[task]
 async fn imu_task(
-	i2c: crate::aliases::ඞ::I2cConcrete,
+	i2c: crate::aliases::ඞ::I2cConcrete<'static>,
 	delay: crate::aliases::ඞ::DelayConcrete,
 ) {
 	crate::imu::imu_task(i2c, delay).await

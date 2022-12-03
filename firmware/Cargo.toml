@@ -52,8 +52,11 @@ mcu-esp32c3 = [
 mcu-nrf52840 = [
   "dep:cortex-m",
   "dep:cortex-m-rt",
-  "dep:nrf52840-hal",
   "dep:alloc-cortex-m",
+  "dep:embassy-time",
+  "embassy-nrf/nrf52840",
+  "embassy-nrf/time-driver-rtc1",
+  "embassy-executor/integrated-timers",
 ]
 
 # Wi-fi dependencies
@@ -85,7 +88,7 @@ riscv = { version = "0.10", optional = true }
 esp-alloc = { version = "0.1", optional = true }
 
 # mcu-nrf52840 stuff
-nrf52840-hal = { version = "0.16", optional = true, default-features = false }
+embassy-nrf = { optional = true, default-features = false, git = "https://github.com/embassy-rs/embassy", rev = "2528f451387e6c7b27c3140cd87d47521d1971a2" }
 alloc-cortex-m = { version = "0.4", optional = true }
 cortex-m = { version = "0.7", optional = true, features = [
   "critical-section-single-core",
@@ -103,10 +106,10 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "2528f
   #"integrated-timers",
   "nightly",
 ] }
-#embassy-time = { version = "0.1.0", features = [
-#  "tick-hz-16_000_000",
-#  "unstable-traits",
-#] }
+embassy-time = { version = "0.1.0", optional = true, features = [
+  # "tick-hz-16_000_000",
+  # "unstable-traits",
+] }
 
 # Wi-Fi
 esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "9034a26", features = [
@@ -156,9 +159,11 @@ feature_utils = "0.0.0"
 # Enable non-default I2C addresses and InitError
 mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
 
+# Emable use of `atomic-polyfill`
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 
+# Necessary for esp-wifi to not be bugged
 # https://github.com/esp-rs/esp-wifi/blob/9b644387a54a5ace93d4280f29075ad2a9e9a8ed/README.md
 # https://github.com/esp-rs/esp-wifi/issues/88#issuecomment-1332363697
 [profile.dev.package.esp-wifi]
