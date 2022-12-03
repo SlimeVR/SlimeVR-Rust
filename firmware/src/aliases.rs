@@ -6,6 +6,13 @@ pub mod ඞ {
 	pub type I2cConcrete = esp32c3_hal::i2c::I2C<esp32c3_hal::pac::I2C0>;
 }
 
+#[cfg(feature = "mcu-nrf52840")]
+pub mod ඞ {
+	pub use nrf52840_hal::Delay as DelayConcrete;
+
+	pub type I2cConcrete = nrf52840_hal::Twim<nrf52840_hal::pac::TWIM0>;
+}
+
 pub trait I2c:
 	embedded_hal::blocking::i2c::Write<Error = <Self as I2c>::Error>
 	+ embedded_hal::blocking::i2c::WriteRead<Error = <Self as I2c>::Error>

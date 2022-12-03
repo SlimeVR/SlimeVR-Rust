@@ -41,13 +41,20 @@ default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
 # TODO: actually support another microcontroller
 # Supported microcontrollers
 mcu-esp32c3 = [
+  "dep:esp32c3-hal",
   "defmt_esp_println?/esp32c3",
   "esp-backtrace/esp32c3",
   "dep:riscv",
   "dep:riscv-rt",
   "dep:esp-alloc",
+  "dep:embedded-svc",
 ]
-mcu-nrf52840 = []
+mcu-nrf52840 = [
+  "dep:cortex-m",
+  "dep:cortex-m-rt",
+  "dep:nrf52840-hal",
+  "dep:alloc-cortex-m",
+]
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
@@ -62,20 +69,31 @@ log-usb-serial = ["defmt_esp_println/jtag_serial"]
 log-uart = ["defmt_esp_println/uart"]
 
 # Enable to flash without needing `espflash`
-direct-boot = ["esp32c3-hal/direct-boot"]
+direct-boot = ["esp32c3-hal?/direct-boot"]
 
 
 [dependencies]
-esp32c3-hal = { version = "0.3", features = [
+
+# mcu-esp32c3 stuff
+esp32c3-hal = { version = "0.3", optional = true, features = [
   #"embassy",
   #"embassy-time-systick",
   #"direct-boot",
 ] }
 riscv-rt = { verison = "0.10", optional = true }
 riscv = { version = "0.10", optional = true }
-esp-alloc = { version = "0.1", features = ["oom-handler"], optional = true }
+esp-alloc = { version = "0.1", optional = true }
+
+# mcu-nrf52840 stuff
+nrf52840-hal = { version = "0.16", optional = true, default-features = false }
+alloc-cortex-m = { version = "0.4", optional = true }
+cortex-m = { version = "0.7", optional = true, features = [
+  "critical-section-single-core",
+] }
+cortex-m-rt = { version = "0.7", optional = true }
+
 embedded-hal = "0.2"
-embedded-svc = { version = "0.23", default-features = false, features = [
+embedded-svc = { version = "0.23", default-features = false, optional = true, features = [
   #  "nightly",
 ] }
 

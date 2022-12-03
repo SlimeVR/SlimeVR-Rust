@@ -1,4 +1,5 @@
 use super::Peripherals;
+use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
 
 use fugit::RateExtU32;
@@ -10,7 +11,7 @@ use esp32c3_hal::{
 	Rtc,
 };
 
-pub fn get_peripherals() -> Peripherals<I2cConcrete, esp32c3_hal::Delay> {
+pub fn get_peripherals() -> Peripherals<I2cConcrete, DelayConcrete> {
 	let p = esp32c3_hal::pac::Peripherals::take().unwrap();
 
 	let mut system = p.SYSTEM.split();
