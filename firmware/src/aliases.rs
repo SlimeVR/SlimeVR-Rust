@@ -3,14 +3,15 @@ pub mod ඞ {
 	pub use esp32c3_hal::ehal;
 	pub use esp32c3_hal::Delay as DelayConcrete;
 
-	pub type I2cConcrete = esp32c3_hal::i2c::I2C<esp32c3_hal::pac::I2C0>;
+	pub type I2cConcrete<'a> = esp32c3_hal::i2c::I2C<esp32c3_hal::pac::I2C0>;
 }
 
 #[cfg(feature = "mcu-nrf52840")]
 pub mod ඞ {
-	pub use nrf52840_hal::Delay as DelayConcrete;
+	pub use embassy_time::Delay as DelayConcrete;
 
-	pub type I2cConcrete = nrf52840_hal::Twim<nrf52840_hal::pac::TWIM0>;
+	pub type I2cConcrete<'a> =
+		embassy_nrf::twim::Twim<'a, embassy_nrf::peripherals::TWISPI0>;
 }
 
 pub trait I2c:

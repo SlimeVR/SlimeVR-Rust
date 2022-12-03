@@ -11,7 +11,7 @@ use esp32c3_hal::{
 	Rtc,
 };
 
-pub fn get_peripherals() -> Peripherals<I2cConcrete, DelayConcrete> {
+pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	let p = esp32c3_hal::pac::Peripherals::take().unwrap();
 
 	let mut system = p.SYSTEM.split();
