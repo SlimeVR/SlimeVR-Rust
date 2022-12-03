@@ -1,5 +1,6 @@
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
+  # For esp-hal
   "-C",
   "link-arg=-Tlinkall.x",
   # For esp-backtrace
@@ -9,6 +10,23 @@ rustflags = [
   "-C",
   "link-arg=-Tdefmt.x",
 ]
+
+[target.thumbv7em-none-eabihf]
+rustflags = [
+  # TODO: Where is this from?
+  "-C",
+  "link-arg=--nmagic",
+  # For cortex-m-rt
+  "-C",
+  "link-arg=-Tlink.x",
+  # For defmt 
+  "-C",
+  "link-arg=-Tdefmt.x",
+  # For safety against stack overflows. Optional.
+  "-C",
+  "linker=flip-link", # Requires you to `cargo install flip-link`
+]
+
 
 [build]
 # We compile without atomics, because its faster than using atomic trap handler

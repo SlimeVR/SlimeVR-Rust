@@ -16,6 +16,7 @@ The ESP32-C3 also claims to have a stronger wifi signal, which will help with la
 ### First time setup
 1. Install cargo and rust via the instructions at https://rustup.rs
 1. run `cargo install cargo-embed`
+1. run `cargo install flip-link`
 
 ### Flashing
 Simply run `cargo embed flash` from this folder to flash the firmware.
