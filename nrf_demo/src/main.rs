@@ -25,14 +25,14 @@ fn main() -> ! {
 	let cp = nrf52840_hal::pac::CorePeripherals::take().unwrap();
 
 	let p0 = nrf52840_hal::gpio::p0::Parts::new(p.P0);
-	let p1 = nrf52840_hal::gpio::p1::Parts::new(p.P1);
+	// let p1 = nrf52840_hal::gpio::p1::Parts::new(p.P1);
 	let led = p0.p0_15.into_push_pull_output(Level::Low);
 	let delay = Delay::new(cp.SYST);
 	let uarte = Uarte::new(
 		p.UARTE0,
 		uarte::Pins {
-			txd: p1.p1_11.into_push_pull_output(gpio::Level::High).degrade(),
-			rxd: p1.p1_12.into_floating_input().degrade(),
+			txd: p0.p0_10.into_push_pull_output(gpio::Level::High).degrade(),
+			rxd: p0.p0_09.into_floating_input().degrade(),
 			cts: None,
 			rts: None,
 		},
