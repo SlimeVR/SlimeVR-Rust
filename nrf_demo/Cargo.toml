@@ -16,9 +16,9 @@ nrf52840-hal = { version = "0.16.0", default-features = false }
 panic-halt = "0.2.0"
 defmt = "0.3"
 embedded-hal = "0.2"
-embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
-  "nightly",
-  # "integrated-timers",
-] }
-embassy-futures = "0.1"
+# embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b", features = [
+#   "nightly",
+#   # "integrated-timers",
+# ] }
+# embassy-futures = "0.1"
 static_cell = "1"

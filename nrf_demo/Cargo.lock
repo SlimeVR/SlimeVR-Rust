@@ -102,41 +102,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a81dae078cea95a014a339291cec439d2f232ebe854a9d672b796c6afafa9b7"
 
 [[package]]
-name = "darling"
-version = "0.13.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a01d95850c592940db9b8194bc39f4bc0e89dee5c4265e4b1807c34a9aba453c"
-dependencies = [
- "darling_core",
- "darling_macro",
-]
-
-[[package]]
-name = "darling_core"
-version = "0.13.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "859d65a907b6852c9361e3185c862aae7fafd2887876799fa55f5f99dc40d610"
-dependencies = [
- "fnv",
- "ident_case",
- "proc-macro2",
- "quote",
- "strsim",
- "syn",
-]
-
-[[package]]
-name = "darling_macro"
-version = "0.13.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c972679f83bdf9c42bd905396b6c3588a843a17f0f16dfcfa3e2c5d57441835"
-dependencies = [
- "darling_core",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "defmt"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -164,36 +129,6 @@ name = "defmt-parser"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0db23d29972d99baa3de2ee2ae3f104c10564a6d05a346eb3f4c4f2c0525a06e"
-
-[[package]]
-name = "embassy-executor"
-version = "0.1.0"
-source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
-dependencies = [
- "atomic-polyfill",
- "cfg-if",
- "critical-section",
- "embassy-macros",
- "futures-util",
- "static_cell",
-]
-
-[[package]]
-name = "embassy-futures"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47e5367165d347c039360f784812f493b001583ab6a3dd8622f4ce9c30374ec3"
-
-[[package]]
-name = "embassy-macros"
-version = "0.1.0"
-source = "git+https://github.com/embassy-rs/embassy?rev=cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b#cb9f0ef5b800ce4a22cde1805e0eb88425f1e07b"
-dependencies = [
- "darling",
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "embedded-dma"
@@ -233,36 +168,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fnv"
-version = "1.0.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
-
-[[package]]
-name = "futures-core"
-version = "0.3.25"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04909a7a7e4633ae6c4a9ab280aeb86da1236243a77b694a49eacd659a4bd3ac"
-
-[[package]]
-name = "futures-task"
-version = "0.3.25"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ffb393ac5d9a6eaa9d3fdf37ae2776656b706e200c8e16b1bdb227f5198e6ea"
-
-[[package]]
-name = "futures-util"
-version = "0.3.25"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "197676987abd2f9cadff84926f410af1c183608d36641465df73ae8211dc65d6"
-dependencies = [
- "futures-core",
- "futures-task",
- "pin-project-lite",
- "pin-utils",
-]
-
-[[package]]
 name = "half"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -270,12 +175,6 @@ checksum = "ad6a9459c9c30b177b925162351f97e7d967c7ea8bab3b8352805327daf45554"
 dependencies = [
  "crunchy",
 ]
-
-[[package]]
-name = "ident_case"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "nb"
@@ -352,8 +251,6 @@ dependencies = [
  "cortex-m",
  "cortex-m-rt",
  "defmt",
- "embassy-executor",
- "embassy-futures",
  "embedded-hal",
  "nrf52840-hal",
  "panic-halt",
@@ -365,18 +262,6 @@ name = "panic-halt"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "de96540e0ebde571dc55c73d60ef407c653844e6f9a1e2fdbd40c07b9252d812"
-
-[[package]]
-name = "pin-project-lite"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0a7ae3ac2f1173085d398531c705756c94a4c56843785df85a60c1a0afac116"
-
-[[package]]
-name = "pin-utils"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "proc-macro-error"
@@ -464,12 +349,6 @@ checksum = "e4c37c250d21f53fa7165e76e5401d7e6539c211a8d2cf449e3962956a5cc2ce"
 dependencies = [
  "atomic-polyfill",
 ]
-
-[[package]]
-name = "strsim"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "syn"
