@@ -23,10 +23,10 @@ use static_cell::StaticCell;
 // according to gabu#6113 on the nice!nano discord, normally the chip expects the
 // interrupt table at 0x0000. But since our code starts at 0x1000, our interrupt table
 // is there. So we must set the value in the register.
-#[pre_init]
-unsafe fn before_main() {
-	(*SCB::PTR).vtor.write(0x1000);
-}
+// #[pre_init]
+// unsafe fn before_main() {
+// 	(*SCB::PTR).vtor.write(0x1000);
+// }
 
 #[entry]
 fn main() -> ! {
@@ -50,15 +50,15 @@ fn main() -> ! {
 	// );
 
 	// Message must be in SRAM
-	let mut buf = [0u8; 64];
+	// let mut buf = [0u8; 64];
 	loop {
-		buf.copy_from_slice(b"Turning on\r\n");
+		// buf.copy_from_slice(b"Turning on\r\n");
 		// uarte.write(&buf).unwrap();
 		// Yes, these should be async, but I was lazy
 		delay.delay_ms(2000 as u16);
 		led.set_high().expect("Failed to set high");
 		delay.delay_ms(1000 as u16);
-		buf.copy_from_slice(b"Turning off\r\n");
+		// buf.copy_from_slice(b"Turning off\r\n");
 		// uarte.write(&buf).unwrap();
 
 		led.set_low().expect("Failed to set low");
