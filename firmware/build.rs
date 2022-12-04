@@ -2,12 +2,18 @@ use feature_utils::mandatory_and_unique;
 
 mandatory_and_unique!("mcu-esp32c3", "mcu-nrf52840");
 mandatory_and_unique!("imu-mpu6050");
-mandatory_and_unique!("log-rtt", "log-usb-serial");
+mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 mandatory_and_unique!("net-wifi", "net-stubbed");
 
 fn main() {
 	#[cfg(feature = "net-wifi")]
 	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x"); // esp-wifi
+
+	// By default, Cargo will re-run a build script whenever
+	// any file in the project changes. By specifying `memory.x`
+	// here, we ensure the build script is only re-run when
+	// `memory.x` is changed.
+	println!("cargo:rerun-if-changed=linker_scripts/");
 
 	#[cfg(feature = "mcu-nrf52840")]
 	{
