@@ -5,10 +5,10 @@ rustflags = [
   "link-arg=--nmagic",
   "-C",
   "link-arg=-Tlink.x",
-  # "-C",
-  # "link-arg=-Tdefmt.x",
-  # "-C",
-  # "linker=flip-link",   # Requires you to `cargo install flip-link`
+  "-C",
+  "link-arg=-Tdefmt.x",
+  "-C",
+  "linker=flip-link",   # Requires you to `cargo install flip-link`
 ]
 
 [build]
