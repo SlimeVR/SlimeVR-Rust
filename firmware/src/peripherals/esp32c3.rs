@@ -59,6 +59,5 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	.expect("Failed to set up i2c");
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
-
-	Peripherals { i2c, delay }
+	Peripherals::new().i2c(i2c).delay(delay)
 }

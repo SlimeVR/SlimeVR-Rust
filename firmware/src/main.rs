@@ -25,6 +25,9 @@ use riscv_rt::entry;
 
 #[entry]
 fn main() -> ! {
+	#[cfg(feature = "defmt-bbq")]
+	let bbq = defmt_bbq::init().unwrap();
+
 	self::globals::setup();
 	debug!("Booted");
 
@@ -36,6 +39,8 @@ fn main() -> ! {
 	EXECUTOR.init(Executor::new()).run(move |spawner| {
 		spawner.spawn(network_task()).unwrap();
 		spawner.spawn(imu_task(p.i2c, p.delay)).unwrap();
+		#[cfg(all(feature = "defmt-bbq", feature = "log-uart"))]
+		spawner.spawn(logger_task(bbq, p.uart)).unwrap();
 	});
 }
 
@@ -50,4 +55,13 @@ async fn imu_task(
 	delay: crate::aliases::ඞ::DelayConcrete,
 ) {
 	crate::imu::imu_task(i2c, delay).await
+}
+
+#[cfg(all(feature = "log-uart", feature = "defmt-bbq"))]
+#[task]
+async fn logger_task(
+	_bbq: defmt_bbq::DefmtConsumer,
+	_uart: crate::aliases::ඞ::UartConcrete<'static>,
+) {
+	todo!()
 }
