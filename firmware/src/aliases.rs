@@ -12,6 +12,9 @@ pub mod ඞ {
 
 	pub type I2cConcrete<'a> =
 		embassy_nrf::twim::Twim<'a, embassy_nrf::peripherals::TWISPI0>;
+
+	pub type UartConcrete<'a> =
+		embassy_nrf::uarte::Uarte<'a, embassy_nrf::peripherals::UARTE0>;
 }
 
 pub trait I2c:

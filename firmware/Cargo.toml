@@ -58,6 +58,7 @@ mcu-nrf52840 = [
   "embassy-nrf/nrf52840",
   "embassy-nrf/time-driver-rtc1",
   "embassy-executor/integrated-timers",
+  "defmt-bbq",
 ]
 
 # Wi-fi dependencies
@@ -140,6 +141,7 @@ defmt-rtt = { version = "0.4", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 esp-backtrace = { git = "https://github.com/esp-rs/esp-backtrace.git", rev = "312f8ea", default-features = false, optional = true }
+defmt-bbq = { version = "0.1", optional = true }
 
 # Peripherals
 mpu6050-dmp = { version = "0.2", optional = true }
@@ -156,6 +158,7 @@ fugit = "0.3"
 
 [build-dependencies]
 feature_utils = "0.0.0"
+cfg_aliases = "0.1.1"
 
 
 [patch.crates-io]

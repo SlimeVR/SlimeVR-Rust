@@ -8,9 +8,45 @@ pub mod ඞ;
 #[path = "nrf52840.rs"]
 pub mod ඞ;
 
-use crate::aliases::I2c;
-
-pub struct Peripherals<I: I2c, D: embedded_hal::blocking::delay::DelayMs<u32>> {
-	pub i2c: I,
-	pub delay: D,
+/// Holds the peripherals. This merely exists to allow a way to pass around platform
+/// specific peripherals, some of which may not even exist, in a platform-agnostic way.
+pub struct Peripherals<I2c = (), Delay = (), Uart = ()> {
+	pub i2c: I2c,
+	pub delay: Delay,
+	pub uart: Uart,
+}
+impl Peripherals {
+	pub fn new() -> Self {
+		Self {
+			i2c: (),
+			delay: (),
+			uart: (),
+		}
+	}
+}
+impl<I2c, Delay, Uart> Peripherals<I2c, Delay, Uart> {
+	#[allow(dead_code)]
+	pub fn i2c<N>(self, p: N) -> Peripherals<N, Delay, Uart> {
+		Peripherals {
+			i2c: p,
+			delay: self.delay,
+			uart: self.uart,
+		}
+	}
+	#[allow(dead_code)]
+	pub fn delay<N>(self, p: N) -> Peripherals<I2c, N, Uart> {
+		Peripherals {
+			i2c: self.i2c,
+			delay: p,
+			uart: self.uart,
+		}
+	}
+	#[allow(dead_code)]
+	pub fn uart<N>(self, p: N) -> Peripherals<I2c, Delay, N> {
+		Peripherals {
+			i2c: self.i2c,
+			delay: self.delay,
+			uart: p,
+		}
+	}
 }
