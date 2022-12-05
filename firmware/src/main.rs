@@ -57,11 +57,28 @@ async fn imu_task(
 	crate::imu::imu_task(i2c, delay).await
 }
 
-#[cfg(all(feature = "log-uart", feature = "defmt-bbq"))]
+#[cfg(all(feature = "log-uart", feature = "mcu-nrf52840", feature = "defmt-bbq"))]
 #[task]
 async fn logger_task(
-	_bbq: defmt_bbq::DefmtConsumer,
-	_uart: crate::aliases::ඞ::UartConcrete<'static>,
+	mut bbq: defmt_bbq::DefmtConsumer,
+	mut uart: crate::aliases::ඞ::UartConcrete<'static>,
 ) {
-	todo!()
+	use embassy_nrf::uarte::Error;
+
+	loop {
+		let Ok(grant) = bbq.read() else {
+			continue; //should be impossible	
+		};
+		let len = grant.buf().len();
+		match uart.write_from_ram(grant.buf()).await {
+			Err(Error::DMABufferNotInDataMemory) => {
+				{}
+				unreachable!("bbq should always be in RAM")
+			}
+			Err(Error::BufferZeroLength) | Err(Error::BufferTooLong) => (),
+			Ok(()) => (),
+			_ => (),
+		};
+		grant.release(len);
+	}
 }
