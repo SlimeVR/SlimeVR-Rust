@@ -22,6 +22,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.66"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
+
+[[package]]
 name = "approx"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -125,6 +131,19 @@ name = "cfg_aliases"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
+
+[[package]]
+name = "core-isa-parser"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23ec98e54b735872e54b2335c2e5a5c7fa7d9c3bfd45500f75280f84089a0083"
+dependencies = [
+ "anyhow",
+ "enum-as-inner",
+ "regex",
+ "strum",
+ "strum_macros",
+]
 
 [[package]]
 name = "cortex-m"
@@ -526,6 +545,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
+name = "enum-as-inner"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "21cdad81446a7f7dc43f6a77409efeb9733d2fa65553efef6018ef257c959b73"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "enumset"
 version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -565,6 +596,7 @@ source = "git+https://github.com/esp-rs/esp-backtrace.git?rev=312f8ea#312f8eaa3f
 dependencies = [
  "esp-println",
  "riscv 0.8.0",
+ "xtensa-lx-rt 0.13.0",
 ]
 
 [[package]]
@@ -578,13 +610,17 @@ dependencies = [
  "embedded-dma",
  "embedded-hal 0.2.7",
  "esp-hal-procmacros",
+ "esp32",
  "esp32c3",
  "fugit",
+ "lock_api",
  "nb 1.0.0",
  "paste",
  "riscv 0.10.0",
  "riscv-atomic-emulation-trap",
  "void",
+ "xtensa-lx",
+ "xtensa-lx-rt 0.14.0",
 ]
 
 [[package]]
@@ -620,6 +656,7 @@ dependencies = [
  "embedded-io 0.3.1",
  "embedded-svc",
  "enumset",
+ "esp32-hal",
  "esp32c3-hal",
  "fugit",
  "heapless",
@@ -631,6 +668,32 @@ dependencies = [
  "riscv-target",
  "smoltcp",
  "void",
+ "xtensa-lx",
+ "xtensa-lx-rt 0.14.0",
+]
+
+[[package]]
+name = "esp32"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1bba88ea125f6f224121dc96af129b74c5e2a14952891b745e09bc6f477274ed"
+dependencies = [
+ "critical-section",
+ "vcell",
+ "xtensa-lx",
+ "xtensa-lx-rt 0.14.0",
+]
+
+[[package]]
+name = "esp32-hal"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e347e1f9701cfb58ac383fa41e7ea714ed309f293b1e9272394d9ea9b89f36ad"
+dependencies = [
+ "embedded-hal 0.2.7",
+ "esp-hal-common",
+ "xtensa-lx",
+ "xtensa-lx-rt 0.14.0",
 ]
 
 [[package]]
@@ -687,6 +750,7 @@ dependencies = [
  "esp-alloc",
  "esp-backtrace",
  "esp-wifi",
+ "esp32-hal",
  "esp32c3-hal",
  "feature_utils",
  "fugit",
@@ -698,6 +762,8 @@ dependencies = [
  "riscv-rt",
  "smoltcp",
  "static_cell",
+ "xtensa-lx",
+ "xtensa-lx-rt 0.14.0",
 ]
 
 [[package]]
@@ -826,6 +892,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "heck"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -882,6 +954,15 @@ name = "memchr"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
+
+[[package]]
+name = "minijinja"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "359c4820413be7706e93999171652e140578384f85faac14cb22d350bd0fbabf"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "mpu6050-dmp"
@@ -1189,6 +1270,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustversion"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97477e48b4cf8603ad5f7aaf897467cf42ab4218a38ef76fb14c2d6773a6d6a8"
+
+[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1309,6 +1396,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
+name = "strum"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
+
+[[package]]
+name = "strum_macros"
+version = "0.24.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e385be0d24f186b4ce2f9982191e7101bb737312ad61c1f2f984f34bcf85d59"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn",
+]
+
+[[package]]
 name = "syn"
 version = "1.0.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1409,4 +1515,41 @@ dependencies = [
  "mutex-trait",
  "r0",
  "spin",
+]
+
+[[package]]
+name = "xtensa-lx-rt"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33a17a83d25998da4f2dca85afb6456ea340d3bde0211bebac011eb45dcbd2f4"
+dependencies = [
+ "bare-metal 1.0.0",
+ "core-isa-parser",
+ "minijinja",
+ "r0",
+ "xtensa-lx-rt-proc-macros",
+]
+
+[[package]]
+name = "xtensa-lx-rt"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c5e7d36626db2a67ba9b874988181d1dac18706914e804fca846add0c5e5eddb"
+dependencies = [
+ "bare-metal 1.0.0",
+ "core-isa-parser",
+ "minijinja",
+ "r0",
+ "xtensa-lx-rt-proc-macros",
+]
+
+[[package]]
+name = "xtensa-lx-rt-proc-macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "21a8200930e2dbd515c231f7a46033bd6dfe1497a8e9a539878f0de8f0cd730b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]

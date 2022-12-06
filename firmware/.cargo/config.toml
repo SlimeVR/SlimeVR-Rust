@@ -11,6 +11,19 @@ rustflags = [
   "link-arg=-Tdefmt.x",
 ]
 
+[target.xtensa-esp32-none-elf]
+rustflags = [
+  # For esp-hal
+  "-C",
+  "link-arg=-Tlinkall.x",
+  # For esp-backtrace
+  "-C",
+  "force-frame-pointers",
+  # For defmt
+  "-C",
+  "link-arg=-Tdefmt.x",
+]
+
 [target.thumbv7em-none-eabihf]
 rustflags = [
   # TODO: Where is this from?
@@ -27,7 +40,8 @@ rustflags = [
 
 [build]
 # We compile without atomics, because its faster than using atomic trap handler
-target = "riscv32imc-unknown-none-elf"
+# target = "riscv32imc-unknown-none-elf"
+target = "xtensa-esp32-none-elf"
 # target = "thumbv7em-none-eabihf"
 
 [unstable]

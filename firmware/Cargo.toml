@@ -39,10 +39,21 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-rtt", "net-stubbed"]
+# default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
+# default = ["mcu-nrf52840", "imu-mpu6050", "log-uart", "net-stubbed"]
+default = ["mcu-esp32", "imu-mpu6050", "log-uart", "net-wifi"]
 
 # Supported microcontrollers
+mcu-esp32 = [
+  "dep:esp32-hal",
+  "defmt_esp_println/esp32",
+  "esp-backtrace/esp32",
+  "xtensa-lx/esp32",
+  "xtensa-lx-rt/esp32",
+  "dep:esp-alloc",
+  "dep:embedded-svc",
+  "esp-wifi?/esp32",
+]
 mcu-esp32c3 = [
   "dep:esp32c3-hal",
   "defmt_esp_println/esp32c3",
@@ -51,6 +62,7 @@ mcu-esp32c3 = [
   "dep:riscv-rt",
   "dep:esp-alloc",
   "dep:embedded-svc",
+  "esp-wifi?/esp32c3",
 ]
 mcu-nrf52840 = [
   "dep:cortex-m",
@@ -82,6 +94,12 @@ direct-boot = ["esp32c3-hal?/direct-boot"]
 
 
 [dependencies]
+# mcu-esp32 stuff
+esp32-hal = { version = "0.7.0", optional = true, features = [
+  #"embassy",
+  #"embassy-time-systick",
+] }
+
 # mcu-esp32c3 stuff
 esp32c3-hal = { version = "0.4", optional = true, features = [
   #"embassy",
@@ -90,7 +108,6 @@ esp32c3-hal = { version = "0.4", optional = true, features = [
 ] }
 riscv-rt = { version = "0.10", optional = true }
 riscv = { version = "0.10", optional = true }
-esp-alloc = { version = "0.1", optional = true }
 
 # mcu-nrf52840 stuff
 embassy-nrf = { version = "*", optional = true, default-features = false, features = [
@@ -115,9 +132,17 @@ embassy-time = { version = "*", optional = true, features = [
 ] }
 embassy-usb = { version = "*", optional = true }
 
+# esp-xtensa stuff
+xtensa-lx = { version = "0.7", optional = true, default-features = false }
+xtensa-lx-rt = { version = "0.14", optional = true, default-features = false }
+
+# esp-generic stuff
+esp-backtrace = { git = "https://github.com/esp-rs/esp-backtrace.git", rev = "312f8ea", default-features = false, optional = true }
+esp-alloc = { version = "0.1", optional = true }
+defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
+
 # Wi-Fi
 esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "aa850de", features = [
-  "esp32c3",
   "wifi",
   "embedded-svc",
 ], optional = true }
@@ -145,8 +170,6 @@ embedded-svc = { version = "0.23", default-features = false, optional = true, fe
 defmt = "0.3"
 defmt-rtt = { version = "0.4", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
-defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
-esp-backtrace = { git = "https://github.com/esp-rs/esp-backtrace.git", rev = "312f8ea", default-features = false, optional = true }
 defmt-bbq = { version = "0.1", optional = true }
 
 # Peripherals
@@ -186,7 +209,12 @@ embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 
 
 # Necessary for esp-wifi to not be bugged
-# https://github.com/esp-rs/esp-wifi/blob/9b644387a54a5ace93d4280f29075ad2a9e9a8ed/README.md
+# https://github.com/esp-rs/esp-wifi/blob/9b644387a54a5ace93d4280f29075ad2a9e9a8ed/README.md#important
 # https://github.com/esp-rs/esp-wifi/issues/88#issuecomment-1332363697
 [profile.dev.package.esp-wifi]
 opt-level = 3
+
+# Recommended by the dependency itself
+# https://github.com/esp-rs/xtensa-lx-rt/blob/455d2b77b8a5724d36db0ea66c88467a4515f376/README.md#i-get-linker-errors-when-i-build-for-debug
+[profile.dev.package.xtensa-lx-rt]
+opt-level = 'z'

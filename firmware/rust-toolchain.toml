@@ -1,5 +1,6 @@
 [toolchain]
-channel = "nightly"
-targets = ["riscv32imc-unknown-none-elf", "thumbv7em-none-eabihf"]
+#channel = "nightly"
+channel = "esp"
+targets = ["riscv32imc-unknown-none-elf", "thumbv7em-none-eabihf", "xtensa-esp32-none-elf"]
 profile = "default"
 components = ["llvm-tools-preview", "rust-src", "rustfmt"]

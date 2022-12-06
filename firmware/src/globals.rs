@@ -1,7 +1,7 @@
 extern crate alloc;
 
 // Set up global heap allocator
-#[cfg(feature = "mcu-esp32c3")]
+#[cfg(esp)]
 #[global_allocator]
 static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 
@@ -41,7 +41,7 @@ pub fn setup() {
 		static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
 
 		unsafe {
-			#[cfg(feature = "mcu-esp32c3")]
+			#[cfg(esp)]
 			ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE);
 			#[cfg(feature = "mcu-nrf52840")]
 			ALLOCATOR.init(HEAP.as_mut_ptr() as usize, HEAP_SIZE);
@@ -50,7 +50,7 @@ pub fn setup() {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(feature = "mcu-esp32c3")]
+#[cfg(esp_riscv)]
 #[export_name = "ExceptionHandler"]
 pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	use defmt::error;
@@ -58,7 +58,7 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	let mepc = riscv::register::mepc::read();
 	let mcause = riscv::register::mcause::read();
 	let mtval = riscv::register::mtval::read();
-	#[cfg(feature = "mcu-esp32c3")]
+	#[cfg(esp_riscv)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
 		for e in backtrace {
@@ -75,4 +75,27 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 		mepc,
 		mtval
 	);
+}
+
+/// This will be called when a hardware exception occurs
+#[cfg(esp_xtensa)]
+#[no_mangle]
+#[link_section = ".rwtext"]
+unsafe extern "C" fn __exception(
+	cause: xtensa_lx_rt::exception::ExceptionCause,
+	context: xtensa_lx_rt::exception::Context,
+) {
+	use defmt::error;
+
+	#[cfg(esp_xtensa)]
+	{
+		let backtrace = esp_backtrace::arch::backtrace();
+		for e in backtrace {
+			if let Some(addr) = e {
+				error!("0x{:x}", addr);
+			}
+		}
+	}
+	error!("Unexpected hardware exception.");
+	panic!("Cause: {:?}, Ctx: {:?}", cause, context,);
 }
