@@ -12,6 +12,7 @@ use embassy_futures::yield_now;
 /// - `before_retry(retry_num)` is a function that gets called right before invoking `f`
 ///   again on a retry. `retry_num` goes from `0..n`. Often useful for logging or
 ///   controlling a delay between invocations of `f`.
+#[allow(dead_code)]
 pub fn retry<A, T, E>(
 	n: u8,
 	acc: A,

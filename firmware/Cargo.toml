@@ -63,10 +63,11 @@ mcu-nrf52840 = [
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
-net-stubbed = []                           # stub out network   
+net-stubbed = []                           # Stubs out network   
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
+imu-stubbed = []              # Stubs out the IMU
 
 # Supported defmt loggers
 log-rtt = ["dep:defmt-rtt"]

@@ -1,3 +1,10 @@
+mod stubbed;
+
+#[cfg(feature = "imu-stubbed")]
+mod ඞ {
+	pub use crate::imu::stubbed::*;
+}
+
 #[cfg(feature = "imu-mpu6050")]
 #[path = "mpu6050.rs"]
 mod ඞ;
