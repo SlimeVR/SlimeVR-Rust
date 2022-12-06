@@ -61,10 +61,8 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	#[cfg(esp_riscv)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
-		for e in backtrace {
-			if let Some(addr) = e {
-				error!("0x{:x}", addr);
-			}
+		for e in backtrace.into_iter().flatten() {
+			error!("0x{:x}", addr);
 		}
 	}
 	error!("Unexpected hardware exception.");
@@ -90,10 +88,8 @@ unsafe extern "C" fn __exception(
 	#[cfg(esp_xtensa)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
-		for e in backtrace {
-			if let Some(addr) = e {
-				error!("0x{:x}", addr);
-			}
+		for e in backtrace.into_iter().flatten() {
+			error!("0x{:x}", addr);
 		}
 	}
 	error!("Unexpected hardware exception.");
