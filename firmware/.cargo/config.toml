@@ -22,9 +22,6 @@ rustflags = [
   # For defmt 
   "-C",
   "link-arg=-Tdefmt.x",
-  # For safety against stack overflows. Optional.
-  "-C",
-  "linker=flip-link", # Requires you to `cargo install flip-link`
 ]
 
 
