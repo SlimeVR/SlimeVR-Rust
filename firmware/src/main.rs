@@ -63,17 +63,20 @@ async fn logger_task(
 	mut bbq: defmt_bbq::DefmtConsumer,
 	mut uart: crate::aliases::ඞ::UartConcrete<'static>,
 ) {
+	use embassy_futures::yield_now;
 	use embassy_nrf::uarte::Error;
 
 	loop {
 		let Ok(grant) = bbq.read() else {
+			yield_now().await;
 			continue; //should be impossible	
 		};
 		let len = grant.buf().len();
+		uart.write(b"got data: ").await;
 		match uart.write_from_ram(grant.buf()).await {
 			Err(Error::DMABufferNotInDataMemory) => {
-				{}
-				unreachable!("bbq should always be in RAM")
+				// unreachable!("bbq should always be in RAM")
+				()
 			}
 			Err(Error::BufferZeroLength) | Err(Error::BufferTooLong) => (),
 			Ok(()) => (),
