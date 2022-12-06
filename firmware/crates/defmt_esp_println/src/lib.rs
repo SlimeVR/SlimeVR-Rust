@@ -25,9 +25,5 @@
 #![no_std]
 #![deny(unsafe_op_in_unsafe_fn)]
 
-cfg_if::cfg_if! {
-	if #[cfg(any(feature = "uart", feature = "usb-serial"))] {
-		mod esp32_all as maybe_mod;
-		use esp32_all::*;
-	}
-}
+#[cfg(any(feature = "uart", feature = "jtag_serial"))]
+mod esp32_all;
