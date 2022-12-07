@@ -13,8 +13,10 @@ fn main() {
 		esp: { any(esp_xtensa, esp_riscv) },
 	}
 
-	#[cfg(feature = "net-wifi")]
+	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32c3"))]
 	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x"); // esp-wifi
+	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32"))]
+	println!("cargo:rustc-link-arg=-Tesp32_rom_functions.x"); // esp-wifi
 
 	// By default, Cargo will re-run a build script whenever
 	// any file in the project changes. By specifying `memory.x`

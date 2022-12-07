@@ -26,7 +26,7 @@ use panic_defmt as _;
 
 // Set up global defmt logger
 #[cfg(all(
-	any(feature = "mcu-esp32c3"),
+	esp,
 	any(feature = "log-usb-serial", feature = "log-uart")
 ))]
 use defmt_esp_println as _;
@@ -61,7 +61,7 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	#[cfg(esp_riscv)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
-		for e in backtrace.into_iter().flatten() {
+		for addr in backtrace.into_iter().flatten() {
 			error!("0x{:x}", addr);
 		}
 	}
@@ -88,7 +88,7 @@ unsafe extern "C" fn __exception(
 	#[cfg(esp_xtensa)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
-		for e in backtrace.into_iter().flatten() {
+		for addr in backtrace.into_iter().flatten() {
 			error!("0x{:x}", addr);
 		}
 	}
