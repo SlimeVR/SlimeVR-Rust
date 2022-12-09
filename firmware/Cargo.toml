@@ -7,7 +7,7 @@ members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 # Flashing takes significantly longer than lto
 # note: for some reason setting this to `true` causes riscv-rt to appear as two 
 # incompatible versions!!?
-lto = "thin"
+lto = false
 opt-level = "s"
 
 
@@ -41,7 +41,7 @@ rust-version.workspace = true
 [features]
 # default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
 # default = ["mcu-nrf52840", "imu-mpu6050", "log-uart", "net-stubbed"]
-default = ["mcu-esp32", "imu-mpu6050", "log-uart", "net-wifi"]
+default = ["mcu-esp32", "imu-mpu6050", "log-uart", "net-stubbed"]
 
 # Supported microcontrollers
 mcu-esp32 = [
