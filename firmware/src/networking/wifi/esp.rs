@@ -39,11 +39,12 @@ pub async fn network_task() {
 
 	let mut buffer = [0u8; 256];
 	let mut i = 0;
+	socket.bind(25565).unwrap();
 	loop {
 		socket.work();
 
 		socket
-			.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes())
+			.send(super::SERVER_IP, 25565, format!("i was {}\n", i).as_bytes())
 			.expect("failed to send");
 
 		match socket.receive(&mut buffer) {
