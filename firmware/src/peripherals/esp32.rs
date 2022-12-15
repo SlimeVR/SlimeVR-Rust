@@ -53,8 +53,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 		400u32.kHz(),
 		&mut system.peripheral_clock_control,
 		&clocks,
-	)
-	.expect("Failed to set up i2c");
+	);
 
 	let delay = esp32_hal::Delay::new(&clocks);
 	Peripherals::new().i2c(i2c).delay(delay)

@@ -539,6 +539,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-svc"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2079f8182848872fb6e8eed2c1ba3aea409fc71984a9e8090733c08c404e7864"
+dependencies = [
+ "defmt",
+ "embedded-io 0.3.1",
+ "enumset",
+ "heapless",
+ "no-std-net",
+ "serde",
+]
+
+[[package]]
 name = "encode_unicode"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -591,12 +605,13 @@ dependencies = [
 
 [[package]]
 name = "esp-backtrace"
-version = "0.3.0"
-source = "git+https://github.com/esp-rs/esp-backtrace.git?rev=312f8ea#312f8eaa3fdaa8237723f3927b58ec2dc0bdecac"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1834d20d58dc6baaf063924cb3ffa0b7f6388a593bae310c9f228c4bd47f0dde"
 dependencies = [
  "esp-println",
- "riscv 0.8.0",
- "xtensa-lx-rt 0.13.0",
+ "riscv 0.10.0",
+ "xtensa-lx-rt",
 ]
 
 [[package]]
@@ -620,7 +635,7 @@ dependencies = [
  "riscv-atomic-emulation-trap",
  "void",
  "xtensa-lx",
- "xtensa-lx-rt 0.14.0",
+ "xtensa-lx-rt",
 ]
 
 [[package]]
@@ -648,17 +663,13 @@ dependencies = [
 [[package]]
 name = "esp-wifi"
 version = "0.1.0"
-<<<<<<< HEAD
 source = "git+https://github.com/esp-rs/esp-wifi.git?rev=aa850de#aa850de8e74d5e37addb67b3a66be35ea58029f9"
-=======
-source = "git+https://github.com/esp-rs/esp-wifi.git?rev=4d8243f#4d8243f779ef2e0f0158ac5484c848c362c0be58"
->>>>>>> 5cf7b40 (update esp-wifi)
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section",
  "embedded-hal 0.2.7",
  "embedded-io 0.3.1",
- "embedded-svc",
+ "embedded-svc 0.23.2",
  "enumset",
  "esp32-hal",
  "esp32c3-hal",
@@ -673,7 +684,7 @@ dependencies = [
  "smoltcp",
  "void",
  "xtensa-lx",
- "xtensa-lx-rt 0.14.0",
+ "xtensa-lx-rt",
 ]
 
 [[package]]
@@ -685,7 +696,7 @@ dependencies = [
  "critical-section",
  "vcell",
  "xtensa-lx",
- "xtensa-lx-rt 0.14.0",
+ "xtensa-lx-rt",
 ]
 
 [[package]]
@@ -697,7 +708,7 @@ dependencies = [
  "embedded-hal 0.2.7",
  "esp-hal-common",
  "xtensa-lx",
- "xtensa-lx-rt 0.14.0",
+ "xtensa-lx-rt",
 ]
 
 [[package]]
@@ -750,7 +761,7 @@ dependencies = [
  "embassy-time",
  "embassy-usb",
  "embedded-hal 0.2.7",
- "embedded-svc",
+ "embedded-svc 0.24.0",
  "esp-alloc",
  "esp-backtrace",
  "esp-wifi",
@@ -767,7 +778,7 @@ dependencies = [
  "smoltcp",
  "static_cell",
  "xtensa-lx",
- "xtensa-lx-rt 0.14.0",
+ "xtensa-lx-rt",
 ]
 
 [[package]]
@@ -889,6 +900,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db04bc24a18b9ea980628ecf00e6c0264f3c1426dac36c00cb49b6fbad8b0743"
 dependencies = [
  "atomic-polyfill 0.1.11",
+ "defmt",
  "hash32",
  "rustc_version 0.4.0",
  "spin",
@@ -1519,19 +1531,6 @@ dependencies = [
  "mutex-trait",
  "r0",
  "spin",
-]
-
-[[package]]
-name = "xtensa-lx-rt"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33a17a83d25998da4f2dca85afb6456ea340d3bde0211bebac011eb45dcbd2f4"
-dependencies = [
- "bare-metal 1.0.0",
- "core-isa-parser",
- "minijinja",
- "r0",
- "xtensa-lx-rt-proc-macros",
 ]
 
 [[package]]
