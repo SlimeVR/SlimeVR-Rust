@@ -539,20 +539,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "embedded-svc"
-version = "0.24.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2079f8182848872fb6e8eed2c1ba3aea409fc71984a9e8090733c08c404e7864"
-dependencies = [
- "defmt",
- "embedded-io 0.3.1",
- "enumset",
- "heapless",
- "no-std-net",
- "serde",
-]
-
-[[package]]
 name = "encode_unicode"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -669,7 +655,7 @@ dependencies = [
  "critical-section",
  "embedded-hal 0.2.7",
  "embedded-io 0.3.1",
- "embedded-svc 0.23.2",
+ "embedded-svc",
  "enumset",
  "esp32-hal",
  "esp32c3-hal",
@@ -761,7 +747,7 @@ dependencies = [
  "embassy-time",
  "embassy-usb",
  "embedded-hal 0.2.7",
- "embedded-svc 0.24.0",
+ "embedded-svc",
  "esp-alloc",
  "esp-backtrace",
  "esp-wifi",
@@ -900,7 +886,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db04bc24a18b9ea980628ecf00e6c0264f3c1426dac36c00cb49b6fbad8b0743"
 dependencies = [
  "atomic-polyfill 0.1.11",
- "defmt",
  "hash32",
  "rustc_version 0.4.0",
  "spin",
