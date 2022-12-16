@@ -81,7 +81,7 @@ direct-boot = ["esp32c3-hal?/direct-boot"]
 [dependencies]
 
 # mcu-esp32c3 stuff
-esp32c3-hal = { version = "0.3", optional = true, features = [
+esp32c3-hal = { version = "0.4", optional = true, features = [
   #"embassy",
   #"embassy-time-systick",
   #"direct-boot",
@@ -111,7 +111,7 @@ embassy-time = { version = "0.1.0", optional = true, features = [
 ] }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "9034a26", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "aa850de", features = [
   "esp32c3",
   "wifi",
   "embedded-svc",
