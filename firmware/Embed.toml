@@ -1,12 +1,12 @@
 ################
 # Default config
 [default.probe]
-protocol = "Jtag"
-# protocol = "Swd"
+# protocol = "Jtag"
+protocol = "Swd"
 
 [default.general]
-chip = "esp32c3"
-# chip = "nrf52840"
+# chip = "esp32c3"
+chip = "nrf52840"
 
 [default.rtt]
 enabled = true

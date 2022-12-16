@@ -23,6 +23,12 @@ pub mod ඞ {
 
 	pub type UartConcrete<'a> =
 		embassy_nrf::uarte::Uarte<'a, embassy_nrf::peripherals::UARTE0>;
+
+	pub type UsbDriverConcrete<'a> = embassy_nrf::usb::Driver<
+		'a,
+		embassy_nrf::peripherals::USBD,
+		embassy_nrf::usb::PowerUsb,
+	>;
 }
 
 pub trait I2c:
