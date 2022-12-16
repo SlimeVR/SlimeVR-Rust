@@ -2,15 +2,17 @@
 # Default config
 [default.probe]
 protocol = "Jtag"
+# protocol = "Swd"
 
 [default.general]
 chip = "esp32c3"
+# chip = "nrf52840"
 
 [default.rtt]
 enabled = true
 up_mode = "NoBlockTrim"
 channels = [
-  { up = 0, down = 0, name = "Firmware logs via defmt", format = "Defmt" },
+	{ up = 0, down = 0, name = "Firmware logs via defmt", format = "Defmt" },
 ]
 
 [default.gdb]
