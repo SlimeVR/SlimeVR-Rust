@@ -25,7 +25,10 @@ use riscv_rt::entry;
 
 #[entry]
 fn main() -> ! {
-	#[cfg(feature = "defmt-bbq")]
+	#[cfg(all(
+		feature = "defmt-bbq",
+		any(feature = "log-uart", feature = "log-usb-serial")
+	))]
 	let bbq = defmt_bbq::init().unwrap();
 
 	self::globals::setup();
@@ -33,7 +36,7 @@ fn main() -> ! {
 
 	let mut p = self::peripherals::ඞ::get_peripherals();
 	debug!("Initialized peripherals");
-	p.delay.delay_ms(1000 as u32);
+	p.delay.delay_ms(500 as u32);
 
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |spawner| {
