@@ -132,7 +132,7 @@ smoltcp = { version = "0.8", default-features = false, features = [
 
 # Platform independent traits
 embedded-hal = "0.2"
-embedded-svc = { version = "0.23.1", default-features = false, optional = true, features = [
+embedded-svc = { version = "0.23", default-features = false, optional = true, features = [
   #  "nightly",
 ] }
 
