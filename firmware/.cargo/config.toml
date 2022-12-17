@@ -48,7 +48,7 @@ build-std = ["core", "alloc"]
 
 [env]
 # You can override this via environment variable when building or by changing it here
-DEFMT_LOG = "trace"
+DEFMT_LOG = "debug"
 
 # Change to your wifi's or override with environment variables.
 SSID = "ssid"

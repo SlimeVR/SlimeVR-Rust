@@ -48,7 +48,7 @@ fn main() -> ! {
 		#[cfg(all(feature = "defmt-bbq", feature = "log-uart"))]
 		spawner.spawn(logger_task(bbq, p.uart)).unwrap();
 		#[cfg(all(feature = "mcu-nrf52840", feature = "log-usb-serial"))]
-		spawner.spawn(logger_task(/*bbq,*/ p.usb_driver)).unwrap()
+		spawner.spawn(logger_task(bbq, p.usb_driver)).unwrap()
 	});
 }
 
@@ -94,15 +94,10 @@ async fn logger_task(
 	}
 }
 
-#[cfg(all(
-	// feature = "log-usb-serial",
-	feature = "log-rtt",
-	feature = "mcu-nrf52840",
-	// feature = "defmt-bbq"
-))]
+#[cfg(all(feature = "log-usb-serial", feature = "mcu-nrf52840",))]
 #[task]
 async fn logger_task(
-	// mut bbq: defmt_bbq::DefmtConsumer,
+	mut bbq: defmt_bbq::DefmtConsumer,
 	driver: crate::aliases::ඞ::UsbDriverConcrete<'static>,
 ) {
 	use embassy_futures::{join::join, yield_now};
@@ -168,20 +163,25 @@ async fn logger_task(
 		loop {
 			usb_class.wait_connection().await;
 			debug!("Awaited connection");
-			// let Ok(grant) = bbq.read() else {
-			// 	yield_now().await;
-			// 	continue;
-			// };
-			// let buf = grant.buf();
-			let buf = b"hello";
+			let Ok(grant) = bbq.read() else {
+				yield_now().await;
+				continue;
+			};
+			let (result, len) = {
+				let buf = grant.buf();
+				let len = buf.len();
+
+				(usb_class.write_packet(buf).await, len)
+			};
+			// let buf = b"hello";
 			// TODO: Repeatedly write up to max packet size bytes.
-			if let Err(err) = usb_class.write_packet(buf).await {
-				defmt::error!("{}", defmt::Debug2Format(&err));
-			// There was an error, lets ignore it. Don't consume any of the buffer.
-			// grant.release(0);
+			if let Err(_err) = result {
+				// defmt::error!("{}", defmt::Debug2Format(&err));
+				// There was an error, lets ignore it. Don't consume any of the buffer.
+				grant.release(0);
 			} else {
-				// grant.release(buf.len());
-				defmt::debug!("Printed buf");
+				grant.release(len);
+				// defmt::debug!("Printed buf");
 			}
 		}
 	};
