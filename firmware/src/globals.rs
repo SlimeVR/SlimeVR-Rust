@@ -25,10 +25,7 @@ fn oom(_: core::alloc::Layout) -> ! {
 use panic_defmt as _;
 
 // Set up global defmt logger
-#[cfg(all(
-	esp,
-	any(feature = "log-usb-serial", feature = "log-uart")
-))]
+#[cfg(all(esp, any(feature = "log-usb-serial", feature = "log-uart")))]
 use defmt_esp_println as _;
 #[cfg(feature = "log-rtt")]
 use defmt_rtt as _;

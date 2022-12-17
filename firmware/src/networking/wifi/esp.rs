@@ -44,7 +44,7 @@ pub async fn network_task() {
 		socket.work();
 
 		socket
-			.send(super::SERVER_IP, 25565, format!("i was {}\n", i).as_bytes())
+			.send(super::SERVER_IP, 25565, format!("i was {i}\n").as_bytes())
 			.expect("failed to send");
 
 		match socket.receive(&mut buffer) {
