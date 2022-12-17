@@ -50,7 +50,7 @@ pub fn setup() {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(esp_riscv)]
+#[cfg(target_arch = "riscv32")]
 #[export_name = "ExceptionHandler"]
 pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	use defmt::error;
@@ -85,12 +85,9 @@ unsafe extern "C" fn __exception(
 ) {
 	use defmt::error;
 
-	#[cfg(esp_xtensa)]
-	{
-		let backtrace = esp_backtrace::arch::backtrace();
-		for addr in backtrace.into_iter().flatten() {
-			error!("0x{:x}", addr);
-		}
+	let backtrace = esp_backtrace::arch::backtrace();
+	for addr in backtrace.into_iter().flatten() {
+		error!("0x{:x}", addr);
 	}
 	error!("Unexpected hardware exception.");
 	panic!("Cause: {:?}, Ctx: {:?}", cause, context,);

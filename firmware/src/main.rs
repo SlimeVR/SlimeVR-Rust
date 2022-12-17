@@ -20,7 +20,7 @@ use static_cell::StaticCell;
 
 #[cfg(feature = "mcu-nrf52840")]
 use cortex_m_rt::entry;
-#[cfg(esp_riscv)]
+#[cfg(target_arch = "riscv32")]
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;

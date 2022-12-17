@@ -16,7 +16,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	let p = pac::Peripherals::take().unwrap();
 
 	let mut system = p.DPORT.split();
-	// The ESP-Wifi module requires 160MHz for cpu clock speeed
+	// The ESP-Wifi module requires 240MHz for cpu clock speeed
 	let clocks =
 		ClockControl::configure(system.clock_control, CpuClock::Clock240MHz).freeze();
 	// Initialize embassy stuff

@@ -68,7 +68,9 @@ pub async fn poll_dhcp(net: &mut Network<'_>) {
 	// wait for getting an ip address
 	debug!("Wait to get an ip address");
 	loop {
-		net.poll_dhcp().expect("failed to poll dhcp");
+		if let Err(e) = net.poll_dhcp() {
+			debug!("{:?}", defmt::Debug2Format(&e));
+		}
 
 		net.work();
 
