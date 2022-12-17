@@ -56,12 +56,16 @@ impl<I: I2c> Imu for Mpu6050<I> {
 	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
 		if self.mpu.get_fifo_count()? >= 28 {
 			let data = self.mpu.read_fifo(&mut self.fifo_buf)?;
-			let data = &data[..16];
-			let q = mpu6050_dmp::quaternion::Quaternion::from_bytes(data).unwrap();
-			let q = nalgebra::Quaternion {
-				coords: nalgebra::vector![q.x, q.y, q.z, q.w],
-			};
-			Ok(Quat::from_quaternion(q))
+			let opt = data.get(..16);
+			if let Some(data) = opt {
+				let q = mpu6050_dmp::quaternion::Quaternion::from_bytes(data).unwrap();
+				let q = nalgebra::Quaternion {
+					coords: nalgebra::vector![q.x, q.y, q.z, q.w],
+				};
+				Ok(Quat::from_quaternion(q))
+			} else {
+				Err(nb::Error::WouldBlock)
+			}
 		} else {
 			Err(nb::Error::WouldBlock)
 		}
