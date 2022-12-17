@@ -2,6 +2,7 @@
 resolver = "2"
 members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
+
 [profile.dev]
 # Flashing takes significantly longer than lto
 # note: for some reason setting this to `true` causes riscv-rt to appear as two 
@@ -17,6 +18,7 @@ repository = "https://github.com/SlimeVR/SlimeVR-Rust"
 
 edition = "2021"
 rust-version = "1.65"
+
 
 [workspace.dependencies]
 esp-println = { version = "0.3", default-features = false, features = [
@@ -55,6 +57,7 @@ mcu-nrf52840 = [
   "dep:cortex-m-rt",
   "dep:alloc-cortex-m",
   "dep:embassy-time",
+  "dep:embassy-usb",
   "embassy-nrf/nrf52840",
   "embassy-nrf/time-driver-rtc1",
   "embassy-executor/integrated-timers",
@@ -79,7 +82,6 @@ direct-boot = ["esp32c3-hal?/direct-boot"]
 
 
 [dependencies]
-
 # mcu-esp32c3 stuff
 esp32c3-hal = { version = "0.4", optional = true, features = [
   #"embassy",
@@ -91,7 +93,9 @@ riscv = { version = "0.10", optional = true }
 esp-alloc = { version = "0.1", optional = true }
 
 # mcu-nrf52840 stuff
-embassy-nrf = { version = "*", optional = true, default-features = false }
+embassy-nrf = { version = "*", optional = true, default-features = false, features = [
+  "nightly", # For usb
+] }
 alloc-cortex-m = { version = "0.4", optional = true }
 cortex-m = { version = "0.7", optional = true, features = [
   "critical-section-single-core",
@@ -109,6 +113,7 @@ embassy-time = { version = "*", optional = true, features = [
   # "tick-hz-16_000_000",
   # "unstable-traits",
 ] }
+embassy-usb = { version = "*", optional = true }
 
 # Wi-Fi
 esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "aa850de", features = [
@@ -177,6 +182,8 @@ defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250
 embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
+embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
+
 
 # Necessary for esp-wifi to not be bugged
 # https://github.com/esp-rs/esp-wifi/blob/9b644387a54a5ace93d4280f29075ad2a9e9a8ed/README.md

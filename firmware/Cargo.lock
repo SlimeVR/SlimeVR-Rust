@@ -323,7 +323,9 @@ dependencies = [
  "embassy-sync",
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0-alpha.9",
+ "embedded-hal-async",
  "embedded-storage",
+ "embedded-storage-async",
  "nb 1.0.0",
 ]
 
@@ -346,6 +348,11 @@ name = "embassy-futures"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "47e5367165d347c039360f784812f493b001583ab6a3dd8622f4ce9c30374ec3"
+
+[[package]]
+name = "embassy-futures"
+version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
 
 [[package]]
 name = "embassy-hal-common"
@@ -380,8 +387,13 @@ dependencies = [
  "embassy-hal-common",
  "embassy-sync",
  "embassy-time",
+ "embassy-usb-driver",
  "embedded-hal 0.2.7",
+ "embedded-hal 1.0.0-alpha.9",
+ "embedded-hal-async",
+ "embedded-io 0.4.0",
  "embedded-storage",
+ "embedded-storage-async",
  "fixed",
  "futures",
  "nrf52840-pac",
@@ -416,6 +428,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "embassy-usb"
+version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
+dependencies = [
+ "embassy-futures 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
+ "embassy-sync",
+ "embassy-usb-driver",
+ "heapless",
+ "ssmarshal",
+ "usbd-hid",
+]
+
+[[package]]
+name = "embassy-usb-driver"
+version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
+
+[[package]]
 name = "embedded-dma"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -441,6 +471,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "129b101ddfee640565f7c07b301a31d95aa21e5acef21a491c307139f5fa4c91"
 
 [[package]]
+name = "embedded-hal-async"
+version = "0.2.0-alpha.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "608a322808d65da06715e03109c0cb69f79a5459af756fba393ab83e875d4969"
+dependencies = [
+ "embedded-hal 1.0.0-alpha.9",
+]
+
+[[package]]
 name = "embedded-io"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -459,18 +498,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "156d7a2fdd98ebbf9ae579cbceca3058cff946e13f8e17b90e3511db0508c723"
 
 [[package]]
-name = "embedded-svc"
-version = "0.23.1"
+name = "embedded-storage-async"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8334d13e9f9132a8a15887d65126d794533e9b87e4490e1b34d0791258f958c2"
+checksum = "5ff04af74e47e9bb4315bd7aa2b01f3d1b05f33c03a6c4e9c3b20e9ce9cd8d79"
+dependencies = [
+ "embedded-storage",
+]
+
+[[package]]
+name = "embedded-svc"
+version = "0.23.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25d1ffdfc6c4ca5a8d308a0df8c0e82ca52cdb63c5bd4d8ae6c36889887756b6"
 dependencies = [
  "embedded-io 0.3.1",
  "enumset",
  "heapless",
- "log",
  "no-std-net",
  "serde",
 ]
+
+[[package]]
+name = "encode_unicode"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
 name = "enumset"
@@ -625,9 +678,10 @@ dependencies = [
  "defmt-rtt",
  "defmt_esp_println",
  "embassy-executor",
- "embassy-futures",
+ "embassy-futures 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embassy-nrf",
  "embassy-time",
+ "embassy-usb",
  "embedded-hal 0.2.7",
  "embedded-svc",
  "esp-alloc",
@@ -1163,18 +1217,18 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "serde"
-version = "1.0.149"
+version = "1.0.151"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "256b9932320c590e707b94576e3cc1f7c9024d0ee6612dfbcf1cb106cbe8e055"
+checksum = "97fed41fc1a24994d044e6db6935e69511a1153b52c15eb42493b26fa87feba0"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.149"
+version = "1.0.151"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4eae9b04cbffdfd550eb462ed33bc6a1b68c935127d008b27444d08380f94e4"
+checksum = "255abe9a125a985c05190d687b320c12f9b1f0b99445e608c21ba0782c719ad8"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1224,6 +1278,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ssmarshal"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3e6ad23b128192ed337dfa4f1b8099ced0c2bf30d61e551b65fda5916dbb850"
+dependencies = [
+ "encode_unicode",
+ "serde",
+]
+
+[[package]]
 name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1266,6 +1330,47 @@ name = "unicode-ident"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ceab39d59e4c9499d4e5a8ee0e2735b891bb7308ac83dfb4e80cad195c9f6f3"
+
+[[package]]
+name = "usb-device"
+version = "0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f6cc3adc849b5292b4075fc0d5fdcf2f24866e88e336dd27a8943090a520508"
+
+[[package]]
+name = "usbd-hid"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "975bd411f4a939986751ea09992a24fa47c4d25c6ed108d04b4c2999a4fd0132"
+dependencies = [
+ "serde",
+ "ssmarshal",
+ "usb-device",
+ "usbd-hid-macros",
+]
+
+[[package]]
+name = "usbd-hid-descriptors"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dcbee8c6735e90894fba04770bc41e11fd3c5256018856e15dc4dd1e6c8a3dd1"
+dependencies = [
+ "bitfield",
+]
+
+[[package]]
+name = "usbd-hid-macros"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "261079a9ada015fa1acac7cc73c98559f3a92585e15f508034beccf6a2ab75a2"
+dependencies = [
+ "byteorder",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "syn",
+ "usbd-hid-descriptors",
+]
 
 [[package]]
 name = "vcell"
