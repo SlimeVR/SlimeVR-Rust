@@ -40,8 +40,8 @@ rustflags = [
 
 [build]
 # We compile without atomics, because its faster than using atomic trap handler
-# target = "riscv32imc-unknown-none-elf"
-target = "xtensa-esp32-none-elf"
+target = "riscv32imc-unknown-none-elf"
+# target = "xtensa-esp32-none-elf"
 # target = "thumbv7em-none-eabihf"
 
 [unstable]
