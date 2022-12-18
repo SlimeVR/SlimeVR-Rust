@@ -16,6 +16,6 @@ pub async fn stubbed_network_task() {
 
 	loop {
 		defmt::debug!("pretending to do networking..");
-		embassy_time::Timer::after(Duration::from_secs(1)).await
+		embassy_time::Timer::after(Duration::from_secs(5)).await
 	}
 }

@@ -14,9 +14,9 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-uart", "net-stubbed"]
-# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
+default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-stubbed"]
+# default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
+# default = ["mcu-esp32", "imu-stubbed", "log-usb-serial", "net-wifi"]
 
 # Supported microcontrollers
 mcu-esp32 = [
@@ -101,7 +101,7 @@ cortex-m-rt = { version = "0.7", optional = true }
 embassy-futures = "0.1.0"
 embassy-executor = { version = "*", features = [
   "integrated-timers",
-  "nightly",
+  "nightly",           # Needed for .spawn()
 ] }
 embassy-time = { version = "*", features = [
   # "unstable-traits",

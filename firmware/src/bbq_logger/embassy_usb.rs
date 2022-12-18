@@ -5,6 +5,8 @@ use defmt_bbq::DefmtConsumer;
 use embassy_futures::{join::join, yield_now};
 use embassy_usb::driver::EndpointError;
 
+const MAX_PACKET_SIZE: u8 = 64; // TODO: explain magic numbers
+
 pub async fn logger_task(
 	mut bbq: DefmtConsumer,
 	driver: crate::aliases::ඞ::UsbDriverConcrete<'static>,
@@ -15,11 +17,11 @@ pub async fn logger_task(
 	// Create embassy-usb Config
 	let config = {
 		let mut config = embassy_usb::Config::new(0xc0de, 0xcafe);
-		config.manufacturer = Some("Embassy");
-		config.product = Some("USB-serial example");
-		config.serial_number = Some("12345678");
+		config.manufacturer = Some("Ferrous SlimeVR");
+		config.product = Some("nrf52");
+		config.serial_number = Some("6969");
 		config.max_power = 100;
-		config.max_packet_size_0 = 64;
+		config.max_packet_size_0 = MAX_PACKET_SIZE;
 
 		// Required for windows compatiblity.
 		// https://developer.nordicsemi.com/nRF_Connect_SDK/doc/1.9.1/kconfig/CONFIG_CDC_ACM_IAD.html#help
@@ -51,8 +53,11 @@ pub async fn logger_task(
 	);
 
 	// Create classes on the builder.
-	let mut usb_class =
-		embassy_usb::class::cdc_acm::CdcAcmClass::new(&mut builder, &mut state, 64);
+	let mut usb_class = embassy_usb::class::cdc_acm::CdcAcmClass::new(
+		&mut builder,
+		&mut state,
+		MAX_PACKET_SIZE.into(),
+	);
 
 	// Build the builder.
 	let mut usb_device = builder.build();
@@ -62,17 +67,18 @@ pub async fn logger_task(
 
 	let write_fut = async {
 		usb_class.wait_connection().await;
-		debug!("Awaited connection for first time");
+		debug!("Established USB serial");
 		loop {
 			let Ok(grant) = bbq.read() else {
+				// TODO: Make it truly async
 				yield_now().await;
 				continue;
 			};
 			let (result, len) = {
 				let buf = grant.buf();
-				let len = buf.len();
+				let len = usize::min(buf.len(), MAX_PACKET_SIZE.into());
 
-				(usb_class.write_packet(buf).await, len)
+				(usb_class.write_packet(&buf[..len]).await, len)
 			};
 			// TODO: Repeatedly write up to max packet size bytes.
 			match result {
@@ -84,7 +90,7 @@ pub async fn logger_task(
 					// There was an error, lets ignore it. Don't consume any of the buffer.
 					grant.release(0);
 					usb_class.wait_connection().await;
-					debug!("Awaited connection");
+					debug!("Reestablished USB serial");
 				}
 				Ok(()) => grant.release(len),
 			}

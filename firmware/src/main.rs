@@ -23,9 +23,9 @@ use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
 use static_cell::StaticCell;
 
-#[cfg(feature = "mcu-nrf52840")]
+#[cfg(cortex_m)]
 use cortex_m_rt::entry;
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv)]
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;

@@ -12,9 +12,11 @@ fn main() {
 		esp_riscv: { any(feature = "mcu-esp32c3") },
 		esp: { any(esp_xtensa, esp_riscv) },
 		bbq: { all(
-			feature = "mcu-nrf52840",
+			any(feature = "mcu-nrf52840"),
 			any(feature = "log-uart", feature = "log-usb-serial")
 		)},
+		cortex_m: { any(feature = "mcu-nrf52840") },
+		riscv: { any(feature = "mcu-esp32c3") },
 	}
 
 	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32c3"))]
