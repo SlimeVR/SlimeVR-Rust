@@ -38,7 +38,7 @@ rust-version.workspace = true
 
 [features]
 default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-mpu6050", "log-uart", "net-stubbed"]
+# default = ["mcu-nrf52840", "imu-stubbed", "log-uart", "net-stubbed"]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 
 # Supported microcontrollers
