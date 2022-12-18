@@ -70,8 +70,9 @@ direct-boot = ["esp32c3-hal?/direct-boot"]
 [dependencies]
 # mcu-esp32 stuff
 esp32-hal = { version = "0.7", optional = true, features = [
-  #"embassy",
-  #"embassy-time-systick",
+  "embassy",
+  "embassy-time-timg0",
+  "async",
 ] }
 
 # mcu-esp32c3 stuff
