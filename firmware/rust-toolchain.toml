@@ -1,6 +1,10 @@
 [toolchain]
-channel = "nightly"
+channel = "nightly-2022-12-18"
 # channel = "esp" # for when compiling to xtensa targets
-targets = ["riscv32imc-unknown-none-elf", "thumbv7em-none-eabihf", "xtensa-esp32-none-elf"]
+targets = [
+	"riscv32imc-unknown-none-elf",
+	"thumbv7em-none-eabihf",
+	"xtensa-esp32-none-elf",
+]
 profile = "default"
 components = ["llvm-tools-preview", "rust-src", "rustfmt"]
