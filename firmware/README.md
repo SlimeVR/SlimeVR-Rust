@@ -25,6 +25,12 @@ We think these chips are the best platforms to develop the firmware on.
 * Has built in USB support, not just as serial but full USB.
 * Supports a debugger but only with a hardware probe.
 
+### Full list of chips supported.
+We likely easily can support most nrf52 and esp32 family chips. Right now the ones
+we officially have added support for are:
+* esp32c3
+* esp32
+* nrf52840
 
 ## How to flash the firmware
 This section is out of date, so is the CONTRIBUTING.md.
