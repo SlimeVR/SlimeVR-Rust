@@ -5,7 +5,7 @@ members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 
 [profile.dev]
 # lto doesnt work on esp32 (xtensa)
-lto = true
+lto = false
 opt-level = "s"
 
 
