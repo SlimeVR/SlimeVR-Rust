@@ -6,7 +6,7 @@ members = ["crates/panic_defmt", "crates/defmt_esp_println"]
 [profile.dev]
 # lto doesnt work on esp32 (xtensa)
 lto = false
-opt-level = "s"
+# opt-level = "s"
 
 
 [workspace.package]
@@ -37,8 +37,8 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-uart", "net-stubbed"]
+# default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
+default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 
 # Supported microcontrollers
@@ -76,7 +76,7 @@ mcu-nrf52840 = [
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
-net-stubbed = []                           # Stubs out network   
+net-stubbed = []                           # Stubs out network
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]

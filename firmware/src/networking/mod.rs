@@ -1,5 +1,3 @@
-use embassy_time::Duration;
-
 #[cfg(feature = "net-wifi")]
 pub mod wifi;
 
@@ -14,6 +12,8 @@ pub async fn network_task() {
 /// the initial port to a new platform (because there are no networking dependencies).
 #[allow(dead_code)]
 pub async fn stubbed_network_task() {
+	use embassy_time::Duration;
+
 	loop {
 		defmt::debug!("pretending to do networking..");
 		embassy_time::Timer::after(Duration::from_secs(1)).await

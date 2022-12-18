@@ -30,6 +30,8 @@ impl Peripherals {
 		}
 	}
 }
+/// Type-level builder for `Peripherals`, which transforms each field from () to the
+/// peripheral type.
 impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
 	#[allow(dead_code)]
 	pub fn i2c<T>(self, p: T) -> Peripherals<T, Delay, Uart, UsbDriver> {
@@ -66,5 +68,33 @@ impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
 			uart: self.uart,
 			usb_driver: p,
 		}
+	}
+}
+
+/// Type-level destructors for `Peripherals` which turn peripheral type into ().
+impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
+	#[cfg(feature = "log-usb-serial")]
+	pub fn bbq_peripheral(self) -> (UsbDriver, Peripherals<I2c, Delay, Uart, ()>) {
+		(
+			self.usb_driver,
+			Peripherals {
+				i2c: self.i2c,
+				delay: self.delay,
+				uart: self.uart,
+				usb_driver: (),
+			},
+		)
+	}
+	#[cfg(feature = "log-uart")]
+	pub fn bbq_peripheral(self) -> (UsbDriver, Peripherals<I2c, Delay, (), UsbDriver>) {
+		(
+			self.uart,
+			Peripherals {
+				i2c: self.i2c,
+				delay: self.delay,
+				uart: (),
+				usb_driver: self.usb_driver,
+			},
+		)
 	}
 }
