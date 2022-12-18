@@ -1,3 +1,5 @@
+//! An implementation of SlimeVR firmware, written in Rust.
+
 #![no_std]
 #![no_main]
 // Needed for embassy macros
@@ -13,30 +15,34 @@ mod networking;
 mod peripherals;
 mod utils;
 
+#[cfg(bbq)]
+mod bbq_logger;
+
 use defmt::debug;
 use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
 use static_cell::StaticCell;
 
-#[cfg(feature = "mcu-nrf52840")]
+#[cfg(cortex_m)]
 use cortex_m_rt::entry;
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv)]
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;
 
 #[entry]
 fn main() -> ! {
-	#[cfg(all(
-		feature = "defmt-bbq",
-		any(feature = "log-uart", feature = "log-usb-serial")
-	))]
+	#[cfg(bbq)]
 	let bbq = defmt_bbq::init().unwrap();
 
 	self::globals::setup();
 	debug!("Booted");
+	defmt::trace!("Trace");
 
-	let mut p = self::peripherals::ඞ::get_peripherals();
+	let p = self::peripherals::ඞ::get_peripherals();
+	#[allow(unused)]
+	let (bbq_peripheral, mut p) = p.bbq_peripheral();
+
 	p.delay.delay_ms(500u32);
 	debug!("Initialized peripherals");
 
@@ -44,8 +50,8 @@ fn main() -> ! {
 	EXECUTOR.init(Executor::new()).run(move |spawner| {
 		spawner.spawn(network_task()).unwrap();
 		spawner.spawn(imu_task(p.i2c, p.delay)).unwrap();
-		#[cfg(all(feature = "defmt-bbq", feature = "log-uart"))]
-		spawner.spawn(logger_task(bbq, p.uart)).unwrap();
+		#[cfg(bbq)]
+		spawner.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
 	});
 }
 
@@ -59,34 +65,15 @@ async fn imu_task(
 	i2c: crate::aliases::ඞ::I2cConcrete<'static>,
 	delay: crate::aliases::ඞ::DelayConcrete,
 ) {
+	debug!("IMU Task!");
 	crate::imu::imu_task(i2c, delay).await
 }
 
-#[cfg(all(feature = "log-uart", feature = "mcu-nrf52840", feature = "defmt-bbq"))]
+#[cfg(bbq)]
 #[task]
 async fn logger_task(
-	mut bbq: defmt_bbq::DefmtConsumer,
-	mut uart: crate::aliases::ඞ::UartConcrete<'static>,
+	bbq: defmt_bbq::DefmtConsumer,
+	logger_peripheral: crate::aliases::ඞ::BbqPeripheralConcrete<'static>,
 ) {
-	use embassy_futures::yield_now;
-	use embassy_nrf::uarte::Error;
-
-	loop {
-		let Ok(grant) = bbq.read() else {
-			yield_now().await;
-			continue; //should be impossible	
-		};
-		let len = grant.buf().len();
-		uart.write(b"got data: ").await;
-		match uart.write_from_ram(grant.buf()).await {
-			Err(Error::DMABufferNotInDataMemory) => {
-				// unreachable!("bbq should always be in RAM")
-				()
-			}
-			Err(Error::BufferZeroLength) | Err(Error::BufferTooLong) => (),
-			Ok(()) => (),
-			_ => (),
-		};
-		grant.release(len);
-	}
+	crate::bbq_logger::ඞ::logger_task(bbq, logger_peripheral).await;
 }

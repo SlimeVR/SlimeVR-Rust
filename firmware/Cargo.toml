@@ -1,29 +1,3 @@
-[workspace]
-resolver = "2"
-members = ["crates/panic_defmt", "crates/defmt_esp_println"]
-
-
-[profile.dev]
-# lto doesnt work on esp32 (xtensa)
-lto = false
-opt-level = "s"
-
-
-[workspace.package]
-license = "MIT OR Apache-2.0"
-authors = ["Ryan Butler <thebutlah@gmail.com>"]
-repository = "https://github.com/SlimeVR/SlimeVR-Rust"
-
-edition = "2021"
-rust-version = "1.65"
-
-
-[workspace.dependencies]
-esp-println = { version = "0.3", default-features = false, features = [
-  "critical-section", # Necessary because otherwise I'm very sus of the soundness
-] }
-
-
 [package]
 name = "firmware"
 version = "0.0.0"
@@ -31,15 +5,18 @@ version = "0.0.0"
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
+categories.workspace = true
+description = "Rust firmware for SlimeVR full-body-tracking"
+keywords = ["slimevr", "full-body-tracking", "vr", "imu", "embassy"]
 
 edition.workspace = true
 rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-uart", "net-stubbed"]
-# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
+default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-stubbed"]
+# default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
+# default = ["mcu-esp32", "imu-stubbed", "log-usb-serial", "net-wifi"]
 
 # Supported microcontrollers
 mcu-esp32 = [
@@ -66,7 +43,6 @@ mcu-nrf52840 = [
   "dep:cortex-m",
   "dep:cortex-m-rt",
   "dep:alloc-cortex-m",
-  "dep:embassy-time",
   "dep:embassy-usb",
   "embassy-nrf/nrf52840",
   "embassy-nrf/time-driver-rtc1",
@@ -76,7 +52,7 @@ mcu-nrf52840 = [
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
-net-stubbed = []                           # Stubs out network   
+net-stubbed = []                           # Stubs out network
 
 # Supported IMUs
 imu-mpu6050 = ["mpu6050-dmp"]
@@ -100,8 +76,9 @@ esp32-hal = { version = "0.7", optional = true, features = [
 
 # mcu-esp32c3 stuff
 esp32c3-hal = { version = "0.4", optional = true, features = [
-  #"embassy",
-  #"embassy-time-systick",
+  "embassy",
+  "embassy-time-timg0",
+  "async",
   #"direct-boot",
 ] }
 riscv-rt = { version = "0.10", optional = true }
@@ -109,7 +86,9 @@ riscv = { version = "0.10", optional = true }
 
 # mcu-nrf52840 stuff
 embassy-nrf = { version = "*", optional = true, default-features = false, features = [
-  "nightly", # For usb
+  "nightly",          # For usb
+  "time",
+  "time-driver-rtc1",
 ] }
 alloc-cortex-m = { version = "0.4", optional = true }
 cortex-m = { version = "0.7", optional = true, features = [
@@ -121,11 +100,10 @@ cortex-m-rt = { version = "0.7", optional = true }
 # Embassy stuff
 embassy-futures = "0.1.0"
 embassy-executor = { version = "*", features = [
-  #"integrated-timers",
-  "nightly",
+  "integrated-timers",
+  "nightly",           # Needed for .spawn()
 ] }
-embassy-time = { version = "*", optional = true, features = [
-  # "tick-hz-16_000_000",
+embassy-time = { version = "*", features = [
   # "unstable-traits",
 ] }
 embassy-usb = { version = "*", optional = true }
@@ -207,6 +185,11 @@ embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 
 
+[profile.dev]
+# lto doesnt work on esp32 (xtensa)
+lto = false
+# opt-level = "s"
+
 # Necessary for esp-wifi to not be bugged
 # https://github.com/esp-rs/esp-wifi/blob/9b644387a54a5ace93d4280f29075ad2a9e9a8ed/README.md#important
 # https://github.com/esp-rs/esp-wifi/issues/88#issuecomment-1332363697
@@ -217,3 +200,26 @@ opt-level = 3
 # https://github.com/esp-rs/xtensa-lx-rt/blob/455d2b77b8a5724d36db0ea66c88467a4515f376/README.md#i-get-linker-errors-when-i-build-for-debug
 [profile.dev.package.xtensa-lx-rt]
 opt-level = 'z'
+
+
+###################
+# Workspace stuff #
+###################
+
+[workspace]
+resolver = "2"
+members = ["crates/panic_defmt", "crates/defmt_esp_println"]
+
+[workspace.package]
+license = "MIT OR Apache-2.0"
+authors = ["Ryan Butler <thebutlah@gmail.com>"]
+repository = "https://github.com/SlimeVR/SlimeVR-Rust"
+categories = ["no-std", "embedded"]
+
+edition = "2021"
+rust-version = "1.65"
+
+[workspace.dependencies]
+esp-println = { version = "0.3", default-features = false, features = [
+  "critical-section", # Necessary because otherwise I'm very sus of the soundness
+] }

@@ -11,4 +11,11 @@ pub async fn network_task() {
 /// This does nothing, its a "fake" networking task meant to facilitate testing and
 /// the initial port to a new platform (because there are no networking dependencies).
 #[allow(dead_code)]
-pub async fn stubbed_network_task() {}
+pub async fn stubbed_network_task() {
+	use embassy_time::Duration;
+
+	loop {
+		defmt::debug!("pretending to do networking..");
+		embassy_time::Timer::after(Duration::from_secs(5)).await
+	}
+}

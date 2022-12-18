@@ -5,7 +5,7 @@ extern crate alloc;
 #[global_allocator]
 static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 
-#[cfg(feature = "mcu-nrf52840")]
+#[cfg(cortex_m)]
 #[global_allocator]
 static ALLOCATOR: alloc_cortex_m::CortexMHeap = alloc_cortex_m::CortexMHeap::empty();
 
