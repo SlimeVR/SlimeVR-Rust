@@ -22,7 +22,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	// embassy::init(&clocks);
 
 	// Disable the RTC and TIMG watchdog timers
-	{
+	let timer0 = {
 		let mut rtc = Rtc::new(p.RTC_CNTL);
 		let timer_group0 = TimerGroup::new(p.TIMG0, &clocks);
 		let mut wdt0 = timer_group0.wdt;
@@ -33,7 +33,12 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 		rtc.swd.disable();
 		wdt0.disable();
 		wdt1.disable();
-	}
+
+		timer_group0.timer0
+	};
+
+	// Initialize embassy
+	esp32c3_hal::embassy::init(&clocks, timer0);
 
 	// Initialize esp-wifi stuff
 	#[cfg(feature = "net-wifi")]

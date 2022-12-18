@@ -73,7 +73,7 @@ impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
 
 /// Type-level destructors for `Peripherals` which turn peripheral type into ().
 impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
-	#[cfg(feature = "log-usb-serial")]
+	#[cfg(all(bbq, feature = "log-usb-serial"))]
 	pub fn bbq_peripheral(self) -> (UsbDriver, Peripherals<I2c, Delay, Uart, ()>) {
 		(
 			self.usb_driver,
@@ -85,8 +85,8 @@ impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
 			},
 		)
 	}
-	#[cfg(feature = "log-uart")]
-	pub fn bbq_peripheral(self) -> (UsbDriver, Peripherals<I2c, Delay, (), UsbDriver>) {
+	#[cfg(all(bbq, feature = "log-uart"))]
+	pub fn bbq_peripheral(self) -> (Uart, Peripherals<I2c, Delay, (), UsbDriver>) {
 		(
 			self.uart,
 			Peripherals {
@@ -96,5 +96,9 @@ impl<I2c, Delay, Uart, UsbDriver> Peripherals<I2c, Delay, Uart, UsbDriver> {
 				usb_driver: self.usb_driver,
 			},
 		)
+	}
+	#[cfg(not(bbq))]
+	pub fn bbq_peripheral(self) -> ((), Peripherals<I2c, Delay, Uart, UsbDriver>) {
+		((), self)
 	}
 }

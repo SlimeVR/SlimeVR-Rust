@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 #[cfg(feature = "mcu-esp32")]
 pub mod ඞ {
 	pub use esp32_hal::ehal;
@@ -34,10 +36,12 @@ pub mod ඞ {
 		embassy_nrf::usb::PowerUsb,
 	>;
 
-	#[cfg(feature = "log-usb-serial")]
+	#[cfg(all(bbq, feature = "log-usb-serial"))]
 	pub type BbqPeripheralConcrete<'a> = UsbDriverConcrete<'a>;
-	#[cfg(feature = "log-uart")]
+	#[cfg(all(bbq, feature = "log-uart"))]
 	pub type BbqPeripheralConcrete<'a> = UartConcrete<'a>;
+	#[cfg(not(bbq))]
+	pub type BbqPeripheralConcrete<'a> = ();
 }
 
 pub trait I2c:

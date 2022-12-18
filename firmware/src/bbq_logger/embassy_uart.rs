@@ -1,8 +1,11 @@
+//! defmt-bbq logger using UART
+
+use defmt::debug;
 use defmt_bbq::DefmtConsumer;
 use embassy_futures::yield_now;
 use embassy_nrf::uarte::Error;
 
-async fn logger_task(
+pub async fn logger_task(
 	mut bbq: DefmtConsumer,
 	mut uart: crate::aliases::ඞ::UartConcrete<'static>,
 ) {
@@ -14,13 +17,13 @@ async fn logger_task(
 			continue;
 		};
 		let len = grant.buf().len();
-		uart.write(b"got data: ").await;
+		let _result = uart.write(b"got data: ").await;
 		match uart.write_from_ram(grant.buf()).await {
 			Err(Error::DMABufferNotInDataMemory) => {
 				// unreachable!("bbq should always be in RAM")
 				()
 			}
-			Err(Error::BufferZeroLength) | Err(Error::BufferTooLong) => (),
+			Err(Error::BufferTooLong) => (),
 			Ok(()) => (),
 			_ => (),
 		};

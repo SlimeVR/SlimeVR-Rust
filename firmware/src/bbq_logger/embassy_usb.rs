@@ -1,3 +1,5 @@
+//! defmt-bbq logger using usb serial + embassy
+
 use defmt::debug;
 use defmt_bbq::DefmtConsumer;
 use embassy_futures::{join::join, yield_now};
