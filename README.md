@@ -12,9 +12,7 @@ A monorepo stores mutliple librares and apps all in one git repo. The main proje
   with the goal of being callable from several languages, including Typescript(node.js)
   and Java.
 * [Firmware](firmware/): A rust implementation of the firmware, built on `embedded-hal`
-  instead of Arduino. Targets the ESP32-C3.
-* [NRF Demo](nrf_demo/): A small blinky program to demonstrate use of the nrf52840 in
-  embedded rust.
+  instead of Arduino. Targets the ESP32-C3 and nrf52840.
 * [SolarXR Client](networking/solarxr/): A rust client for the [solarxr protocol](https://github.com/SlimeVR/SolarXR-Protocol).
   
 
