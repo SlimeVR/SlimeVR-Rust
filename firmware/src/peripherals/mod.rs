@@ -1,5 +1,9 @@
 //! This module handles the typically platform-dependent setup of the peripherals
 
+#[cfg(feature = "mcu-esp32")]
+#[path = "esp32.rs"]
+pub mod ඞ;
+
 #[cfg(feature = "mcu-esp32c3")]
 #[path = "esp32c3.rs"]
 pub mod ඞ;

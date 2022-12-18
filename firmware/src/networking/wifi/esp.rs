@@ -39,11 +39,12 @@ pub async fn network_task() {
 
 	let mut buffer = [0u8; 256];
 	let mut i = 0;
+	socket.bind(25565).unwrap();
 	loop {
 		socket.work();
 
 		socket
-			.send(super::SERVER_IP, 25565, format!("i was {}", i).as_bytes())
+			.send(super::SERVER_IP, 25565, format!("i was {i}\n").as_bytes())
 			.expect("failed to send");
 
 		match socket.receive(&mut buffer) {
@@ -67,7 +68,9 @@ pub async fn poll_dhcp(net: &mut Network<'_>) {
 	// wait for getting an ip address
 	debug!("Wait to get an ip address");
 	loop {
-		net.poll_dhcp().unwrap();
+		if let Err(e) = net.poll_dhcp() {
+			debug!("{:?}", defmt::Debug2Format(&e));
+		}
 
 		net.work();
 

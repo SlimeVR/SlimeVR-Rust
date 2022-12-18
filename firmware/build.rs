@@ -1,13 +1,22 @@
+use cfg_aliases::cfg_aliases;
 use feature_utils::mandatory_and_unique;
 
-mandatory_and_unique!("mcu-esp32c3", "mcu-nrf52840");
+mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52840");
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 mandatory_and_unique!("net-wifi", "net-stubbed");
 
 fn main() {
-	#[cfg(feature = "net-wifi")]
+	cfg_aliases! {
+		esp_xtensa: { any(feature = "mcu-esp32") },
+		esp_riscv: { any(feature = "mcu-esp32c3") },
+		esp: { any(esp_xtensa, esp_riscv) },
+	}
+
+	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32c3"))]
 	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x"); // esp-wifi
+	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32"))]
+	println!("cargo:rustc-link-arg=-Tesp32_rom_functions.x"); // esp-wifi
 
 	// By default, Cargo will re-run a build script whenever
 	// any file in the project changes. By specifying `memory.x`
