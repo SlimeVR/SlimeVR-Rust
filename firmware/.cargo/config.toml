@@ -1,3 +1,17 @@
+[build]
+# We compile without atomics, because its faster than using atomic trap handler
+target = "riscv32imc-unknown-none-elf"
+# target = "thumbv7em-none-eabihf"
+# target = "xtensa-esp32-none-elf"
+
+[env]
+# You can override this via environment variable when building or by changing it here
+DEFMT_LOG = "debug"
+
+# Change to your wifi's or override with environment variables.
+SSID = "ssid"
+PASSWORD = "password"
+
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
   # For esp-hal
@@ -37,19 +51,5 @@ rustflags = [
   "link-arg=-Tdefmt.x",
 ]
 
-[build]
-# We compile without atomics, because its faster than using atomic trap handler
-target = "riscv32imc-unknown-none-elf"
-# target = "thumbv7em-none-eabihf"
-# target = "xtensa-esp32-none-elf"
-
 [unstable]
 build-std = ["core", "alloc"]
-
-[env]
-# You can override this via environment variable when building or by changing it here
-DEFMT_LOG = "debug"
-
-# Change to your wifi's or override with environment variables.
-SSID = "ssid"
-PASSWORD = "password"
