@@ -1,5 +1,9 @@
 name: Main CI
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - .github/workflows/firmware-ci.yml
+      - firmware/**
 
 jobs:
   linting:

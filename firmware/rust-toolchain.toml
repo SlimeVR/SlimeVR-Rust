@@ -7,4 +7,4 @@ targets = [
 	"xtensa-esp32-none-elf",
 ]
 profile = "default"
-components = ["llvm-tools-preview", "rust-src", "rustfmt"]
+components = ["llvm-tools-preview", "rust-src", "rustfmt", "clippy"]
