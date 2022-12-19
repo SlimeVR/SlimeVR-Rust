@@ -68,6 +68,9 @@ jobs:
         with:
           ldproxy: false
           buildtargets: ${{ matrix.espname }}
+      - if: startsWith(matrix.target, 'xtensa')
+        run: rustup override set esp
+
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
         with:
@@ -79,8 +82,6 @@ jobs:
         with:
           tool: clippy-sarif,sarif-fmt
 
-      - if: matrix.target == 'xtensa-esp32-none-elf'
-        run: rustup override set esp
       - name: Clippy lints
         run: cargo clippy --target ${{ matrix.target }} --no-default-features --features $FEATURES --message-format=json |
           clippy-sarif | tee results.sarif | sarif-fmt
