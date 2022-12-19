@@ -35,7 +35,6 @@ jobs:
     strategy:
       matrix:
         mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840]
-        imu: [imu-stubbed, imu-mpu6050]
         net: [net-stubbed, net-wifi]
         log: [log-rtt, log-usb-serial, log-uart]
         include:
@@ -46,6 +45,12 @@ jobs:
             espname: esp32 # needed for passing to xtensa action
           - mcu: mcu-nrf52840
             target: thumbv7em-none-eabihf
+
+          - imu: imu-stubbed # by default use imu-stubbed
+          - mcu: mcu-esp32c3
+            net: net-stubbed
+            log: log-uart
+            imu: imu-mpu6050 # only in this case it will be overwritten by the IMUs
         exclude:
           - mcu: mcu-esp32
             log: log-usb-serial
@@ -54,11 +59,6 @@ jobs:
 
           - mcu: mcu-nrf52840
             net: net-wifi
-
-          - imu: imu-mpu6050
-            log: log-rtt
-          - imu: imu-mpu6050
-            log: log-usb-serial
 
     env:
       FEATURES: ${{ format('{0},{1},{2},{3}', matrix.mcu, matrix.imu, matrix.net, matrix.log) }}
