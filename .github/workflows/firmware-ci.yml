@@ -80,11 +80,13 @@ jobs:
       - name: Clippy lints
         run: cargo clippy --target ${{ matrix.target }} --no-default-features --features $FEATURES --message-format=json |
           clippy-sarif | tee results.sarif | sarif-fmt
-      
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: firmware/results.sarif
 
       - name: Build
         run: cargo build --target ${{ matrix.target }} --no-default-features --features $FEATURES
+
+      - name: Upload SARIF file
+        if: ${{ success() }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: firmware/results.sarif
+          category: $FEATURES
