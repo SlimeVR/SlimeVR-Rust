@@ -51,8 +51,14 @@ jobs:
             log: log-usb-serial
           - mcu: mcu-esp32
             log: log-rtt
+
           - mcu: mcu-nrf52840
             net: net-wifi
+
+          - imu: imu-mpu6050
+            log: log-rtt
+          - imu: imu-mpu6050
+            log: log-usb-serial
 
     env:
       FEATURES: ${{ format('{0},{1},{2},{3}', matrix.mcu, matrix.imu, matrix.net, matrix.log) }}
