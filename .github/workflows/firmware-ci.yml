@@ -44,6 +44,7 @@ jobs:
             target: riscv32imc-unknown-none-elf
           - mcu: mcu-esp32
             target: xtensa-esp32-none-elf
+            espname: esp32 # needed for passing to xtensa action
           - mcu: mcu-nrf52840
             target: thumbv7em-none-eabihf
         exclude:
@@ -66,7 +67,7 @@ jobs:
         uses: esp-rs/xtensa-toolchain@v1.3
         with:
           ldproxy: false
-          buildtargets: ${{ matrix.target }}
+          buildtargets: ${{ matrix.espname }}
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
         with:
