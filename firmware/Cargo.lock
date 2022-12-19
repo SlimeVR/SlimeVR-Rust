@@ -730,7 +730,9 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e347e1f9701cfb58ac383fa41e7ea714ed309f293b1e9272394d9ea9b89f36ad"
 dependencies = [
+ "embassy-time",
  "embedded-hal 0.2.7",
+ "embedded-hal-async 0.1.0-alpha.3",
  "esp-hal-common",
  "xtensa-lx",
  "xtensa-lx-rt",
