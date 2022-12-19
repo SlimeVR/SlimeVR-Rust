@@ -13,7 +13,7 @@ on:
 
 jobs:
   fmt:
-    name: Formatting
+    name: Format
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,7 +31,6 @@ jobs:
 
   build:
     name: Build
-    needs: fmt
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.mcu == 'mcu-esp32' }} # Continue if esp32 fails because it's not fully working currently
     strategy:
