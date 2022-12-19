@@ -22,6 +22,8 @@ jobs:
 
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./firmware -> ./firmware/target/"
 
       - name: Check formatting
         run: cargo fmt --check
@@ -64,6 +66,8 @@ jobs:
         uses: esp-rs/xtensa-toolchain@v1.3
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./firmware -> ./firmware/target/"
 
       - run: cargo install clippy-sarif sarif-fmt
 
