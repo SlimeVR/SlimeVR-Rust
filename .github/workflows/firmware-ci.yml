@@ -70,6 +70,7 @@ jobs:
         with:
           workspaces: "./firmware -> target/"
           env-vars: "FEATURES"
+          cache-on-failure: ${{ matrix.mcu == 'mcu-esp32' }} # Again, esp32 doesnt fully work currently.
 
       - uses: taiki-e/install-action@v1
         with:
