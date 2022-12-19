@@ -1,3 +1,4 @@
+name: Firmware CI
 on:
   push:
     paths:
