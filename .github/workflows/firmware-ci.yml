@@ -14,9 +14,11 @@ jobs:
   fmt:
     name: Formatting
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./firmware
     steps:
       - uses: actions/checkout@v3
-      - run: cd firmware
 
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
@@ -24,8 +26,10 @@ jobs:
       - name: Check formatting
         run: cargo fmt --check
 
-  clippy:
-    name: Linting
+  build:
+    name: Build
+    needs: fmt
+    runs-on: ubuntu-latest
   
     strategy:
       matrix:
@@ -45,13 +49,15 @@ jobs:
             log: log-usb-serial
           - mcu: mcu-nrf52840
             net: net-wifi
+
     env:
       FEATURES: ${{ format('{0},{1},{2},{3}', matrix.mcu, matrix.imu, matrix.net, matrix.log) }}
-    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./firmware
   
     steps:
       - uses: actions/checkout@v3
-      - run: cd firmware
 
       - name: Install Xtensa toolchain
         if: matrix.target == 'xtensa-esp32-none-elf'
@@ -66,3 +72,6 @@ jobs:
       - name: Clippy lints
         run: cargo clippy --target ${{ matrix.target }} --no-default-features --features $FEATURES --message-format=json |
           clippy-sarif | tee results.sarif | sarif-fmt
+      
+      - name: Build
+        run: cargo build --target ${{ matrix.target }} --no-default-features --features $FEATURES
