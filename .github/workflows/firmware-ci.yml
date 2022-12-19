@@ -68,6 +68,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./firmware -> ./firmware/target/"
+          env-vars: "FEATURES"
 
       - run: cargo install clippy-sarif sarif-fmt
 
