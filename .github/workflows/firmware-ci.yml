@@ -23,7 +23,7 @@ jobs:
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "./firmware -> ./firmware/target/"
+          workspaces: "./firmware -> target/"
 
       - name: Check formatting
         run: cargo fmt --check
@@ -67,7 +67,7 @@ jobs:
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "./firmware -> ./firmware/target/"
+          workspaces: "./firmware -> target/"
           env-vars: "FEATURES"
 
       - uses: taiki-e/install-action@v1
