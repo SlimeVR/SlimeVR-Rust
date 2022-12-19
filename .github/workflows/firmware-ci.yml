@@ -62,8 +62,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Xtensa toolchain
-        if: matrix.target == 'xtensa-esp32-none-elf'
+        if: startsWith(matrix.target, 'xtensa')
         uses: esp-rs/xtensa-toolchain@v1.3
+        with:
+          ldproxy: false
+          buildtargets: ${{ matrix.target }}
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@v2
         with:
