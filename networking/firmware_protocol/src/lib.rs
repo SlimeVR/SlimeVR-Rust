@@ -2,6 +2,7 @@
 
 extern crate alloc;
 
+#[cfg(test)]
 mod test_deku;
 
 pub use deku;
@@ -21,7 +22,7 @@ pub struct SlimeQuaternion {
 	pub k: f32,
 	pub w: f32,
 }
-#[cfg(feature = "nalgebra031")]
+#[cfg(any(test, feature = "nalgebra031"))]
 mod nalgebra031_impls {
 	use super::*;
 	use nalgebra031::Quaternion;
@@ -42,7 +43,7 @@ mod nalgebra031_impls {
 		}
 	}
 }
-#[cfg(feature = "nalgebra030")]
+#[cfg(any(test, feature = "nalgebra030"))]
 mod nalgebra030_impls {
 	use super::*;
 	use nalgebra030::Quaternion;
