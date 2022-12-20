@@ -1,10 +1,11 @@
 [workspace]
 members = [
   "autoupdater",
-  "overlay",
-  "networking/tokio_shutdown",
-  "skeletal_model",
+  "networking/firmware_protocol",
   "networking/solarxr",
+  "networking/tokio_shutdown",
+  "overlay",
+  "skeletal_model",
 ]
 exclude = ["nrf_demo", "firmware"]
 
