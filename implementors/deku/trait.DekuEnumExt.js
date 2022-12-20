@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"firmware_protocol":[["impl DekuEnumExt&lt;'_, <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.65.0/std/primitive.u32.html\">u32</a>&gt; for <a class=\"enum\" href=\"firmware_protocol/enum.PacketType.html\" title=\"enum firmware_protocol::PacketType\">PacketType</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

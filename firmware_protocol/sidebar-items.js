@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["PacketType",""]],"mod":[["nalgebra030_impls",""],["nalgebra031_impls",""]],"struct":[["SlimeQuaternion",""],["SlimeString",""]]};
