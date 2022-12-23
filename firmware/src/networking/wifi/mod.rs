@@ -19,7 +19,9 @@ static SERVER_IP: Ipv4Address = Ipv4Address::new(192, 168, 10, 121);
 const EXPECTED_NEIGHBOURS: usize = 10;
 const WIFI_FIND_RETRIES: usize = 10;
 
-pub async fn wifi_task() -> ! {}
+pub async fn wifi_task() -> ! {
+    todo!()
+}
 
 pub async fn connect_wifi<W: Wifi>(
 	wifi: &mut W,

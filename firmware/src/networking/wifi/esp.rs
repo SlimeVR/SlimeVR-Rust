@@ -10,7 +10,11 @@ use esp_wifi::{
 	wifi::utils::create_network_interface,
 	wifi_interface::{IoError as WifiError, Network},
 };
-use smoltcp::socket::UdpPacketMetadata;
+use smoltcp::{
+	iface::{Neighbor, Route, SocketStorage},
+	socket::UdpPacketMetadata,
+	wire::{IpAddress, IpCidr},
+};
 
 use super::{PASSWORD, SSID};
 
@@ -48,7 +52,7 @@ pub fn create_wifi(storage: &mut WifiStorage) -> impl Wifi {
 		&mut storage.socket_set_entries,
 		&mut storage.neighbor_cache_storage,
 		&mut storage.routes_storage,
-		&mut storage.ip_addr,
+		&mut [storage.ip_addr],
 		&mut storage.ipv4_multicast_storage,
 	));
 	esp_wifi::wifi_interface::Wifi::new(ethernet)
@@ -57,9 +61,8 @@ pub fn create_wifi(storage: &mut WifiStorage) -> impl Wifi {
 pub async fn network_task() {
 	// TODO: Maybe we should look at the macros in the future for better config
 	// (socket_count, neighbour_cache_count, routes_store_count, multicast_store_count)
-	let mut storage = create_network_stack_storage!(3, 8, 1, 1);
-	let ethernet = create_network_interface(network_stack_storage!(storage));
-	let mut wifi = esp_wifi::wifi_interface::Wifi::new(ethernet);
+	let mut storage = create_wifi_storage();
+	let mut wifi = create_wifi(&mut storage);
 	super::connect_wifi(&mut wifi, SSID, PASSWORD)
 		.await
 		.expect("Couldn't connect to wifi");
