@@ -1,9 +1,12 @@
+pub mod messaging;
+pub use self::messaging::{Message, Signals};
+
 #[cfg(feature = "net-wifi")]
 pub mod wifi;
 
-pub async fn network_task() {
+pub async fn network_task(msg_signals: &Signals) {
 	#[cfg(feature = "net-wifi")]
-	self::wifi::ඞ::network_task().await;
+	self::wifi::ඞ::network_task(msg_signals).await;
 	#[cfg(feature = "net-stubbed")]
 	stubbed_network_task().await;
 }

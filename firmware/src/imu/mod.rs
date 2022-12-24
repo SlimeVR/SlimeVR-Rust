@@ -9,7 +9,7 @@ mod ඞ {
 #[path = "mpu6050.rs"]
 mod ඞ;
 
-use crate::utils::nb2a;
+use crate::{networking::messaging::Signal, utils::nb2a};
 
 use defmt::{debug, info, trace};
 use embassy_futures::yield_now;
@@ -30,7 +30,11 @@ pub trait Imu {
 }
 
 /// Gets data from the IMU
-pub async fn imu_task(i2c: impl crate::aliases::I2c, mut delay: impl DelayMs<u32>) {
+pub async fn imu_task(
+	quat_signal: &Signal<Quat>,
+	i2c: impl crate::aliases::I2c,
+	mut delay: impl DelayMs<u32>,
+) {
 	debug!("Started sensor_task");
 	let mut imu = ඞ::new_imu(i2c, &mut delay);
 	info!("Initialized IMU!");
@@ -44,6 +48,7 @@ pub async fn imu_task(i2c: impl crate::aliases::I2c, mut delay: impl DelayMs<u32
 			q.coords.z,
 			q.coords.w
 		);
+		quat_signal.signal(q);
 		yield_now().await // Yield to ensure fairness
 	}
 }
