@@ -1,18 +1,20 @@
 extern crate alloc;
-use alloc::format;
-use core::str;
 
+use core::str;
 use defmt::{debug, error, info};
-use embassy_futures::yield_now;
 use embedded_svc::ipv4::Interface;
 use esp_wifi::{
 	create_network_stack_storage, current_millis, network_stack_storage,
 	wifi::utils::create_network_interface,
-	wifi_interface::{IoError as WifiError, Network},
+	wifi_interface::{IoError as WifiError, Network, UdpSocket},
 };
 use smoltcp::socket::UdpPacketMetadata;
 
-pub async fn network_task() {
+use crate::networking::messaging::Signals;
+
+const PORT: u16 = 25565;
+
+pub async fn network_task(signals: &Signals) {
 	// TODO: Maybe we should look at the macros in the future for better config
 	// (socket_count, neighbour_cache_count, routes_store_count, multicast_store_count)
 	let mut storage = create_network_stack_storage!(3, 8, 1, 1);
@@ -23,6 +25,7 @@ pub async fn network_task() {
 		.expect("Couldn't connect to wifi");
 
 	let mut network = Network::new(wifi, current_millis);
+
 	poll_dhcp(&mut network).await;
 
 	// I think its better for each arch to make it's buffers
@@ -37,30 +40,40 @@ pub async fn network_task() {
 		&mut tx_buffer,
 	);
 
+	socket.bind(PORT).unwrap();
+
 	let mut buffer = [0u8; 256];
-	let mut i = 0;
-	socket.bind(25565).unwrap();
 	loop {
-		socket.work();
+		main_loop(&mut socket, signals, &mut buffer).await;
+	}
+}
 
-		socket
-			.send(super::SERVER_IP, 25565, format!("i was {i}\n").as_bytes())
-			.expect("failed to send");
+async fn main_loop<'s, 'n>(
+	socket: &mut UdpSocket<'s, 'n>,
+	signals: &Signals,
+	buffer: &mut [u8],
+) {
+	socket.work();
+	// Send latest message
+	{
+		// Grab latest message that we should send
+		let msg = signals.latest.wait().await;
+		let send_result = socket.send(super::SERVER_IP, PORT, msg.as_bytes());
+		// We pass the sent message back so the other side can reuse its buffer
+		signals.sent.signal(msg);
+		send_result.expect("failed to send");
+	}
 
-		match socket.receive(&mut buffer) {
-			Ok((len, _addr, _port)) => unsafe {
-				info!(
-					"Received packet: \"{}\"",
-					str::from_utf8_unchecked(&buffer[0..len])
-				);
-			},
-			Err(WifiError::Other(smoltcp::Error::Exhausted)) => {}
-			Err(WifiError::Other(e)) => error!("smoltcp error {}", e),
-			Err(e) => error!("esp-wifi error {}", defmt::Debug2Format(&e)),
-		}
-		i += 1;
-		yield_now().await
-		//Timer::after(Duration::from_millis(1000)).await
+	match socket.receive(buffer) {
+		Ok((len, _addr, _port)) => unsafe {
+			info!(
+				"Received packet: \"{}\"",
+				str::from_utf8_unchecked(&buffer[0..len])
+			);
+		},
+		Err(WifiError::Other(smoltcp::Error::Exhausted)) => {}
+		Err(WifiError::Other(e)) => error!("smoltcp error {}", e),
+		Err(e) => error!("esp-wifi error {}", defmt::Debug2Format(&e)),
 	}
 }
 

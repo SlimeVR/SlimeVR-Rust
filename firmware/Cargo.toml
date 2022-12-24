@@ -98,7 +98,7 @@ cortex-m = { version = "0.7", optional = true, features = [
 cortex-m-rt = { version = "0.7", optional = true }
 
 
-# Embassy stuff
+# Async stuff
 embassy-futures = "0.1.0"
 embassy-executor = { version = "*", features = [
   "integrated-timers",
@@ -108,6 +108,8 @@ embassy-time = { version = "*", features = [
   # "unstable-traits",
 ] }
 embassy-usb = { version = "*", optional = true }
+embassy-sync = { version = "*" }
+futures-util = { version = "0.3", default-features = false }
 
 # esp-xtensa stuff
 xtensa-lx = { version = "0.7", optional = true, default-features = false }
@@ -184,7 +186,7 @@ embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "ebc73
 embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
-
+embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 
 [profile.dev]
 # lto doesnt work on esp32 (xtensa)

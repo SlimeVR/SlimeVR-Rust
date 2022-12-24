@@ -331,7 +331,7 @@ dependencies = [
  "embassy-executor",
  "embassy-hal-common",
  "embassy-macros",
- "embassy-sync 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
+ "embassy-sync",
 ]
 
 [[package]]
@@ -339,7 +339,7 @@ name = "embassy-embedded-hal"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
 dependencies = [
- "embassy-sync 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
+ "embassy-sync",
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0-alpha.9",
  "embedded-hal-async 0.2.0-alpha.0",
@@ -404,7 +404,7 @@ dependencies = [
  "embassy-cortex-m",
  "embassy-embedded-hal",
  "embassy-hal-common",
- "embassy-sync 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
+ "embassy-sync",
  "embassy-time",
  "embassy-usb-driver",
  "embedded-hal 0.2.7",
@@ -417,20 +417,6 @@ dependencies = [
  "futures",
  "nrf52840-pac",
  "rand_core",
-]
-
-[[package]]
-name = "embassy-sync"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6ea38e6ea5d0361d087680f786c19a1454becb06174790280534a3be05ed839"
-dependencies = [
- "atomic-polyfill 1.0.1",
- "cfg-if",
- "critical-section",
- "embedded-io 0.3.1",
- "futures-util",
- "heapless",
 ]
 
 [[package]]
@@ -454,7 +440,7 @@ dependencies = [
  "atomic-polyfill 1.0.1",
  "cfg-if",
  "critical-section",
- "embassy-sync 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
+ "embassy-sync",
  "embedded-hal 0.2.7",
  "embedded-hal-async 0.2.0-alpha.0",
  "futures-util",
@@ -467,7 +453,7 @@ version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
 dependencies = [
  "embassy-futures 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
- "embassy-sync 0.1.0 (git+https://github.com/embassy-rs/embassy?rev=ebc7350)",
+ "embassy-sync",
  "embassy-usb-driver",
  "heapless",
  "ssmarshal",
@@ -642,7 +628,7 @@ checksum = "007db8d84050d19fec367bece124cccbdf6837ff0ea8e1a4fc04599148ab5ea1"
 dependencies = [
  "cfg-if",
  "critical-section",
- "embassy-sync 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "embassy-sync",
  "embassy-time",
  "embedded-dma",
  "embedded-hal 0.2.7",
@@ -787,6 +773,7 @@ dependencies = [
  "embassy-executor",
  "embassy-futures 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embassy-nrf",
+ "embassy-sync",
  "embassy-time",
  "embassy-usb",
  "embedded-hal 0.2.7",
@@ -798,6 +785,7 @@ dependencies = [
  "esp32c3-hal",
  "feature_utils",
  "fugit",
+ "futures-util",
  "mpu6050-dmp",
  "nalgebra",
  "nb 1.0.0",

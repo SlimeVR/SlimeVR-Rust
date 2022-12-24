@@ -13,6 +13,7 @@ mod globals;
 mod imu;
 mod networking;
 mod peripherals;
+mod serialization;
 mod utils;
 
 #[cfg(bbq)]
@@ -21,6 +22,8 @@ mod bbq_logger;
 use defmt::debug;
 use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
+use imu::Quat;
+use networking::messaging::Signal;
 use static_cell::StaticCell;
 
 #[cfg(cortex_m)]
@@ -29,6 +32,8 @@ use cortex_m_rt::entry;
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;
+
+use crate::networking::messaging::Signals;
 
 #[entry]
 fn main() -> ! {
@@ -46,27 +51,49 @@ fn main() -> ! {
 	p.delay.delay_ms(500u32);
 	debug!("Initialized peripherals");
 
+	static MESSAGE_SIGNALS: StaticCell<Signals> = StaticCell::new();
+	let message_signals: &'static Signals = MESSAGE_SIGNALS.init(Signals::new());
+
+	static QUAT_SIGNAL: StaticCell<Signal<Quat>> = StaticCell::new();
+	let quat_signal: &'static Signal<Quat> = QUAT_SIGNAL.init(Signal::new());
+
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |spawner| {
-		spawner.spawn(network_task()).unwrap();
-		spawner.spawn(imu_task(p.i2c, p.delay)).unwrap();
+		spawner
+			.spawn(serialize_task(message_signals, quat_signal))
+			.unwrap();
+		spawner.spawn(network_task(message_signals)).unwrap();
+		spawner
+			.spawn(imu_task(quat_signal, p.i2c, p.delay))
+			.unwrap();
 		#[cfg(bbq)]
 		spawner.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
 	});
 }
 
 #[task]
-async fn network_task() {
-	networking::network_task().await
+async fn serialize_task(
+	msg_signals: &'static Signals,
+	quat_signal: &'static Signal<Quat>,
+) {
+	debug!("Serialize task!");
+	crate::serialization::serialize_task(msg_signals, quat_signal).await
+}
+
+#[task]
+async fn network_task(msg_signals: &'static Signals) {
+	debug!("Network task!");
+	crate::networking::network_task(msg_signals).await
 }
 
 #[task]
 async fn imu_task(
+	quat_signal: &'static Signal<Quat>,
 	i2c: crate::aliases::ඞ::I2cConcrete<'static>,
 	delay: crate::aliases::ඞ::DelayConcrete,
 ) {
 	debug!("IMU Task!");
-	crate::imu::imu_task(i2c, delay).await
+	crate::imu::imu_task(quat_signal, i2c, delay).await
 }
 
 #[cfg(bbq)]
