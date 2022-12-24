@@ -8,6 +8,13 @@ members = [
   "skeletal_model",
 ]
 exclude = ["nrf_demo", "firmware"]
+default-members = [
+  "autoupdater",
+  "networking/firmware_protocol",
+  "networking/solarxr",
+  "networking/tokio_shutdown",
+  "skeletal_model",
+]
 
 resolver = "2"
 
