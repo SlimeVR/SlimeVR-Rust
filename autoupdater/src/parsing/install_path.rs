@@ -1,22 +1,17 @@
-use color_eyre::{
-	eyre::{ContextCompat, WrapErr},
-	Result,
-};
+use autoupdater::component::MaybeCrossPlatform;
+use color_eyre::{Result, eyre::{ContextCompat, Context}};
 use lazy_static::lazy_static;
 use path_absolutize::Absolutize;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-use crate::parsing::MCP;
-
 lazy_static! {
-	static ref SLIME_DIR: MCP<PathBuf> = MCP::Cross(PathBuf::from("todo"));
-	static ref STEAM_DIR: MCP<PathBuf> = MCP::Cross(PathBuf::from("todo"));
+	static ref SLIME_DIR: MaybeCrossPlatform<PathBuf> =
+		MaybeCrossPlatform::Cross(PathBuf::from("todo"));
+	static ref STEAM_DIR: MaybeCrossPlatform<PathBuf> =
+		MaybeCrossPlatform::Cross(PathBuf::from("todo"));
 }
 
-/// The location to install a component.
-///
-/// Single files are placed in this dir, and zip files are unzipped into this dir.
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum InstallPath {

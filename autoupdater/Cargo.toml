@@ -14,12 +14,13 @@ reqwest = "0.11"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 url = { version = "2", features = ["serde"] }
-clap = { version = "3", features = ["derive"] }
+clap = { version = "4", features = ["derive"] }
 lazy_static = "1"
-serde_yaml = "0.8"
+serde_yaml = "0.9"
 derive_more = "0.99"
-serde-enum-str = "0.2.5"
+serde-enum-str = "0.3"
 tempfile = "3"
 futures = "0.3"
 color-eyre = "0.6"
 path-absolutize = "3"
+semver = { version = "1.0.16", features = ["serde"] }
