@@ -9,7 +9,7 @@ mod ඞ {
 #[path = "mpu6050.rs"]
 mod ඞ;
 
-use crate::{networking::messaging::Signal, utils::nb2a};
+use crate::utils::{nb2a, Unreliable};
 
 use defmt::{debug, info, trace};
 use embassy_futures::yield_now;
@@ -31,7 +31,7 @@ pub trait Imu {
 
 /// Gets data from the IMU
 pub async fn imu_task(
-	quat_signal: &Signal<Quat>,
+	quat_signal: &Unreliable<Quat>,
 	i2c: impl crate::aliases::I2c,
 	mut delay: impl DelayMs<u32>,
 ) {

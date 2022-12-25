@@ -13,18 +13,19 @@ mod globals;
 mod imu;
 mod networking;
 mod peripherals;
-mod serialization;
 mod utils;
 
 #[cfg(bbq)]
 mod bbq_logger;
 
-use defmt::debug;
+use defmt::{debug, warn};
 use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
+use firmware_protocol::PacketType;
 use imu::Quat;
-use networking::messaging::Signal;
+use networking::Packets;
 use static_cell::StaticCell;
+use utils::Unreliable;
 
 #[cfg(cortex_m)]
 use cortex_m_rt::entry;
@@ -32,8 +33,6 @@ use cortex_m_rt::entry;
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;
-
-use crate::networking::messaging::Signals;
 
 #[entry]
 fn main() -> ! {
@@ -51,44 +50,80 @@ fn main() -> ! {
 	p.delay.delay_ms(500u32);
 	debug!("Initialized peripherals");
 
-	static MESSAGE_SIGNALS: StaticCell<Signals> = StaticCell::new();
-	let message_signals: &'static Signals = MESSAGE_SIGNALS.init(Signals::new());
+	static PACKETS: StaticCell<Packets> = StaticCell::new();
+	let packets: &'static Packets = PACKETS.init(Packets::new());
 
-	static QUAT_SIGNAL: StaticCell<Signal<Quat>> = StaticCell::new();
-	let quat_signal: &'static Signal<Quat> = QUAT_SIGNAL.init(Signal::new());
+	static QUAT: StaticCell<Unreliable<Quat>> = StaticCell::new();
+	let quat: &'static Unreliable<Quat> = QUAT.init(Unreliable::new());
 
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
-	EXECUTOR.init(Executor::new()).run(move |spawner| {
-		spawner
-			.spawn(serialize_task(message_signals, quat_signal))
-			.unwrap();
-		spawner.spawn(network_task(message_signals)).unwrap();
-		spawner
-			.spawn(imu_task(quat_signal, p.i2c, p.delay))
-			.unwrap();
+	EXECUTOR.init(Executor::new()).run(move |s| {
+		s.spawn(control_task(packets, quat)).unwrap();
+		s.spawn(network_task(packets)).unwrap();
+		s.spawn(imu_task(quat, p.i2c, p.delay)).unwrap();
 		#[cfg(bbq)]
-		spawner.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
+		s.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
 	});
 }
 
 #[task]
-async fn serialize_task(
-	msg_signals: &'static Signals,
-	quat_signal: &'static Signal<Quat>,
-) {
-	debug!("Serialize task!");
-	crate::serialization::serialize_task(msg_signals, quat_signal).await
+async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>) {
+	debug!("Control task!");
+
+	loop {
+		match packets.clientbound.recv().await {
+			// Identify ourself when discovery packet is received
+			PacketType::Discovery => {
+				packets
+					.serverbound
+					.send(PacketType::Handshake {
+						board: 4,
+						imu: 8,
+						mcu_type: 2,
+						imu_info: (1, 2, 3),
+						build: 5,
+						firmware: "SlimeVR-Rust".into(),
+						mac_address: [0; 6],
+					})
+					.await;
+			}
+			// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
+			// The protocol is asymmetric so its a bit unintuitive. TODO: Split packet type into Server2Client and C2S
+			PacketType::Heartbeat => {
+				packets.serverbound.send(PacketType::Discovery).await;
+			}
+			packet => warn!("Unhandled packet {}", defmt::Debug2Format(&packet)),
+		}
+
+		packets
+			.serverbound
+			.send(PacketType::SensorInfo {
+				sensor_id: 0,
+				sensor_status: 1,
+				sensor_type: 0,
+			})
+			.await;
+		packets
+			.serverbound
+			.send(PacketType::RotationData {
+				sensor_id: 0,
+				data_type: 1,
+				quat: quat.wait().await.into_inner().into(),
+				calibration_info: 0,
+			})
+			.await;
+	}
 }
 
 #[task]
-async fn network_task(msg_signals: &'static Signals) {
+async fn network_task(msg_signals: &'static Packets) {
 	debug!("Network task!");
 	crate::networking::network_task(msg_signals).await
 }
 
 #[task]
 async fn imu_task(
-	quat_signal: &'static Signal<Quat>,
+	quat_signal: &'static Unreliable<Quat>,
 	i2c: crate::aliases::ඞ::I2cConcrete<'static>,
 	delay: crate::aliases::ඞ::DelayConcrete,
 ) {
