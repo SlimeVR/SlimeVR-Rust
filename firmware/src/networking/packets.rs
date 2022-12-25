@@ -1,12 +1,12 @@
 use crate::utils::Reliable;
-use firmware_protocol::PacketData;
+use firmware_protocol::{SBPacket, CBPacket};
 
 /// Packets is an accessor to internal logic <-> network messaging system
 pub struct Packets {
 	/// The latest `Message` that should be sent
-	pub serverbound: Reliable<PacketData>,
+	pub serverbound: Reliable<SBPacket>,
 	/// The latest `Message` that could be received
-	pub clientbound: Reliable<PacketData>,
+	pub clientbound: Reliable<CBPacket>,
 }
 
 impl Packets {
