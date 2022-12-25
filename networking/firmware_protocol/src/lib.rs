@@ -13,7 +13,6 @@ use alloc::string::String;
 use alloc::vec::Vec;
 
 use deku::prelude::*;
-use nalgebra::Quaternion;
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
@@ -24,19 +23,46 @@ pub struct SlimeQuaternion {
 	pub w: f32,
 }
 
-impl From<Quaternion<f32>> for SlimeQuaternion {
-	fn from(q: Quaternion<f32>) -> Self {
-		Self {
-			i: q.i as _,
-			j: q.j as _,
-			k: q.k as _,
-			w: q.w as _,
+#[cfg(any(test, feature = "nalgebra031"))]
+mod nalgebra031_impls {
+	use super::*;
+	use nalgebra031::Quaternion;
+
+	impl From<Quaternion<f32>> for SlimeQuaternion {
+		fn from(q: Quaternion<f32>) -> Self {
+			Self {
+				i: q.i as _,
+				j: q.j as _,
+				k: q.k as _,
+				w: q.w as _,
+			}
+		}
+	}
+	impl From<SlimeQuaternion> for Quaternion<f32> {
+		fn from(q: SlimeQuaternion) -> Self {
+			Self::new(q.w as _, q.i as _, q.j as _, q.k as _)
 		}
 	}
 }
-impl From<SlimeQuaternion> for Quaternion<f32> {
-	fn from(q: SlimeQuaternion) -> Self {
-		Self::new(q.w as _, q.i as _, q.j as _, q.k as _)
+#[cfg(any(test, feature = "nalgebra030"))]
+mod nalgebra030_impls {
+	use super::*;
+	use nalgebra030::Quaternion;
+
+	impl From<Quaternion<f32>> for SlimeQuaternion {
+		fn from(q: Quaternion<f32>) -> Self {
+			Self {
+				i: q.i as _,
+				j: q.j as _,
+				k: q.k as _,
+				w: q.w as _,
+			}
+		}
+	}
+	impl From<SlimeQuaternion> for Quaternion<f32> {
+		fn from(q: SlimeQuaternion) -> Self {
+			Self::new(q.w as _, q.i as _, q.j as _, q.k as _)
+		}
 	}
 }
 
@@ -81,24 +107,33 @@ impl SlimeString {
 pub struct Packet {
 	// TODO: This tag could really be dropped from the Rust side, but #[deku(temp)] is a bit wonky
 	tag: u32,
+	/// Sequence number for the packet. It is incremented for each subsequent packet and is used to reject out of order
+	/// packets. This is sometimes referred to as the packet id
 	seq: u64,
 	#[deku(ctx = "*tag")]
-	ty_: PacketType,
+	data: PacketData,
 }
 
 impl Packet {
-	pub fn new(seq: u64, ty_: PacketType) -> Packet {
+	pub fn new(seq: u64, data: PacketData) -> Packet {
 		Packet {
-			tag: ty_.deku_id().unwrap(),
+			tag: data.deku_id().unwrap(),
 			seq,
-			ty_,
+			data,
 		}
 	}
 
-	pub fn serialize_into(&self, buf: &mut [u8]) -> usize {
-		let bytes = self.to_bytes().unwrap();
+	/// Serialize the packet into a byte slice, returning the number of bytes written. If the packet cannot fit into
+	/// the buffer or data could not be serialied, Err is returned.
+	pub fn serialize_into(&self, buf: &mut [u8]) -> Result<usize, ()> {
+		// TODO: Deku should be extended to support in-place serialization instead of allocating here
+		let bytes = self.to_bytes().map_err(|_| ())?;
+		// Check we can fit the buffer
+		if bytes.len() > buf.len() {
+			return Err(());
+		}
 		buf[..bytes.len()].copy_from_slice(&bytes);
-		bytes.len()
+		Ok(bytes.len())
 	}
 
 	pub fn deserialize_from(buf: &[u8]) -> Result<Packet, ()> {
@@ -108,14 +143,14 @@ impl Packet {
 		}
 	}
 
-	pub fn split(self) -> (u64, PacketType) {
-		(self.seq, self.ty_)
+	pub fn split(self) -> (u64, PacketData) {
+		(self.seq, self.data)
 	}
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(ctx = "e: deku::ctx::Endian, tag: u32", id = "tag", endian = "e")]
-pub enum PacketType {
+#[deku(ctx = "_: deku::ctx::Endian, tag: u32", id = "tag", endian = "big")]
+pub enum PacketData {
 	#[deku(id = "0")]
 	Discovery,
 	#[deku(id = "1")]

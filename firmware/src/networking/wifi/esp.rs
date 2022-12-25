@@ -84,7 +84,7 @@ pub async fn network_task(packets: &Packets) -> ! {
 			// There is pending outbound packet that should be sent
 			Either::First(msg) => {
 				// Serialize the packet based on our send sequence number
-				let len = Packet::new(tx_seq, msg).serialize_into(&mut buffer);
+				let Ok(len) = Packet::new(tx_seq, msg).serialize_into(&mut buffer) else { continue };
 				tx_seq += 1;
 
 				if let Err(e) = socket.send(Ipv4Address(host_ip), PORT, &buffer[..len])

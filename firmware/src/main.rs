@@ -21,7 +21,7 @@ mod bbq_logger;
 use defmt::{debug, warn};
 use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
-use firmware_protocol::PacketType;
+use firmware_protocol::PacketData;
 use imu::Quat;
 use networking::Packets;
 use static_cell::StaticCell;
@@ -73,10 +73,10 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 	loop {
 		match packets.clientbound.recv().await {
 			// Identify ourself when discovery packet is received
-			PacketType::Discovery => {
+			PacketData::Discovery => {
 				packets
 					.serverbound
-					.send(PacketType::Handshake {
+					.send(PacketData::Handshake {
 						board: 4,
 						imu: 8,
 						mcu_type: 2,
@@ -89,15 +89,15 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 			}
 			// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
 			// The protocol is asymmetric so its a bit unintuitive. TODO: Split packet type into Server2Client and C2S
-			PacketType::Heartbeat => {
-				packets.serverbound.send(PacketType::Discovery).await;
+			PacketData::Heartbeat => {
+				packets.serverbound.send(PacketData::Discovery).await;
 			}
 			packet => warn!("Unhandled packet {}", defmt::Debug2Format(&packet)),
 		}
 
 		packets
 			.serverbound
-			.send(PacketType::SensorInfo {
+			.send(PacketData::SensorInfo {
 				sensor_id: 0,
 				sensor_status: 1,
 				sensor_type: 0,
@@ -105,7 +105,7 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 			.await;
 		packets
 			.serverbound
-			.send(PacketType::RotationData {
+			.send(PacketData::RotationData {
 				sensor_id: 0,
 				data_type: 1,
 				quat: quat.wait().await.into_inner().into(),
