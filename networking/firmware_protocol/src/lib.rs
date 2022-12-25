@@ -138,7 +138,7 @@ impl Packet {
 
 	pub fn deserialize_from(buf: &[u8]) -> Result<Packet, ()> {
 		match Packet::from_bytes((buf, 0)) {
-			Ok(((tail, _), p)) if tail.len() == 0 => Ok(p),
+			Ok(((tail, _tail_offset), packet)) if tail.len() == 0 => Ok(packet),
 			_ => Err(()),
 		}
 	}

@@ -1,6 +1,6 @@
 extern crate alloc;
 
-use defmt::{debug, error, info, warn};
+use defmt::{error, info, trace, warn};
 use embassy_futures::{
 	select::{select, Either},
 	yield_now,
@@ -33,7 +33,7 @@ pub async fn network_task(packets: &Packets) -> ! {
 
 	// Wait till DHCP assigns us an IP
 	let client_ip = loop {
-		network.poll_dhcp().expect("Failed to drive DHCP socket");
+		yield_now().await;
 		network.work();
 		let Ok(ip) = network.get_ip_info() else { continue };
 		break ip.ip.octets();
@@ -78,13 +78,13 @@ pub async fn network_task(packets: &Packets) -> ! {
 		)
 		.await;
 
-		debug!("Network event {}", defmt::Debug2Format(&net));
+		trace!("Network event {}", defmt::Debug2Format(&net));
 
 		match net {
 			// There is pending outbound packet that should be sent
 			Either::First(msg) => {
 				// Serialize the packet based on our send sequence number
-				let Ok(len) = Packet::new(tx_seq, msg).serialize_into(&mut buffer) else { continue };
+				let Ok(len) = Packet::new(tx_seq, msg).serialize_into(&mut buffer) else { warn!("Failed to serialize outgoing packet"); continue };
 				tx_seq += 1;
 
 				if let Err(e) = socket.send(Ipv4Address(host_ip), PORT, &buffer[..len])
@@ -95,7 +95,7 @@ pub async fn network_task(packets: &Packets) -> ! {
 			// There is inbound bytes that should be parsed and processed
 			Either::Second((len, addr, _port)) => {
 				// Try to optimistically parse all packets that come off the network
-				let Ok(packet) = Packet::deserialize_from(&buffer[..len]) else { debug!("Discarding {}", &buffer[..len]); continue };
+				let Ok(packet) = Packet::deserialize_from(&buffer[..len]) else { trace!("Discarding {}", &buffer[..len]); continue };
 				let (seq, msg) = packet.split();
 
 				// Cancel if sequence number is less than last seen. As of writing, SlimeVR server does not properly
@@ -128,7 +128,8 @@ pub async fn network_task(packets: &Packets) -> ! {
 	}
 }
 
-/// Asynchronously receive bytes from the network
+/// Asynchronously receive bytes from the network. This is a wrapper around UdpSocket::receive
+/// Returns number of bytes read, receiving Ipv4 address and receiving port
 async fn recv_bytes<'s, 'n>(
 	socket: &mut UdpSocket<'s, 'n>,
 	buffer: &mut [u8],
