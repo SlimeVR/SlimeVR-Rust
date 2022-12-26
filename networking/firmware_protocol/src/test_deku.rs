@@ -6,11 +6,11 @@ use nalgebra031::{Quaternion, UnitQuaternion};
 
 use crate::{CbPacket, Packet, SbPacket};
 
-#[test]
 /// Since we have the use of hrtb in the generics of the `Packet`, this ensures that
 /// the behaviour of the lifetimes matches what we would expect.
 ///
 /// This code should fail to compile if we did the lifetimes wrong.
+#[test]
 fn test_lifetimes() {
 	let a = vec![0, 1];
 	let a_slice: &[u8] = &a;
