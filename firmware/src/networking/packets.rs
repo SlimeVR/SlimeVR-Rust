@@ -1,5 +1,5 @@
 use crate::utils::Reliable;
-use firmware_protocol::{SbPacket, CbPacket};
+use firmware_protocol::{CbPacket, SbPacket};
 
 /// Packets is an accessor to internal logic <-> network messaging system
 pub struct Packets {
