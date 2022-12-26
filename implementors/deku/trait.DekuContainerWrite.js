@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"firmware_protocol":[["impl DekuContainerWrite for <a class=\"struct\" href=\"firmware_protocol/struct.Packet.html\" title=\"struct firmware_protocol::Packet\">Packet</a>"]]
+"firmware_protocol":[["impl&lt;D&gt; DekuContainerWrite for <a class=\"struct\" href=\"firmware_protocol/struct.Packet.html\" title=\"struct firmware_protocol::Packet\">Packet</a>&lt;D&gt;<span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;for&lt;'a&gt; D: DekuRead&lt;'a, (Endian, <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.65.0/std/primitive.u32.html\">u32</a>)&gt; + DekuWrite&lt;(Endian, <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.65.0/std/primitive.u32.html\">u32</a>)&gt;,</span>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

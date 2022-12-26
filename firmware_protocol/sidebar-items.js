@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["DeserializeError",""],["PacketData",""],["SerializeError",""]],"mod":[["nalgebra030_impls",""],["nalgebra031_impls",""]],"struct":[["Packet",""],["SlimeQuaternion",""],["SlimeString",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["CbPacket",""],["DeserializeError",""],["SbPacket",""],["SerializeError",""]],"mod":[["clientbound",""],["nalgebra030_impls",""],["nalgebra031_impls",""],["serverbound",""]],"struct":[["Packet",""],["SlimeQuaternion",""],["SlimeString",""]]};
