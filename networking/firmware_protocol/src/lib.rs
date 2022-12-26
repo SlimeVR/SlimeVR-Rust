@@ -105,7 +105,7 @@ impl SlimeString {
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "big")]
 pub struct Packet {
-	// TODO: This tag could really be dropped from the Rust side, but #[deku(temp)] is a bit wonky
+	/// Identifies the variant of the packet.
 	tag: u32,
 	/// Sequence number for the packet. It is incremented for each subsequent packet and is used to reject out of order
 	/// packets. This is sometimes referred to as the packet id
