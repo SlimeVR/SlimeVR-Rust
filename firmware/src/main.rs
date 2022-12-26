@@ -18,10 +18,10 @@ mod utils;
 #[cfg(bbq)]
 mod bbq_logger;
 
-use defmt::{debug, warn};
+use defmt::debug;
 use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
-use firmware_protocol::PacketData;
+use firmware_protocol::{CbPacket, SbPacket};
 use imu::Quat;
 use networking::Packets;
 use static_cell::StaticCell;
@@ -73,10 +73,10 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 	loop {
 		match packets.clientbound.recv().await {
 			// Identify ourself when discovery packet is received
-			PacketData::Discovery => {
+			CbPacket::Discovery => {
 				packets
 					.serverbound
-					.send(PacketData::Handshake {
+					.send(SbPacket::Handshake {
 						board: 4,
 						imu: 8,
 						mcu_type: 2,
@@ -89,15 +89,18 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 			}
 			// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
 			// The protocol is asymmetric so its a bit unintuitive. TODO: Split packet type into Server2Client and C2S
-			PacketData::Heartbeat => {
-				packets.serverbound.send(PacketData::Discovery).await;
+			CbPacket::Heartbeat => {
+				packets.serverbound.send(SbPacket::Heartbeat).await;
 			}
-			packet => warn!("Unhandled packet {}", defmt::Debug2Format(&packet)),
+			// Pings are basically like heartbeats, just echo data back
+			CbPacket::Ping { id } => {
+				packets.serverbound.send(SbPacket::Ping { id }).await;
+			}
 		}
 
 		packets
 			.serverbound
-			.send(PacketData::SensorInfo {
+			.send(SbPacket::SensorInfo {
 				sensor_id: 0,
 				sensor_status: 1,
 				sensor_type: 0,
@@ -105,7 +108,7 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 			.await;
 		packets
 			.serverbound
-			.send(PacketData::RotationData {
+			.send(SbPacket::RotationData {
 				sensor_id: 0,
 				data_type: 1,
 				quat: quat.wait().await.into_inner().into(),

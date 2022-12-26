@@ -2,10 +2,15 @@
 
 extern crate alloc;
 
+mod clientbound;
+mod serverbound;
 #[cfg(test)]
 mod test_deku;
 
+pub use clientbound::CbPacket;
 pub use deku;
+use deku::ctx::Endian;
+pub use serverbound::SbPacket;
 
 use alloc::format;
 use alloc::string::FromUtf8Error;
@@ -102,21 +107,29 @@ impl SlimeString {
 	}
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(endian = "big")]
-pub struct Packet {
+pub struct Packet<D>
+where
+	for<'a> D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)>,
+{
 	/// Identifies the variant of the packet.
 	tag: u32,
 	/// Sequence number for the packet. It is incremented for each subsequent packet and is used to reject out of order
 	/// packets. This is sometimes referred to as the packet id
 	seq: u64,
 	#[deku(ctx = "*tag")]
-	data: PacketData,
+	data: D,
 }
 
-impl Packet {
-	pub fn new(seq: u64, data: PacketData) -> Packet {
-		Packet {
+impl<D> Packet<D>
+where
+	for<'a> D: DekuRead<'a, (Endian, u32)>
+		+ DekuWrite<(Endian, u32)>
+		+ DekuEnumExt<'static, u32>,
+{
+	pub fn new(seq: u64, data: D) -> Self {
+		Self {
 			tag: data.deku_id().unwrap(),
 			seq,
 			data,
@@ -136,7 +149,7 @@ impl Packet {
 		Ok(bytes.len())
 	}
 
-	pub fn deserialize_from(buf: &[u8]) -> Result<Packet, DeserializeError> {
+	pub fn deserialize_from(buf: &[u8]) -> Result<Self, DeserializeError> {
 		match Packet::from_bytes((buf, 0)) {
 			Ok(((tail, _tail_offset), packet)) => {
 				if tail.is_empty() {
@@ -150,48 +163,9 @@ impl Packet {
 	}
 
 	/// Returns a tuple of the sequence number, and the `PacketData`.
-	pub fn split(self) -> (u64, PacketData) {
+	pub fn split(self) -> (u64, D) {
 		(self.seq, self.data)
 	}
-}
-
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(ctx = "e: deku::ctx::Endian, tag: u32", id = "tag", endian = "e")]
-pub enum PacketData {
-	#[deku(id = "0")]
-	Discovery,
-	#[deku(id = "1")]
-	Heartbeat,
-	#[deku(id = "3")]
-	Handshake {
-		board: i32,
-		imu: i32,
-		mcu_type: i32,
-		imu_info: (i32, i32, i32),
-		build: i32,
-		firmware: SlimeString,
-		mac_address: [u8; 6],
-	},
-	#[deku(id = "4")]
-	Acceleration {
-		vector: (f32, f32, f32),
-		sensor_id: Option<u8>,
-	},
-	#[deku(id = "10")]
-	Ping { id: u32 },
-	#[deku(id = "15")]
-	SensorInfo {
-		sensor_id: u8,
-		sensor_status: u8,
-		sensor_type: u8,
-	},
-	#[deku(id = "17")]
-	RotationData {
-		sensor_id: u8,
-		data_type: u8,
-		quat: SlimeQuaternion,
-		calibration_info: u8,
-	},
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
