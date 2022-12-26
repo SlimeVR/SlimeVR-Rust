@@ -130,7 +130,7 @@ impl Packet {
 		let bytes = self.to_bytes().map_err(|_| ())?;
 		// Check we can fit the buffer
 		if bytes.len() > buf.len() {
-			return Err(());  // TODO: Allow us to distinguish between deku error and buffer length error
+			return Err(()); // TODO: Allow us to distinguish between deku error and buffer length error
 		}
 		buf[..bytes.len()].copy_from_slice(&bytes);
 		Ok(bytes.len())
