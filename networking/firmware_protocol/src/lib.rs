@@ -7,8 +7,6 @@ mod serverbound;
 #[cfg(test)]
 mod test_deku;
 
-use core::marker::PhantomData;
-
 pub use clientbound::CBPacket;
 pub use deku;
 use deku::ctx::Endian;
@@ -111,7 +109,10 @@ impl SlimeString {
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "big")]
-pub struct Packet<'a, D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)>> {
+pub struct Packet<D>
+where
+	for<'a> D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)>,
+{
 	/// Identifies the variant of the packet.
 	tag: u32,
 	/// Sequence number for the packet. It is incremented for each subsequent packet and is used to reject out of order
@@ -119,23 +120,19 @@ pub struct Packet<'a, D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)>>
 	seq: u64,
 	#[deku(ctx = "*tag")]
 	data: D,
-	#[deku(skip)]
-	_phantom: PhantomData<&'a ()>,
 }
 
-impl<
-		'a,
-		D: DekuRead<'a, (Endian, u32)>
-			+ DekuWrite<(Endian, u32)>
-			+ DekuEnumExt<'static, u32>,
-	> Packet<'a, D>
+impl<D> Packet<D>
+where
+	for<'a> D: DekuRead<'a, (Endian, u32)>
+		+ DekuWrite<(Endian, u32)>
+		+ DekuEnumExt<'static, u32>,
 {
 	pub fn new(seq: u64, data: D) -> Self {
 		Self {
 			tag: data.deku_id().unwrap(),
 			seq,
 			data,
-			_phantom: PhantomData,
 		}
 	}
 
@@ -152,7 +149,7 @@ impl<
 		Ok(bytes.len())
 	}
 
-	pub fn deserialize_from(buf: &'a [u8]) -> Result<Self, DeserializeError> {
+	pub fn deserialize_from(buf: &[u8]) -> Result<Self, DeserializeError> {
 		match Packet::from_bytes((buf, 0)) {
 			Ok(((tail, _tail_offset), packet)) => {
 				if tail.is_empty() {

@@ -7,6 +7,26 @@ use nalgebra031::{Quaternion, UnitQuaternion};
 use crate::{CBPacket, Packet, SBPacket};
 
 #[test]
+/// Since we have the use of hrtb in the generics of the `Packet`, this ensures that
+/// the behaviour of the lifetimes matches what we would expect.
+///
+/// This code should fail to compile if we did the lifetimes wrong.
+fn test_lifetimes() {
+	let a = vec![0, 1];
+	let a_slice: &[u8] = &a;
+	let static_slice: &'static [u8] = &[2, 3, 4];
+
+	let a_result = Packet::<SBPacket>::deserialize_from(a_slice);
+	let static_result = Packet::<SBPacket>::deserialize_from(static_slice);
+
+	drop(a);
+	drop(static_slice);
+
+	drop(a_result);
+	drop(static_result);
+}
+
+#[test]
 fn handshake() {
 	let mac: [u8; 6] = [121, 34, 164, 250, 231, 204]; // test mac
 	let handshake = Packet::new(
