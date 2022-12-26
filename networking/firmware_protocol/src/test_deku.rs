@@ -94,7 +94,7 @@ fn quat_fancy() {
 #[test]
 fn test_ping() {
 	let data = [0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 4];
-	let (seq, data): (_, SbPacket) = Packet::deserialize_from(&data).unwrap().split();
+	let (seq, data) = Packet::<SbPacket>::deserialize_from(&data).unwrap().split();
 	assert_eq!(data, SbPacket::Ping { id: 16909060 });
 	assert_eq!(seq, 1);
 }
