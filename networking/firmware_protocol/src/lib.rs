@@ -143,6 +143,7 @@ impl Packet {
 		}
 	}
 
+	/// Returns a tuple of the sequence number, and the `PacketData`.
 	pub fn split(self) -> (u64, PacketData) {
 		(self.seq, self.data)
 	}
