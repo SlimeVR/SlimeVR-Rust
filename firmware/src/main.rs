@@ -80,10 +80,12 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 					.serverbound
 					.send(SbPacket::Handshake {
 						board: 4, // BOARD_CUSTOM
-						imu: IMU_KIND.protocol_id(),
+						imu: IMU_KIND.protocol_id().into(),
 						mcu_type: 2,         // ESP32
 						imu_info: (0, 0, 0), // These appear to be inert
-						build: 0,
+						// Needs to be >=9 to use newer protocol, this is hard-coded in
+						// the java server :(
+						build: 10,
 						firmware: "SlimeVR-Rust".into(),
 						mac_address: [0; 6],
 					})
