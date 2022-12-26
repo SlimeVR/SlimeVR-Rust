@@ -15,7 +15,7 @@ use alloc::vec::Vec;
 use deku::prelude::*;
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[deku(endian = "e", ctx = "e: deku::ctx::Endian")]
 pub struct SlimeQuaternion {
 	pub i: f32,
 	pub j: f32,
@@ -67,7 +67,7 @@ mod nalgebra030_impls {
 }
 
 #[derive(PartialEq, Eq, Debug, DekuRead, DekuWrite)]
-#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[deku(endian = "e", ctx = "e: deku::ctx::Endian")]
 pub struct SlimeString {
 	#[deku(update = "self.data.len()")]
 	count: u8,
@@ -150,7 +150,7 @@ impl Packet {
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(ctx = "_: deku::ctx::Endian, tag: u32", id = "tag", endian = "big")]
+#[deku(ctx = "e: deku::ctx::Endian, tag: u32", id = "tag", endian = "e")]
 pub enum PacketData {
 	#[deku(id = "0")]
 	Discovery,
