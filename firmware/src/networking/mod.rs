@@ -8,8 +8,7 @@ pub async fn network_task(packets: &Packets) -> ! {
 	#[cfg(feature = "net-wifi")]
 	self::wifi::ඞ::network_task(packets).await;
 	#[cfg(feature = "net-stubbed")]
-	stubbed_network_task(packets).await;
-	unreachable!("No network implementation specified")
+	stubbed_network_task(packets).await
 }
 
 /// This does nothing, its a "fake" networking task meant to facilitate testing and
