@@ -4,13 +4,10 @@ pub mod wifi;
 mod packets;
 pub use self::packets::Packets;
 
-pub async fn network_task(packets: &Packets) -> ! {
-	#[cfg(feature = "net-wifi")]
-	self::wifi::ඞ::network_task(packets).await;
-	#[cfg(feature = "net-stubbed")]
-	stubbed_network_task(packets).await;
-	unreachable!("No network implementation specified")
-}
+#[cfg(feature = "net-wifi")]
+pub use self::wifi::ඞ::network_task;
+#[cfg(feature = "net-stubbed")]
+pub use stubbed_network_task as network_task;
 
 /// This does nothing, its a "fake" networking task meant to facilitate testing and
 /// the initial port to a new platform (because there are no networking dependencies).

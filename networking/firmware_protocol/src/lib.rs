@@ -2,17 +2,17 @@
 
 extern crate alloc;
 
+mod clientbound;
+mod serverbound;
 #[cfg(test)]
 mod test_deku;
-mod serverbound;
-mod clientbound;
 
 use core::marker::PhantomData;
 
+pub use clientbound::CBPacket;
 pub use deku;
 use deku::ctx::Endian;
 pub use serverbound::SBPacket;
-pub use clientbound::CBPacket;
 
 use alloc::format;
 use alloc::string::FromUtf8Error;
@@ -22,7 +22,7 @@ use alloc::vec::Vec;
 use deku::prelude::*;
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[deku(endian = "e", ctx = "e: deku::ctx::Endian")]
 pub struct SlimeQuaternion {
 	pub i: f32,
 	pub j: f32,
@@ -74,7 +74,7 @@ mod nalgebra030_impls {
 }
 
 #[derive(PartialEq, Eq, Debug, DekuRead, DekuWrite)]
-#[deku(endian = "endian", ctx = "endian: deku::ctx::Endian")]
+#[deku(endian = "e", ctx = "e: deku::ctx::Endian")]
 pub struct SlimeString {
 	#[deku(update = "self.data.len()")]
 	count: u8,
@@ -112,7 +112,7 @@ impl SlimeString {
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "big")]
 pub struct Packet<'a, D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)>> {
-	// TODO: This tag could really be dropped from the Rust side, but #[deku(temp)] is a bit wonky
+	/// Identifies the variant of the packet.
 	tag: u32,
 	/// Sequence number for the packet. It is incremented for each subsequent packet and is used to reject out of order
 	/// packets. This is sometimes referred to as the packet id
@@ -123,37 +123,73 @@ pub struct Packet<'a, D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)>>
 	_phantom: PhantomData<&'a ()>,
 }
 
-impl<'a, D: DekuRead<'a, (Endian, u32)> + DekuWrite<(Endian, u32)> + DekuEnumExt<'static, u32>> Packet<'a, D> {
+impl<
+		'a,
+		D: DekuRead<'a, (Endian, u32)>
+			+ DekuWrite<(Endian, u32)>
+			+ DekuEnumExt<'static, u32>,
+	> Packet<'a, D>
+{
 	pub fn new(seq: u64, data: D) -> Self {
 		Self {
 			tag: data.deku_id().unwrap(),
 			seq,
 			data,
-			_phantom: PhantomData
+			_phantom: PhantomData,
 		}
 	}
 
 	/// Serialize the packet into a byte slice, returning the number of bytes written. If the packet cannot fit into
 	/// the buffer or data could not be serialied, Err is returned.
-	pub fn serialize_into(&self, buf: &mut [u8]) -> Result<usize, ()> {
+	pub fn serialize_into(&self, buf: &mut [u8]) -> Result<usize, SerializeError> {
 		// TODO: Deku should be extended to support in-place serialization instead of allocating here
-		let bytes = self.to_bytes().map_err(|_| ())?;
+		let bytes = self.to_bytes()?;
 		// Check we can fit the buffer
 		if bytes.len() > buf.len() {
-			return Err(());
+			return Err(SerializeError::BufferTooSmall);
 		}
 		buf[..bytes.len()].copy_from_slice(&bytes);
 		Ok(bytes.len())
 	}
 
-	pub fn deserialize_from(buf: &'a [u8]) -> Result<Self, ()> {
+	pub fn deserialize_from(buf: &'a [u8]) -> Result<Self, DeserializeError> {
 		match Packet::from_bytes((buf, 0)) {
-			Ok(((tail, _tail_offset), packet)) if tail.len() == 0 => Ok(packet),
-			_ => Err(()),
+			Ok(((tail, _tail_offset), packet)) => {
+				if tail.is_empty() {
+					Ok(packet)
+				} else {
+					Err(DeserializeError::BytesRemaining)
+				}
+			}
+			Err(deku) => Err(DeserializeError::Deku(deku)),
 		}
 	}
 
+	/// Returns a tuple of the sequence number, and the `PacketData`.
 	pub fn split(self) -> (u64, D) {
 		(self.seq, self.data)
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SerializeError {
+	Deku(::deku::DekuError),
+	BufferTooSmall,
+}
+impl From<::deku::DekuError> for SerializeError {
+	fn from(deku: ::deku::DekuError) -> Self {
+		Self::Deku(deku)
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DeserializeError {
+	Deku(::deku::DekuError),
+	/// Unexpectedly had bytes remaining after deserialization.
+	BytesRemaining,
+}
+impl From<::deku::DekuError> for DeserializeError {
+	fn from(deku: ::deku::DekuError) -> Self {
+		Self::Deku(deku)
 	}
 }

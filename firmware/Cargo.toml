@@ -163,7 +163,9 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "libm",
 ] }
 fugit = "0.3"
-firmware_protocol = { path = "../networking/firmware_protocol", features = ["nalgebra031"] }
+firmware_protocol = { path = "../networking/firmware_protocol", features = [
+  "nalgebra031",
+] }
 
 [build-dependencies]
 feature_utils = "0.0.0"
