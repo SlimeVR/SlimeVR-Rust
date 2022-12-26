@@ -4,10 +4,12 @@ on:
     paths:
       - .github/workflows/firmware-ci.yml
       - firmware/**
+      - networking/firmware_protocol/**
   pull_request:
     paths:
       - .github/workflows/firmware-ci.yml
       - firmware/**
+      - networking/firmware_protocol/**
   workflow_dispatch:
 
 jobs:

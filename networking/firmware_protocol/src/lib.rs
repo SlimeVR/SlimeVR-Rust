@@ -125,21 +125,27 @@ impl Packet {
 
 	/// Serialize the packet into a byte slice, returning the number of bytes written. If the packet cannot fit into
 	/// the buffer or data could not be serialied, Err is returned.
-	pub fn serialize_into(&self, buf: &mut [u8]) -> Result<usize, ()> {
+	pub fn serialize_into(&self, buf: &mut [u8]) -> Result<usize, SerializeError> {
 		// TODO: Deku should be extended to support in-place serialization instead of allocating here
-		let bytes = self.to_bytes().map_err(|_| ())?;
+		let bytes = self.to_bytes()?;
 		// Check we can fit the buffer
 		if bytes.len() > buf.len() {
-			return Err(()); // TODO: Allow us to distinguish between deku error and buffer length error
+			return Err(SerializeError::BufferTooSmall);
 		}
 		buf[..bytes.len()].copy_from_slice(&bytes);
 		Ok(bytes.len())
 	}
 
-	pub fn deserialize_from(buf: &[u8]) -> Result<Packet, ()> {
+	pub fn deserialize_from(buf: &[u8]) -> Result<Packet, DeserializeError> {
 		match Packet::from_bytes((buf, 0)) {
-			Ok(((tail, _tail_offset), packet)) if tail.len() == 0 => Ok(packet),
-			_ => Err(()),
+			Ok(((tail, _tail_offset), packet)) => {
+				if tail.is_empty() {
+					Ok(packet)
+				} else {
+					Err(DeserializeError::BytesRemaining)
+				}
+			}
+			Err(deku) => Err(DeserializeError::Deku(deku)),
 		}
 	}
 
@@ -186,4 +192,27 @@ pub enum PacketData {
 		quat: SlimeQuaternion,
 		calibration_info: u8,
 	},
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SerializeError {
+	Deku(::deku::DekuError),
+	BufferTooSmall,
+}
+impl From<::deku::DekuError> for SerializeError {
+	fn from(deku: ::deku::DekuError) -> Self {
+		Self::Deku(deku)
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DeserializeError {
+	Deku(::deku::DekuError),
+	/// Unexpectedly had bytes remaining after deserialization.
+	BytesRemaining,
+}
+impl From<::deku::DekuError> for DeserializeError {
+	fn from(deku: ::deku::DekuError) -> Self {
+		Self::Deku(deku)
+	}
 }
