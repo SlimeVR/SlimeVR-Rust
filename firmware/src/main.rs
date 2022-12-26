@@ -18,14 +18,12 @@ mod utils;
 #[cfg(bbq)]
 mod bbq_logger;
 
-use core::convert::Infallible;
-
 use defmt::debug;
 use embassy_executor::{task, Executor};
-use embassy_time::{Duration, Ticker};
+
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::{CbPacket, SbPacket};
-use futures_util::{future::join, StreamExt};
+
 use imu::Quat;
 use networking::Packets;
 use static_cell::StaticCell;
@@ -75,31 +73,12 @@ fn main() -> ! {
 #[task]
 async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>) -> ! {
 	debug!("Control task!");
-
-	let sensor_info_fut = async {
-		let mut ticker = Ticker::every(Duration::from_millis(1000));
-		loop {
-			packets
-				.serverbound
-				.send(SbPacket::SensorInfo {
-					sensor_id: 0,     // First sensor (of two)
-					sensor_status: 1, // OK
-					sensor_type: IMU_KIND.protocol_id(),
-				})
-				.await;
-			debug!("Sent SensorInfo");
-
-			ticker.next().await;
-		}
-	};
-	let loop_fut = async {
+	async {
 		loop {
 			do_work(packets, quat).await;
 		}
-	};
-
-	let _: (Infallible, Infallible) = join(sensor_info_fut, loop_fut).await;
-	unreachable!()
+	}
+	.await
 }
 
 async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
@@ -120,6 +99,18 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 					mac_address: [0; 6],
 				})
 				.await;
+			debug!("Handshake");
+
+			// After handshake, we are supposed to send `SensorInfo` only once.
+			packets
+				.serverbound
+				.send(SbPacket::SensorInfo {
+					sensor_id: 0,     // First sensor (of two)
+					sensor_status: 1, // OK
+					sensor_type: IMU_KIND.protocol_id(),
+				})
+				.await;
+			debug!("SensorInfo");
 		}
 		// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
 		// The protocol is asymmetric so its a bit unintuitive.
