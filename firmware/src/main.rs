@@ -18,10 +18,14 @@ mod utils;
 #[cfg(bbq)]
 mod bbq_logger;
 
+use core::convert::Infallible;
+
 use defmt::debug;
 use embassy_executor::{task, Executor};
+use embassy_time::{Duration, Ticker};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::{CbPacket, SbPacket};
+use futures_util::{future::join, StreamExt};
 use imu::Quat;
 use networking::Packets;
 use static_cell::StaticCell;
@@ -33,6 +37,8 @@ use cortex_m_rt::entry;
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;
+
+use crate::imu::IMU_KIND;
 
 #[entry]
 fn main() -> ! {
@@ -67,55 +73,74 @@ fn main() -> ! {
 }
 
 #[task]
-async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>) {
+async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>) -> ! {
 	debug!("Control task!");
 
-	loop {
-		match packets.clientbound.recv().await {
-			// Identify ourself when discovery packet is received
-			CbPacket::Discovery => {
-				packets
-					.serverbound
-					.send(SbPacket::Handshake {
-						board: 4,
-						imu: 8,
-						mcu_type: 2,
-						imu_info: (1, 2, 3),
-						build: 5,
-						firmware: "SlimeVR-Rust".into(),
-						mac_address: [0; 6],
-					})
-					.await;
-			}
-			// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
-			// The protocol is asymmetric so its a bit unintuitive. TODO: Split packet type into Server2Client and C2S
-			CbPacket::Heartbeat => {
-				packets.serverbound.send(SbPacket::Heartbeat).await;
-			}
-			// Pings are basically like heartbeats, just echo data back
-			CbPacket::Ping { id } => {
-				packets.serverbound.send(SbPacket::Ping { id }).await;
-			}
-		}
+	let sensor_info_fut = async {
+		let mut ticker = Ticker::every(Duration::from_millis(1000));
+		loop {
+			packets
+				.serverbound
+				.send(SbPacket::SensorInfo {
+					sensor_id: 0,     // First sensor (of two)
+					sensor_status: 1, // OK
+					sensor_type: IMU_KIND.protocol_id(),
+				})
+				.await;
+			debug!("Sent SensorInfo");
 
-		packets
-			.serverbound
-			.send(SbPacket::SensorInfo {
-				sensor_id: 0,
-				sensor_status: 1,
-				sensor_type: 0,
-			})
-			.await;
-		packets
-			.serverbound
-			.send(SbPacket::RotationData {
-				sensor_id: 0,
-				data_type: 1,
-				quat: quat.wait().await.into_inner().into(),
-				calibration_info: 0,
-			})
-			.await;
+			ticker.next().await;
+		}
+	};
+	let loop_fut = async {
+		loop {
+			do_work(packets, quat).await;
+		}
+	};
+
+	let _: (Infallible, Infallible) = join(sensor_info_fut, loop_fut).await;
+	unreachable!()
+}
+
+async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
+	match packets.clientbound.recv().await {
+		// Identify ourself when discovery packet is received
+		CbPacket::Discovery => {
+			packets
+				.serverbound
+				.send(SbPacket::Handshake {
+					board: 4, // BOARD_CUSTOM
+					imu: IMU_KIND.protocol_id().into(),
+					mcu_type: 2,         // ESP32
+					imu_info: (0, 0, 0), // These appear to be inert
+					// Needs to be >=9 to use newer protocol, this is hard-coded in
+					// the java server :(
+					build: 10,
+					firmware: "SlimeVR-Rust".into(),
+					mac_address: [0; 6],
+				})
+				.await;
+		}
+		// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
+		// The protocol is asymmetric so its a bit unintuitive.
+		CbPacket::Heartbeat => {
+			packets.serverbound.send(SbPacket::Heartbeat).await;
+		}
+		// Pings are basically like heartbeats, just echo data back
+		CbPacket::Ping { id } => {
+			packets.serverbound.send(SbPacket::Ping { id }).await;
+		}
 	}
+
+	packets
+		.serverbound
+		.send(SbPacket::RotationData {
+			sensor_id: 0, // First sensor
+			data_type: 1, // Rotation data without magnetometer correction.
+			quat: quat.wait().await.into_inner().into(),
+			calibration_info: 0,
+		})
+		.await;
 }
 
 #[task]
