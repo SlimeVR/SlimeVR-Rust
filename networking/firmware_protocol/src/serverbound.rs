@@ -1,11 +1,11 @@
 use alloc::format;
 use deku::prelude::*;
 
-use crate::{SlimeString, SlimeQuaternion};
+use crate::{SlimeQuaternion, SlimeString};
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(ctx = "_: deku::ctx::Endian, tag: u32", id = "tag", endian = "big")]
-pub enum SBPacket {
+pub enum SbPacket {
 	#[deku(id = "0")]
 	Heartbeat,
 	#[deku(id = "3")]

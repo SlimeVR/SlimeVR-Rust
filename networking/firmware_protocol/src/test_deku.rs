@@ -4,7 +4,7 @@ use alloc::vec::Vec;
 use deku::DekuContainerWrite;
 use nalgebra031::{Quaternion, UnitQuaternion};
 
-use crate::{CBPacket, Packet, SBPacket};
+use crate::{CbPacket, Packet, SbPacket};
 
 #[test]
 /// Since we have the use of hrtb in the generics of the `Packet`, this ensures that
@@ -16,8 +16,8 @@ fn test_lifetimes() {
 	let a_slice: &[u8] = &a;
 	let static_slice: &'static [u8] = &[2, 3, 4];
 
-	let a_result = Packet::<SBPacket>::deserialize_from(a_slice);
-	let static_result = Packet::<SBPacket>::deserialize_from(static_slice);
+	let a_result = Packet::<SbPacket>::deserialize_from(a_slice);
+	let static_result = Packet::<SbPacket>::deserialize_from(static_slice);
 
 	drop(a);
 	drop(static_slice);
@@ -31,7 +31,7 @@ fn handshake() {
 	let mac: [u8; 6] = [121, 34, 164, 250, 231, 204]; // test mac
 	let handshake = Packet::new(
 		1,
-		SBPacket::Handshake {
+		SbPacket::Handshake {
 			board: 2,
 			imu: 3,
 			mcu_type: 4,
@@ -52,7 +52,7 @@ fn handshake() {
 }
 #[test]
 fn quat() {
-	let packet = Packet::new(1, CBPacket::Heartbeat);
+	let packet = Packet::new(1, CbPacket::Heartbeat);
 	let data: Vec<u8> = vec![0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1];
 
 	assert_eq!(packet.to_bytes().unwrap(), data);
@@ -61,7 +61,7 @@ fn quat() {
 fn sensor_info() {
 	let sensor_info = Packet::new(
 		1,
-		SBPacket::SensorInfo {
+		SbPacket::SensorInfo {
 			sensor_id: 64,
 			sensor_status: 3,
 			sensor_type: 5,
@@ -76,7 +76,7 @@ fn quat_fancy() {
 	let quat = UnitQuaternion::new_unchecked(Quaternion::new(1.0f32, 0.0, 0.0, 0.0));
 	let rotation = Packet::new(
 		1,
-		SBPacket::RotationData {
+		SbPacket::RotationData {
 			sensor_id: 64,
 			data_type: 1,
 			quat: (*quat.quaternion()).into(),
@@ -94,15 +94,15 @@ fn quat_fancy() {
 #[test]
 fn test_ping() {
 	let data = [0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 4];
-	let (seq, data): (_, SBPacket) = Packet::deserialize_from(&data).unwrap().split();
-	assert_eq!(data, SBPacket::Ping { id: 16909060 });
+	let (seq, data): (_, SbPacket) = Packet::deserialize_from(&data).unwrap().split();
+	assert_eq!(data, SbPacket::Ping { id: 16909060 });
 	assert_eq!(seq, 1);
 }
 #[test]
 fn test_acceleration() {
 	let acc = Packet::new(
 		16,
-		SBPacket::Acceleration {
+		SbPacket::Acceleration {
 			vector: (0.1, 0.5, 0.9),
 			sensor_id: Some(32),
 		},

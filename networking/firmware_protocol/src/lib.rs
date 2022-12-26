@@ -7,10 +7,10 @@ mod serverbound;
 #[cfg(test)]
 mod test_deku;
 
-pub use clientbound::CBPacket;
+pub use clientbound::CbPacket;
 pub use deku;
 use deku::ctx::Endian;
-pub use serverbound::SBPacket;
+pub use serverbound::SbPacket;
 
 use alloc::format;
 use alloc::string::FromUtf8Error;
