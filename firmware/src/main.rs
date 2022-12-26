@@ -18,7 +18,7 @@ mod utils;
 #[cfg(bbq)]
 mod bbq_logger;
 
-use defmt::{debug, warn};
+use defmt::{debug};
 use embassy_executor::{task, Executor};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::{CBPacket, SBPacket};
