@@ -1,7 +1,6 @@
 use defmt::{debug, info};
 use embassy_futures::yield_now;
 use embedded_svc::wifi::{ClientConfiguration, Configuration, Wifi};
-use smoltcp::wire::Ipv4Address;
 
 #[cfg(feature = "net-wifi")]
 #[path = "esp.rs"]
@@ -9,7 +8,6 @@ pub mod ඞ;
 
 const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
-static SERVER_IP: Ipv4Address = Ipv4Address::new(192, 168, 10, 121);
 const EXPECTED_NEIGHBOURS: usize = 10;
 const WIFI_FIND_RETRIES: usize = 10;
 
