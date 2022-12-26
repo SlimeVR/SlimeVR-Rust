@@ -20,7 +20,6 @@ fn test_lifetimes() {
 	let static_result = Packet::<SbPacket>::deserialize_from(static_slice);
 
 	drop(a);
-	drop(static_slice);
 
 	drop(a_result);
 	drop(static_result);

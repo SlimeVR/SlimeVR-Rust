@@ -107,7 +107,7 @@ impl SlimeString {
 	}
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(endian = "big")]
 pub struct Packet<D>
 where
