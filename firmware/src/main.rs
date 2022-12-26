@@ -34,6 +34,8 @@ use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;
 
+use crate::imu::IMU_KIND;
+
 #[entry]
 fn main() -> ! {
 	#[cfg(bbq)]
@@ -77,11 +79,11 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 				packets
 					.serverbound
 					.send(SbPacket::Handshake {
-						board: 4,
-						imu: 8,
-						mcu_type: 2,
-						imu_info: (1, 2, 3),
-						build: 5,
+						board: 4, // BOARD_CUSTOM
+						imu: IMU_KIND.protocol_id(),
+						mcu_type: 2,         // ESP32
+						imu_info: (0, 0, 0), // These appear to be inert
+						build: 0,
 						firmware: "SlimeVR-Rust".into(),
 						mac_address: [0; 6],
 					})
@@ -101,16 +103,16 @@ async fn control_task(packets: &'static Packets, quat: &'static Unreliable<Quat>
 		packets
 			.serverbound
 			.send(SbPacket::SensorInfo {
-				sensor_id: 0,
-				sensor_status: 1,
-				sensor_type: 0,
+				sensor_id: 0,     // First sensor (of two)
+				sensor_status: 1, // OK
+				sensor_type: IMU_KIND.protocol_id(),
 			})
 			.await;
 		packets
 			.serverbound
 			.send(SbPacket::RotationData {
-				sensor_id: 0,
-				data_type: 1,
+				sensor_id: 0, // First sensor
+				data_type: 1, // Rotation data without magnetometer correction.
 				quat: quat.wait().await.into_inner().into(),
 				calibration_info: 0,
 			})
