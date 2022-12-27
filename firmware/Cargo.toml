@@ -14,7 +14,7 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-bmi160", "log-rtt", "net-wifi"]
+default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
 # default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 

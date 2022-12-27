@@ -1,7 +1,9 @@
 use super::{Imu, ImuKind, Quat};
+
 use crate::aliases::I2c;
 use crate::utils;
 
+use bmi160::SensorSelector;
 use defmt::{debug, trace};
 use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::blocking::i2c::{Write, WriteRead};
@@ -65,7 +67,17 @@ impl<I: I2c> Imu for Bmi160<I> {
 	const IMU_TYPE: ImuType = ImuType::Bmi160;
 
 	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
-		todo!()
+		let data = self.driver.data(SensorSelector::new().gyro())?;
+		let euler = data.gyro.unwrap();
+
+		// TODO: Check that bmi crates conventions for euler angles matches nalgebra.
+		// TODO: Need to actually use FSR from bmi to convert to float. How we do it rn
+		// results in meaningless data.
+		Ok(nalgebra::UnitQuaternion::from_euler_angles(
+			euler.x.into(),
+			euler.y.into(),
+			euler.z.into(),
+		))
 	}
 }
 
