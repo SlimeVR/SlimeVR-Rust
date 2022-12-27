@@ -31,6 +31,7 @@ pub const IMU_KIND: ImuKind = {
 };
 
 #[derive(Debug, Eq, PartialEq)]
+#[allow(dead_code)]
 pub enum ImuKind {
 	Mpu6050,
 	Bmi160,

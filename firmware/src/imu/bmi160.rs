@@ -3,7 +3,7 @@ use super::{Imu, ImuKind, Quat};
 use crate::aliases::I2c;
 use crate::utils;
 
-use bmi160::SensorSelector;
+use bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
 use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::blocking::i2c::{Write, WriteRead};
@@ -35,6 +35,15 @@ impl<I: I2c> Bmi160<I> {
 		let addr = ::bmi160::SlaveAddr::Default;
 		debug!("I2C address: {:?}", defmt::Debug2Format(&addr));
 
+		macro_rules! unwrap_or_err {
+			($d:expr, $e:expr) => {
+				match $e {
+					Ok(v) => v,
+					Err(err) => return Err(($d.destroy(), err)),
+				}
+			};
+		}
+
 		utils::retry(
 			4,
 			i2c,
@@ -45,12 +54,17 @@ impl<I: I2c> Bmi160<I> {
 				delay.delay_ms(100);
 				trace!("Constructing IMU");
 				let mut driver = BmiDriver::new_with_i2c(i2c, addr);
-				let id = match driver.chip_id() {
-					Ok(id) => id,
-					Err(error) => return Err((driver.destroy(), error)),
-				};
+				let id = unwrap_or_err!(driver, driver.chip_id());
 				debug!("Constructed BMI with chip id: {}", id);
-				// TODO: Do we need to enable rotation or do any other setup?
+				unwrap_or_err!(
+					driver,
+					driver.set_accel_power_mode(AccelerometerPowerMode::Normal)
+				);
+				unwrap_or_err!(
+					driver,
+					driver.set_gyro_power_mode(GyroscopePowerMode::Normal)
+				);
+				debug!("BMI power mode set to Normal");
 				delay.delay_ms(100);
 				Ok(Self { driver })
 			},
