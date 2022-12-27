@@ -92,6 +92,7 @@ impl<I: I2c> Imu for Bmi160<I> {
 		const FSR: GyroFsr = GyroFsr::DEFAULT;
 
 		// TODO: Check that bmi crates conventions for euler angles matches nalgebra.
+		// TODO: Implement sensor fusion and temperature compensation
 		Ok(nalgebra::UnitQuaternion::from_euler_angles(
 			discrete_to_radians(FSR, euler.x),
 			discrete_to_radians(FSR, euler.y),
