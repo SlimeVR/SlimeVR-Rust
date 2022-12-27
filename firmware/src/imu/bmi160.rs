@@ -9,16 +9,15 @@ use firmware_protocol::ImuType;
 
 type BmiDriver<I2c> = ::bmi160::Bmi160<bmi160::interface::I2cInterface<I2c>>;
 // Second generic is `()` because we don't have chip select errors in I2C.
-type BmiError<I: I2c> = ::bmi160::Error<<I as I2c>::Error, ()>;
+type BmiError<I> = ::bmi160::Error<<I as I2c>::Error, ()>;
 
 pub struct InitError<I: I2c> {
 	pub i2c: I,
 	pub error: BmiError<I>,
 }
-impl<I2c, E> core::fmt::Debug for InitError<I2c>
+impl<I> core::fmt::Debug for InitError<I>
 where
-	I2c: WriteRead<Error = E> + Write<Error = E>,
-	E: core::fmt::Debug,
+	I: I2c,
 {
 	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
 		self.error.fmt(f)
@@ -32,7 +31,7 @@ impl<I: I2c> Bmi160<I> {
 	pub fn new(i2c: I, delay: &mut impl DelayMs<u32>) -> Result<Self, InitError<I>> {
 		debug!("Constructing BMI160...");
 		let addr = ::bmi160::SlaveAddr::Default;
-		debug!("I2C address: {:x}", addr.0);
+		debug!("I2C address: {:?}", defmt::Debug2Format(&addr));
 
 		utils::retry(
 			4,
@@ -40,20 +39,16 @@ impl<I: I2c> Bmi160<I> {
 			|mut i2c| {
 				delay.delay_ms(100);
 				trace!("Flushing I2C with bogus data");
-				let _ = i2c.write(addr.0, &[0]);
+				let _ = i2c.write(addr.addr(), &[0]);
 				delay.delay_ms(100);
 				trace!("Constructing IMU");
 				let mut driver = BmiDriver::new_with_i2c(i2c, addr);
 				let id = match driver.chip_id() {
 					Ok(id) => id,
-					Err(error) => {
-						return InitError {
-							i2c: driver.destroy(),
-							error,
-						}
-					}
+					Err(error) => return Err((driver.destroy(), error)),
 				};
 				debug!("Constructed BMI with chip id: {}", id);
+				// TODO: Do we need to enable rotation or do any other setup?
 				delay.delay_ms(100);
 				Ok(Self { driver })
 			},

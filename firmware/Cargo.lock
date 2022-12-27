@@ -123,8 +123,7 @@ dependencies = [
 [[package]]
 name = "bmi160"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "768b9d4065e62e7db91f03f258febcb4aa92b29376775a938605263c2d9facce"
+source = "git+https://github.com/TheButlah/bmi160-rs?rev=e99802b#e99802b801f36509bb769a6646153f0a77ba49c5"
 dependencies = [
  "embedded-hal 0.2.7",
 ]
