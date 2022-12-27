@@ -121,6 +121,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bmi160"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "768b9d4065e62e7db91f03f258febcb4aa92b29376775a938605263c2d9facce"
+dependencies = [
+ "embedded-hal 0.2.7",
+]
+
+[[package]]
 name = "bytemuck"
 version = "1.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -797,6 +806,7 @@ name = "firmware"
 version = "0.0.0"
 dependencies = [
  "alloc-cortex-m",
+ "bmi160",
  "cfg_aliases",
  "cortex-m",
  "cortex-m-rt",
