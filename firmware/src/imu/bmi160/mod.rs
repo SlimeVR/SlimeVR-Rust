@@ -1,7 +1,11 @@
+mod math;
+
+use self::math::discrete_to_radians;
+
 use super::{Imu, ImuKind, Quat};
 
-use crate::aliases::I2c;
 use crate::utils;
+use crate::{aliases::I2c, imu::ඞ::math::GyroFsr};
 
 use bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
@@ -84,13 +88,14 @@ impl<I: I2c> Imu for Bmi160<I> {
 		let data = self.driver.data(SensorSelector::new().gyro())?;
 		let euler = data.gyro.unwrap();
 
+		// TODO: We should probably query the IMU for the FSR instead of assuming the default one.
+		const FSR: GyroFsr = GyroFsr::DEFAULT;
+
 		// TODO: Check that bmi crates conventions for euler angles matches nalgebra.
-		// TODO: Need to actually use FSR from bmi to convert to float. How we do it rn
-		// results in meaningless data.
 		Ok(nalgebra::UnitQuaternion::from_euler_angles(
-			euler.x.into(),
-			euler.y.into(),
-			euler.z.into(),
+			discrete_to_radians(FSR, euler.x),
+			discrete_to_radians(FSR, euler.y),
+			discrete_to_radians(FSR, euler.z),
 		))
 	}
 }

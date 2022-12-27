@@ -10,7 +10,7 @@ mod ඞ {
 mod ඞ;
 
 #[cfg(feature = "imu-bmi160")]
-#[path = "bmi160.rs"]
+#[path = "bmi160/mod.rs"]
 mod ඞ;
 
 use crate::utils::{nb2a, Unreliable};
