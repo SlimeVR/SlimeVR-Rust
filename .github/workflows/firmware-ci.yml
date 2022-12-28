@@ -53,8 +53,12 @@ jobs:
             net: net-stubbed
             log: log-uart
             target: riscv32imc-unknown-none-elf
-            imu: imu-mpu6050 # add IMUs inside the include so they are only ran once
-          # example:
+            imu: imu-mpu6050 
+          - mcu: mcu-esp32c3
+            net: net-stubbed
+            log: log-uart
+            target: riscv32imc-unknown-none-elf
+            imu: imu-bmi160 # add IMUs inside the include so they are only ran once
           # - mcu: mcu-esp32c3
             # net: net-stubbed
             # log: log-uart
