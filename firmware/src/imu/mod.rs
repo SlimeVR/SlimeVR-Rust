@@ -14,34 +14,14 @@ use crate::utils::{nb2a, Unreliable};
 use defmt::{debug, info, trace};
 use embassy_futures::yield_now;
 use embedded_hal::blocking::delay::DelayMs;
+use firmware_protocol::ImuType;
 
 pub type Quat = nalgebra::UnitQuaternion<f32>;
-
-pub const IMU_KIND: ImuKind = {
-	#[cfg(any(feature = "imu-mpu6050", feature = "imu-stubbed"))]
-	ImuKind::Mpu6050
-};
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum ImuKind {
-	Mpu6050,
-}
-impl ImuKind {
-	/// The ID this imu type corresponds to in the firmware protocol.
-	///
-	/// Reference:
-	/// https://github.com/SlimeVR/SlimeVR-Tracker-ESP/blob/cb188cfd7a757fa1fda/src/consts.h#L26
-	pub const fn protocol_id(&self) -> u8 {
-		match self {
-			ImuKind::Mpu6050 => 6,
-		}
-	}
-}
 
 pub trait Imu {
 	type Error: core::fmt::Debug;
 
-	const IMU_KIND: ImuKind;
+	const IMU_TYPE: ImuType;
 	fn quat(&mut self) -> nb::Result<Quat, Self::Error>;
 }
 
