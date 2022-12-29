@@ -23,10 +23,10 @@ pub enum SbPacket {
 	#[deku(id = "4")]
 	Acceleration {
 		vector: (f32, f32, f32),
-		sensor_id: Option<u8>,
+		sensor_id: u8,
 	},
 	#[deku(id = "10")]
-	Ping { id: u32 },
+	Ping { challenge: [u8; 4] },
 	#[deku(id = "15")]
 	SensorInfo {
 		sensor_id: u8,
@@ -72,8 +72,7 @@ pub enum BoardType {
 	#[deku(id = "12")]
 	ESP32C3DevKitM1,
 	#[deku(id_pat = "_")]
-	// TODO: Figure out how to make Unknown(u32) with deku
-	Unknown,
+	Unknown(u32),
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
@@ -100,8 +99,7 @@ pub enum ImuType {
 	#[deku(id = "9")]
 	Icm20948,
 	#[deku(id_pat = "_")]
-	// TODO: Figure out how to make Unknown(u8) with deku
-	Unknown,
+	Unknown(u8),
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
@@ -114,8 +112,7 @@ pub enum McuType {
 	#[deku(id = "2")]
 	Esp32,
 	#[deku(id_pat = "_")]
-	// TODO: Figure out how to make Unknown(u32) with deku
-	Unknown,
+	Unknown(u32),
 }
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
@@ -140,4 +137,124 @@ pub enum SensorDataType {
 	#[deku(id = "2")]
 	/// Never sent by C++ firmware
 	Correction,
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::*;
+
+	// Compare data section of packet
+	fn test(p: SbPacket, d: &[u8]) {
+		let packet = Packet::new(0, p);
+		let bytes = packet.to_bytes().unwrap();
+		// Skip tag and seq
+		assert_eq!(&bytes[4 + 8..], d);
+		// Check deserialization
+		assert_eq!(
+			Packet::from_bytes((&bytes, 0)),
+			Ok((([].as_slice(), 0), packet))
+		);
+	}
+
+	#[test]
+	fn heartbeat() {
+		test(SbPacket::Heartbeat, &[]);
+	}
+
+	#[test]
+	fn handshake() {
+		test(
+			SbPacket::Handshake {
+				board: BoardType::SlimeVR,
+				imu: ImuType::Bno085,
+				mcu: McuType::Esp8266,
+				imu_info: (1, 2, 3),
+				build: 7,
+				firmware: SlimeString::from("Test"),
+				mac_address: *b"ferris",
+			},
+			&[
+				0, 0, 0, 9, // Board
+				0, 0, 0, // Pad
+				4, // IMU
+				0, 0, 0, 1, // MCU
+				0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, // Info
+				0, 0, 0, 7, // Build
+				4, b'T', b'e', b's', b't', // Firmware
+				b'f', b'e', b'r', b'r', b'i', b's', // MAC
+			],
+		);
+	}
+
+	#[test]
+	fn acceleration() {
+		test(
+			SbPacket::Acceleration {
+				vector: (
+					f32::from_be_bytes([1, 2, 3, 4]),
+					f32::from_be_bytes([5, 6, 7, 8]),
+					f32::from_be_bytes([9, 10, 11, 12]),
+				),
+				sensor_id: 13,
+			},
+			&[
+				1, 2, 3, 4, // X
+				5, 6, 7, 8, // Y
+				9, 10, 11, 12, // Z
+				13, // ID
+			],
+		);
+	}
+
+	#[test]
+	fn ping() {
+		test(
+			SbPacket::Ping {
+				challenge: [1, 3, 3, 7],
+			},
+			&[1, 3, 3, 7],
+		);
+	}
+
+	#[test]
+	fn sensor_info() {
+		test(
+			SbPacket::SensorInfo {
+				sensor_id: 40,
+				sensor_status: SensorStatus::Offline,
+				sensor_type: ImuType::Unknown(180),
+			},
+			&[
+				40,  // ID
+				1,   // Status
+				180, // IMU
+			],
+		);
+	}
+
+	#[test]
+	fn rotation_data() {
+		test(
+			SbPacket::RotationData {
+				sensor_id: 40,
+				data_type: SensorDataType::Normal,
+				quat: SlimeQuaternion {
+					i: f32::from_be_bytes([00, 01, 02, 03]),
+					j: f32::from_be_bytes([10, 11, 12, 13]),
+					k: f32::from_be_bytes([20, 21, 22, 23]),
+					w: f32::from_be_bytes([30, 31, 32, 33]),
+				},
+				calibration_info: 127,
+			},
+			&[
+				40, // ID
+				1,  // Data type
+				00, 01, 02, 03, // I
+				10, 11, 12, 13, // J
+				20, 21, 22, 23, // K
+				30, 31, 32, 33, // W
+				127, // Accuracy
+			],
+		);
+	}
 }

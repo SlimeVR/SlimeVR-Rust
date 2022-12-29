@@ -4,8 +4,6 @@ extern crate alloc;
 
 mod clientbound;
 mod serverbound;
-#[cfg(test)]
-mod test_deku;
 
 pub use clientbound::*;
 pub use deku;
@@ -188,5 +186,91 @@ pub enum DeserializeError {
 impl From<::deku::DekuError> for DeserializeError {
 	fn from(deku: ::deku::DekuError) -> Self {
 		Self::Deku(deku)
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	// Dummy packet data used for testing
+	#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
+	#[deku(ctx = "_: deku::ctx::Endian, tag: u32", id = "tag", endian = "big")]
+	enum Dummy {
+		#[deku(id = "0")]
+		D0,
+		#[deku(id = "1")]
+		D1,
+		#[deku(id = "2")]
+		D2 { val: u32 },
+	}
+
+	#[test]
+	fn packet_d0() {
+		// Generate 10 packets with increasing sequence number and check round trip se/deserialization
+		for i in 0..10 {
+			let packet = Packet::new(i, Dummy::D0);
+			let bytes = packet.to_bytes().unwrap();
+			#[rustfmt::skip]
+			assert_eq!(
+				bytes,
+				[
+					/* Variant */ 0, 0, 0, 0, 
+					/* Sequence */ 0, 0, 0, 0, 0, 0, 0, i as u8, 
+					/* Data */
+				]
+			);
+			#[rustfmt::skip]
+			assert_eq!(
+				Packet::from_bytes((&bytes, 0)), 
+				Ok((([].as_slice(), 0), packet))
+			);
+		}
+	}
+
+	#[test]
+	fn packet_d1() {
+		// Generate 10 packets with increasing sequence number and check round trip se/deserialization
+		for i in 0..10 {
+			let packet = Packet::new(i, Dummy::D1);
+			let bytes = packet.to_bytes().unwrap();
+			#[rustfmt::skip]
+			assert_eq!(
+				bytes,
+				[
+					/* Variant */ 0, 0, 0, 1, 
+					/* Sequence */ 0, 0, 0, 0, 0, 0, 0, i as u8, 
+					/* Data */
+				]
+			);
+			#[rustfmt::skip]
+			assert_eq!(
+				Packet::from_bytes((&bytes, 0)), 
+				Ok((([].as_slice(), 0), packet))
+			);
+		}
+	}
+
+	#[test]
+	fn packet_d2() {
+		// Generate 10 packets with increasing sequence number and check round trip se/deserialization
+		for i in 0..10 {
+			let packet = Packet::new(i, Dummy::D2 { val: i as u32 + 20 });
+			let bytes = packet.to_bytes().unwrap();
+			#[rustfmt::skip]
+			assert_eq!(
+				bytes,
+				[
+					/* Variant */ 0, 0, 0, 2, 
+					/* Sequence */ 0, 0, 0, 0, 0, 0, 0, i as u8, 
+					/* Data */ 0, 0, 0, i as u8 + 20
+				]
+			);
+			#[rustfmt::skip]
+			assert_eq!(
+				Packet::from_bytes((&bytes, 0)), 
+				Ok((([].as_slice(), 0), packet))
+			);
+		}
 	}
 }
