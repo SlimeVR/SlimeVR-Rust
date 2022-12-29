@@ -10,7 +10,7 @@ struct FakeImu;
 impl Imu for FakeImu {
 	type Error = ();
 
-	const IMU_TYPE: ImuType = ImuType::Unknown;
+	const IMU_TYPE: ImuType = ImuType::Unknown(0xFF);
 
 	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
 		Ok(Quat::identity())

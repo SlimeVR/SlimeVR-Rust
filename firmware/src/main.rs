@@ -91,7 +91,7 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 					// TODO: Compile time constants for board and MCU
 					board: BoardType::Custom,
 					// Should this IMU type be whatever the first IMU of the system is?
-					imu: ImuType::Unknown,
+					imu: ImuType::Unknown(0xFF),
 					mcu: McuType::Esp32,
 					imu_info: (0, 0, 0), // These appear to be inert
 					// Needs to be >=9 to use newer protocol, this is hard-coded in
@@ -109,7 +109,7 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 				.send(SbPacket::SensorInfo {
 					sensor_id: 0, // First sensor (of two)
 					sensor_status: SensorStatus::Ok,
-					sensor_type: ImuType::Unknown,
+					sensor_type: ImuType::Unknown(0xFF),
 				})
 				.await;
 			debug!("SensorInfo");
@@ -120,8 +120,8 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 			packets.serverbound.send(SbPacket::Heartbeat).await;
 		}
 		// Pings are basically like heartbeats, just echo data back
-		CbPacket::Ping { id } => {
-			packets.serverbound.send(SbPacket::Ping { id }).await;
+		CbPacket::Ping { challenge } => {
+			packets.serverbound.send(SbPacket::Ping { challenge }).await;
 		}
 	}
 
