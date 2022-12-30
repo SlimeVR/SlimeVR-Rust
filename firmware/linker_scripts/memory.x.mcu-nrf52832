@@ -1,11 +1,8 @@
 MEMORY
 {
-  /* NOTE K = KiBi = 1024 bytes */
-  /* BOOT : ORIGIN = 0x00000000, LENGTH = 4K */
-  /* softdevice normally is at 0x1000, but we dont use that so we just write over it */
-  /*FLASH : ORIGIN = 0x00000000 + 4K, LENGTH = 1M - 4K*/ /* 4K for boot */
-  /* We had to abandon the built in adafruit bootloader because it was messing with the
-     ability to do usb :( */
-  FLASH : ORIGIN = 0x00000000, LENGTH = 1M
-  RAM : ORIGIN = 0x20000000, LENGTH = 256K
+  /* NOTE 1 K = 1 KiBi = 1024 bytes */
+  /* These values correspond to the NRF52840 with Softdevices S140 7.0.1 */
+  /* To calculate this on your own, see `docs/Softdevice.md` */
+  FLASH : ORIGIN = 0x00027000, LENGTH = 868K
+  RAM : ORIGIN = 0x20020000, LENGTH = 128K
 }
