@@ -14,8 +14,8 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
+# default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
+default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 
 # Supported microcontrollers
@@ -196,6 +196,7 @@ fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [
   "nalgebra031",
 ] }
+paste = "1.0"
 
 [build-dependencies]
 feature_utils = "0.0.0"

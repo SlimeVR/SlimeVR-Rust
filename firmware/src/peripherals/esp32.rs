@@ -3,6 +3,7 @@ use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
 
 use fugit::RateExtU32;
+use paste::paste;
 
 use esp32_hal::{
 	clock::{ClockControl, CpuClock},
@@ -11,6 +12,14 @@ use esp32_hal::{
 	timer::TimerGroup,
 	Rtc,
 };
+
+macro_rules! map_pin {
+	($io: ident, $pin: expr) => {
+		paste! {
+			$io.pins.[<gpio $pin>]
+		}
+	};
+}
 
 pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	let p = pac::Peripherals::take().unwrap();

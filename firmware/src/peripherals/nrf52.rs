@@ -8,6 +8,15 @@ use defmt::debug;
 use embassy_nrf::interrupt;
 use embassy_nrf::twim::{self, Twim};
 use embassy_nrf::uarte::{self, Uarte};
+use paste::paste;
+
+macro_rules! map_pin {
+	($io: ident, $pin: expr) => {
+		paste! {
+			$io.[<P $pin>]
+		}
+	};
+}
 
 pub fn get_peripherals() -> Peripherals<
 	I2cConcrete<'static>,
@@ -34,6 +43,7 @@ pub fn get_peripherals() -> Peripherals<
 		let irq = interrupt::take!(UARTE0_UART0);
 		let mut config = uarte::Config::default();
 		config.parity = uarte::Parity::EXCLUDED;
+		p.
 		config.baudrate = uarte::Baudrate::BAUD115200;
 		let rx = p.P0_12;
 		let tx = p.P0_11;
