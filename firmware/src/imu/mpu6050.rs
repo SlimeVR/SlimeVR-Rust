@@ -1,9 +1,10 @@
-use super::{Imu, ImuKind, Quat};
+use super::{Imu, Quat};
 use crate::aliases::I2c;
 use crate::utils;
 
 use defmt::{debug, trace};
 use embedded_hal::blocking::delay::DelayMs;
+use firmware_protocol::ImuType;
 use mpu6050_dmp::address::Address;
 use mpu6050_dmp::error::InitError;
 use mpu6050_dmp::sensor::Mpu6050 as LibMpu;
@@ -51,7 +52,7 @@ impl<I: I2c> Mpu6050<I> {
 impl<I: I2c> Imu for Mpu6050<I> {
 	type Error = mpu6050_dmp::error::Error<I>;
 
-	const IMU_KIND: super::ImuKind = ImuKind::Mpu6050;
+	const IMU_TYPE: ImuType = ImuType::Mpu6050;
 
 	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
 		if self.mpu.get_fifo_count()? >= 28 {

@@ -1,7 +1,8 @@
-use super::{Imu, ImuKind, Quat};
+use super::{Imu, Quat};
 
 use defmt::debug;
 use embedded_hal::blocking::delay::DelayMs;
+use firmware_protocol::ImuType;
 
 /// Fakes an IMU for easier testing.
 struct FakeImu;
@@ -9,7 +10,7 @@ struct FakeImu;
 impl Imu for FakeImu {
 	type Error = ();
 
-	const IMU_KIND: super::ImuKind = ImuKind::Mpu6050;
+	const IMU_TYPE: ImuType = ImuType::Unknown(0xFF);
 
 	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
 		Ok(Quat::identity())

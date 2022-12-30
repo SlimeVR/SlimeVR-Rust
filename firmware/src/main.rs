@@ -22,7 +22,9 @@ use defmt::debug;
 use embassy_executor::{task, Executor};
 
 use embedded_hal::blocking::delay::DelayMs;
-use firmware_protocol::{CbPacket, SbPacket};
+use firmware_protocol::{
+	BoardType, CbPacket, ImuType, McuType, SbPacket, SensorDataType, SensorStatus,
+};
 
 use imu::Quat;
 use networking::Packets;
@@ -35,8 +37,6 @@ use cortex_m_rt::entry;
 use riscv_rt::entry;
 #[cfg(esp_xtensa)]
 use xtensa_lx_rt::entry;
-
-use crate::imu::IMU_KIND;
 
 #[entry]
 fn main() -> ! {
@@ -88,9 +88,11 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 			packets
 				.serverbound
 				.send(SbPacket::Handshake {
-					board: 4, // BOARD_CUSTOM
-					imu: IMU_KIND.protocol_id().into(),
-					mcu_type: 2,         // ESP32
+					// TODO: Compile time constants for board and MCU
+					board: BoardType::Custom,
+					// Should this IMU type be whatever the first IMU of the system is?
+					imu: ImuType::Unknown(0xFF),
+					mcu: McuType::Esp32,
 					imu_info: (0, 0, 0), // These appear to be inert
 					// Needs to be >=9 to use newer protocol, this is hard-coded in
 					// the java server :(
@@ -105,9 +107,9 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 			packets
 				.serverbound
 				.send(SbPacket::SensorInfo {
-					sensor_id: 0,     // First sensor (of two)
-					sensor_status: 1, // OK
-					sensor_type: IMU_KIND.protocol_id(),
+					sensor_id: 0, // First sensor (of two)
+					sensor_status: SensorStatus::Ok,
+					sensor_type: ImuType::Unknown(0xFF),
 				})
 				.await;
 			debug!("SensorInfo");
@@ -118,16 +120,16 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 			packets.serverbound.send(SbPacket::Heartbeat).await;
 		}
 		// Pings are basically like heartbeats, just echo data back
-		CbPacket::Ping { id } => {
-			packets.serverbound.send(SbPacket::Ping { id }).await;
+		CbPacket::Ping { challenge } => {
+			packets.serverbound.send(SbPacket::Ping { challenge }).await;
 		}
 	}
 
 	packets
 		.serverbound
 		.send(SbPacket::RotationData {
-			sensor_id: 0, // First sensor
-			data_type: 1, // Rotation data without magnetometer correction.
+			sensor_id: 0,                      // First sensor
+			data_type: SensorDataType::Normal, // Rotation data without magnetometer correction.
 			quat: quat.wait().await.into_inner().into(),
 			calibration_info: 0,
 		})
