@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["SbPacket",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["BoardType","The board design for a SlimeVR tracker"],["ImuType","The intertial measurement unit in use"],["McuType","The family of the MCU in use"],["SbPacket",""],["SensorDataType","How should sensor data be treated"],["SensorStatus","Current status of the sensor"]]};
