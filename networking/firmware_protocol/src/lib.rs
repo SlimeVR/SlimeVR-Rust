@@ -212,17 +212,14 @@ mod tests {
 			let packet = Packet::new(i, Dummy::D0);
 			let bytes = packet.to_bytes().unwrap();
 			#[rustfmt::skip]
+			let expected = [
+				0, 0, 0, 0, // Variant
+				0, 0, 0, 0, 0, 0, 0, i as u8, // Sequence
+				// Data
+			];
+			assert_eq!(bytes, expected);
 			assert_eq!(
-				bytes,
-				[
-					/* Variant */ 0, 0, 0, 0, 
-					/* Sequence */ 0, 0, 0, 0, 0, 0, 0, i as u8, 
-					/* Data */
-				]
-			);
-			#[rustfmt::skip]
-			assert_eq!(
-				Packet::from_bytes((&bytes, 0)), 
+				Packet::from_bytes((&bytes, 0)),
 				Ok((([].as_slice(), 0), packet))
 			);
 		}
@@ -235,17 +232,14 @@ mod tests {
 			let packet = Packet::new(i, Dummy::D1);
 			let bytes = packet.to_bytes().unwrap();
 			#[rustfmt::skip]
+			let expected = [
+				0, 0, 0, 1, //
+				0, 0, 0, 0, 0, 0, 0, i as u8, // Sequence
+				 // Data
+			];
+			assert_eq!(bytes, expected);
 			assert_eq!(
-				bytes,
-				[
-					/* Variant */ 0, 0, 0, 1, 
-					/* Sequence */ 0, 0, 0, 0, 0, 0, 0, i as u8, 
-					/* Data */
-				]
-			);
-			#[rustfmt::skip]
-			assert_eq!(
-				Packet::from_bytes((&bytes, 0)), 
+				Packet::from_bytes((&bytes, 0)),
 				Ok((([].as_slice(), 0), packet))
 			);
 		}
@@ -258,17 +252,14 @@ mod tests {
 			let packet = Packet::new(i, Dummy::D2 { val: i as u32 + 20 });
 			let bytes = packet.to_bytes().unwrap();
 			#[rustfmt::skip]
+			let expected = [
+				0, 0, 0, 2, // Variant
+				0, 0, 0, 0, 0, 0, 0, i as u8, // Sequence
+				0, 0, 0, i as u8 + 20 // Data
+			];
+			assert_eq!(bytes, expected);
 			assert_eq!(
-				bytes,
-				[
-					/* Variant */ 0, 0, 0, 2, 
-					/* Sequence */ 0, 0, 0, 0, 0, 0, 0, i as u8, 
-					/* Data */ 0, 0, 0, i as u8 + 20
-				]
-			);
-			#[rustfmt::skip]
-			assert_eq!(
-				Packet::from_bytes((&bytes, 0)), 
+				Packet::from_bytes((&bytes, 0)),
 				Ok((([].as_slice(), 0), packet))
 			);
 		}

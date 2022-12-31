@@ -6,6 +6,8 @@
 #![feature(type_alias_impl_trait)]
 // Needed to use `alloc` + `no_std`
 #![feature(alloc_error_handler)]
+// We want to do some floating point math at compile time
+#![feature(const_fn_floating_point_arithmetic)]
 #![deny(unsafe_op_in_unsafe_fn)]
 
 mod aliases;

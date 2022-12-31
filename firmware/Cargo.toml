@@ -55,8 +55,9 @@ net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
 net-stubbed = []                           # Stubs out network
 
 # Supported IMUs
-imu-mpu6050 = ["mpu6050-dmp"]
-imu-stubbed = []              # Stubs out the IMU
+imu-bmi160 = ["dep:bmi160"]
+imu-mpu6050 = ["dep:mpu6050-dmp"]
+imu-stubbed = []                  # Stubs out the IMU
 
 # Supported defmt loggers
 log-rtt = ["dep:defmt-rtt"]
@@ -152,8 +153,9 @@ defmt-rtt = { version = "0.4", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
 defmt-bbq = { version = "0.1", optional = true }
 
-# Peripherals
+# Peripheral drivers
 mpu6050-dmp = { version = "0.2", optional = true }
+bmi160 = { version = "0.1", optional = true }
 
 # Other crates
 static_cell = "1"
@@ -175,6 +177,7 @@ cfg_aliases = "0.1.1"
 [patch.crates-io]
 # Enable non-default I2C addresses and InitError
 mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
+bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
 # Emable use of `atomic-polyfill`
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }

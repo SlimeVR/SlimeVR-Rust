@@ -9,9 +9,13 @@ mod ඞ {
 #[path = "mpu6050.rs"]
 mod ඞ;
 
+#[cfg(feature = "imu-bmi160")]
+#[path = "bmi160/mod.rs"]
+mod ඞ;
+
 use crate::utils::{nb2a, Unreliable};
 
-use defmt::{debug, info, trace};
+use defmt::{debug, info, trace, warn};
 use embassy_futures::yield_now;
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
@@ -36,7 +40,13 @@ pub async fn imu_task(
 	info!("Initialized IMU!");
 
 	loop {
-		let q = nb2a(|| imu.quat()).await.expect("Fatal IMU Error");
+		let q = match nb2a(|| imu.quat()).await {
+			Ok(q) => q,
+			Err(err) => {
+				warn!("Error in IMU: {}", defmt::Debug2Format(&err));
+				continue;
+			}
+		};
 		trace!(
 			"Quat values: x: {}, y: {}, z: {}, w: {}",
 			q.coords.x,
