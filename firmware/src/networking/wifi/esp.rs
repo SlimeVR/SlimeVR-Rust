@@ -5,7 +5,7 @@ use embassy_futures::{
 	select::{select, Either},
 	yield_now,
 };
-use embedded_svc::ipv4::Interface;
+
 use esp_wifi::{
 	create_network_stack_storage, current_millis, network_stack_storage,
 	wifi::utils::create_network_interface,
@@ -31,22 +31,6 @@ pub async fn network_task(packets: &Packets) -> ! {
 
 	let network = Network::new(wifi, current_millis);
 
-	// Wait till DHCP assigns us an IP
-	let client_ip = loop {
-		yield_now().await;
-		network.work();
-		let Ok(ip) = network.get_ip_info() else { continue };
-		break ip.ip.octets();
-	};
-
-	info!("DHCP IP: {}", client_ip);
-
-	// Our tracker is most likely on the same /24 as the server. Server will broadcast to all a.b.c.255 for auto
-	// discovery, so we just use random IP until we get a discovery packet. 255 in host ip is placeholder till then.
-	let [a, b, c, _] = client_ip;
-	// He's just like me fr
-	let mut host_ip = [a, b, c, 255];
-
 	// Buffer size of 1536 matches modern MTU sizes and is more than enough for the SlimeVR protocol
 	// Unfortunately esp-wifi won't let us access the underlying tx/rx buffer. Unecessary copy here
 	let mut buffer = [0; 1536];
@@ -63,6 +47,17 @@ pub async fn network_task(packets: &Packets) -> ! {
 
 	// Server will send broadcasts to this port
 	socket.bind(PORT).unwrap();
+
+	// Wait for a broadcast from the server to figure out server address
+	let mut host_ip = loop {
+		// Don't worry, server will send another Discover soon
+		let (_, addr, port) = recv_bytes(&mut socket, &mut []).await;
+
+		// If its on the correct port, its probably SlimeVR server :)
+		if port == PORT {
+			break addr;
+		}
+	};
 
 	// Sequence numbers are monotonically increasing. This is done to reject out-of-order packets
 	// This along with serialization should maybe be done in Packets

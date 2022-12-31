@@ -1,12 +1,4 @@
 use embassy_futures::yield_now;
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-
-/// Signals are used for concurrently updating values, where we only care about
-/// keeping the latest value around
-pub type Unreliable<T> = embassy_sync::signal::Signal<NoopRawMutex, T>;
-/// Channel with a capacity of 1. Used instead of Signal when we need to have
-/// back pressure and guaranteed reads of the value
-pub type Reliable<T> = embassy_sync::channel::Channel<NoopRawMutex, T, 1>;
 
 /// Retries function `f` by repeatedly calling it `n` times. Returns the first `Ok`
 /// value or the last `Err`.
