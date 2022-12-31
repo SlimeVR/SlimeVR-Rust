@@ -322,7 +322,7 @@
 				<span class="kw">let </span>col_major_3x4 = Matrix3x4::from(<span class="kw-2">&amp;</span>transform);
 				mngr.set_transform_absolute(
 					overlay,
-					TrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated,
+					TrackingUniverseOrigin::TrackingUniverseStanding,
 					<span class="kw-2">&amp;</span>col_major_3x4,
 				)
 				.wrap_err(<span class="string">&quot;Failed to set transform&quot;</span>)<span class="question-mark">?</span>;
