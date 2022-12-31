@@ -457,6 +457,7 @@ dependencies = [
  "embedded-storage-async",
  "fixed",
  "futures",
+ "nrf52832-pac",
  "nrf52840-pac",
  "rand_core",
 ]
@@ -1115,6 +1116,17 @@ name = "no-std-net"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bcece43b12349917e096cddfa66107277f123e6c96a5aea78711dc601a47152"
+
+[[package]]
+name = "nrf52832-pac"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0242b685c9c15648fb803e155628f42ace457478b2cb930868f40cae2db925e0"
+dependencies = [
+ "cortex-m",
+ "cortex-m-rt",
+ "vcell",
+]
 
 [[package]]
 name = "nrf52840-pac"

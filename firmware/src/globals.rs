@@ -40,7 +40,7 @@ pub fn setup() {
 		unsafe {
 			#[cfg(esp)]
 			ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE);
-			#[cfg(feature = "mcu-nrf52840")]
+			#[cfg(cortex_m)]
 			ALLOCATOR.init(HEAP.as_mut_ptr() as usize, HEAP_SIZE);
 		}
 	}

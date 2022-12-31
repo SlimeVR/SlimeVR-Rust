@@ -38,7 +38,7 @@ jobs:
     continue-on-error: ${{ matrix.mcu == 'mcu-esp32' }} # Continue if esp32 fails because it's not fully working currently
     strategy:
       matrix:
-        mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840]
+        mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840, mcu-nrf52832]
         imu: [imu-stubbed] # dont add IMUs here
         net: [net-stubbed, net-wifi]
         log: [log-rtt, log-usb-serial, log-uart]
@@ -71,8 +71,12 @@ jobs:
             log: log-usb-serial
           - mcu: mcu-esp32
             log: log-rtt
+          - mcu: mcu-nrf52832
+            log: log-usb-serial
 
           - mcu: mcu-nrf52840
+            net: net-wifi
+          - mcu: mcu-nrf52832
             net: net-wifi
 
     env:

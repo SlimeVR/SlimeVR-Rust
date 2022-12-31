@@ -8,7 +8,6 @@ use defmt::debug;
 use embassy_nrf::interrupt;
 use embassy_nrf::twim::{self, Twim};
 use embassy_nrf::uarte::{self, Uarte};
-use embassy_nrf::usb::{self, Driver};
 
 pub fn get_peripherals() -> Peripherals<
 	I2cConcrete<'static>,
@@ -36,18 +35,22 @@ pub fn get_peripherals() -> Peripherals<
 		let mut config = uarte::Config::default();
 		config.parity = uarte::Parity::EXCLUDED;
 		config.baudrate = uarte::Baudrate::BAUD115200;
-		let rx = p.P1_12;
-		let tx = p.P1_11;
+		let rx = p.P0_12;
+		let tx = p.P0_11;
 		Uarte::new(p.UARTE0, irq, rx, tx, config)
 	};
 	debug!("Initialized uarte");
 
+	let usb_driver = ();
+	#[cfg(feature = "mcu-nrf52840")]
 	let usb_driver = {
+		use embassy_nrf::usb::{self, Driver};
 		let irq = interrupt::take!(USBD);
 		let power_irq = interrupt::take!(POWER_CLOCK);
-		Driver::new(p.USBD, irq, usb::PowerUsb::new(power_irq))
+		let d = Driver::new(p.USBD, irq, usb::PowerUsb::new(power_irq));
+		debug!("Initialized usb_driver");
+		d
 	};
-	debug!("Initialized usb_driver");
 
 	let p = Peripherals::new();
 	p.i2c(twim).delay(delay).uart(uarte).usb_driver(usb_driver)

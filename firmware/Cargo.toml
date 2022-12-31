@@ -14,8 +14,8 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
+# default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
+default = ["mcu-nrf52832", "imu-stubbed", "log-usb-serial", "net-stubbed"]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 
 # Supported microcontrollers
@@ -39,16 +39,8 @@ mcu-esp32c3 = [
   "dep:embedded-svc",
   "esp-wifi?/esp32c3",
 ]
-mcu-nrf52840 = [
-  "dep:cortex-m",
-  "dep:cortex-m-rt",
-  "dep:alloc-cortex-m",
-  "dep:embassy-usb",
-  "embassy-nrf/nrf52840",
-  "embassy-nrf/time-driver-rtc1",
-  "embassy-executor/integrated-timers",
-  "defmt-bbq",
-]
+mcu-nrf52840 = ["embassy-nrf/nrf52840", "dep:embassy-usb", "_mcu-f-nrf52"]
+mcu-nrf52832 = ["embassy-nrf/nrf52832", "_mcu-f-nrf52"]
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
@@ -67,6 +59,17 @@ log-uart = ["defmt_esp_println?/uart"]
 # Enable to flash without needing `espflash`
 direct-boot = ["esp32c3-hal?/direct-boot"]
 
+# All features with underscores are internal only, should not be used by other crates,
+# and are not covered under semver guarantees.
+# nrf52 family
+_mcu-f-nrf52 = [
+  "dep:cortex-m",
+  "dep:cortex-m-rt",
+  "dep:alloc-cortex-m",
+  "embassy-nrf/time-driver-rtc1",
+  "embassy-executor/integrated-timers",
+  "defmt-bbq",
+]
 
 [dependencies]
 # mcu-esp32 stuff
@@ -86,7 +89,7 @@ esp32c3-hal = { version = "0.4", optional = true, features = [
 riscv-rt = { version = "0.10", optional = true }
 riscv = { version = "0.10", optional = true }
 
-# mcu-nrf52840 stuff
+# mcu-f-nrf52 stuff
 embassy-nrf = { version = "*", optional = true, default-features = false, features = [
   "nightly",          # For usb
   "time",
