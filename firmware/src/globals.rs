@@ -1,7 +1,7 @@
 extern crate alloc;
 
 // Set up global heap allocator
-#[cfg(esp)]
+#[cfg(mcu_f_esp32)]
 #[global_allocator]
 static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 
@@ -38,7 +38,7 @@ pub fn setup() {
 		static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
 
 		unsafe {
-			#[cfg(esp)]
+			#[cfg(mcu_f_esp32)]
 			ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE);
 			#[cfg(cortex_m)]
 			ALLOCATOR.init(HEAP.as_mut_ptr() as usize, HEAP_SIZE);
@@ -73,7 +73,7 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(esp_xtensa)]
+#[cfg(xtensa)]
 #[no_mangle]
 #[link_section = ".rwtext"]
 unsafe extern "C" fn __exception(

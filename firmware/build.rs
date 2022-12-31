@@ -29,14 +29,13 @@ fn main() {
 
 	cfg_aliases! {
 		mcu_f_nrf52: { any(feature = "mcu-nrf52840", feature = "mcu-nrf52832") },
-		esp_xtensa: { any(feature = "mcu-esp32") },
-		esp_riscv: { any(feature = "mcu-esp32c3") },
-		esp: { any(esp_xtensa, esp_riscv) },
+		mcu_f_esp32: { any(feature = "mcu-esp32", feature = "mcu-esp32c3") },
 		bbq: { all(
-			any(feature = "mcu-nrf52840", feature = "mcu-nrf52832"),
+			any(mcu_f_nrf52),
 			any(feature = "log-uart", feature = "log-usb-serial")
 		)},
-		cortex_m: { any(feature = "mcu-nrf52840", feature = "mcu-nrf52832") },
+		cortex_m: { mcu_f_nrf52 },
+		xtensa: { any(feature = "mcu-esp32") },
 		riscv: { any(feature = "mcu-esp32c3") },
 	}
 

@@ -41,6 +41,7 @@ pub fn get_peripherals() -> Peripherals<
 	};
 	debug!("Initialized uarte");
 
+	#[allow(unused_variables)]
 	let usb_driver = ();
 	#[cfg(feature = "mcu-nrf52840")]
 	let usb_driver = {
