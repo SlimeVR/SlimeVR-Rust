@@ -136,7 +136,7 @@ impl Bone {
 				let col_major_3x4 = Matrix3x4::from(&transform);
 				mngr.set_transform_absolute(
 					overlay,
-					TrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated,
+					TrackingUniverseOrigin::TrackingUniverseStanding,
 					&col_major_3x4,
 				)
 				.wrap_err("Failed to set transform")?;
