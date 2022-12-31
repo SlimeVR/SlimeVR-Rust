@@ -258,6 +258,7 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
+<span id="261">261</span>
 </pre><pre class="rust"><code><span class="kw">use </span>alloc::format;
 <span class="kw">use </span>deku::prelude::<span class="kw-2">*</span>;
 
@@ -302,7 +303,7 @@
 	},
 }
 
-<span class="attribute">#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+<span class="attribute">#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(<span class="kw">type </span>= <span class="string">&quot;u32&quot;</span>, ctx = <span class="string">&quot;_: deku::ctx::Endian&quot;</span>, endian = <span class="string">&quot;big&quot;</span>)]
 #[non_exhaustive]
 </span><span class="doccomment">/// The board design for a SlimeVR tracker
@@ -335,7 +336,7 @@
 	</span>Unknown(u32),
 }
 
-<span class="attribute">#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+<span class="attribute">#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(<span class="kw">type </span>= <span class="string">&quot;u8&quot;</span>, ctx = <span class="string">&quot;_: deku::ctx::Endian&quot;</span>, endian = <span class="string">&quot;big&quot;</span>)]
 #[non_exhaustive]
 </span><span class="doccomment">/// The intertial measurement unit in use
@@ -362,7 +363,7 @@
 	</span>Unknown(u8),
 }
 
-<span class="attribute">#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+<span class="attribute">#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(<span class="kw">type </span>= <span class="string">&quot;u32&quot;</span>, ctx = <span class="string">&quot;_: deku::ctx::Endian&quot;</span>, endian = <span class="string">&quot;big&quot;</span>)]
 #[non_exhaustive]
 </span><span class="doccomment">/// The family of the MCU in use
@@ -375,7 +376,7 @@
 	</span>Unknown(u32),
 }
 
-<span class="attribute">#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+<span class="attribute">#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(<span class="kw">type </span>= <span class="string">&quot;u8&quot;</span>, ctx = <span class="string">&quot;_: deku::ctx::Endian&quot;</span>, endian = <span class="string">&quot;big&quot;</span>)]
 </span><span class="doccomment">/// Current status of the sensor
 </span><span class="kw">pub enum </span>SensorStatus {
@@ -387,7 +388,7 @@
 	</span>Offline,
 }
 
-<span class="attribute">#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+<span class="attribute">#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(<span class="kw">type </span>= <span class="string">&quot;u8&quot;</span>, ctx = <span class="string">&quot;_: deku::ctx::Endian&quot;</span>, endian = <span class="string">&quot;big&quot;</span>)]
 </span><span class="doccomment">/// How should sensor data be treated
 </span><span class="kw">pub enum </span>SensorDataType {
@@ -494,7 +495,8 @@
 
 	<span class="attribute">#[test]
 	</span><span class="kw">fn </span>rotation_data() {
-		test(
+		<span class="attribute">#[allow(clippy::zero_prefixed_literal)]
+		</span>test(
 			SbPacket::RotationData {
 				sensor_id: <span class="number">40</span>,
 				data_type: SensorDataType::Normal,
@@ -512,7 +514,7 @@
 				</span><span class="number">00</span>, <span class="number">01</span>, <span class="number">02</span>, <span class="number">03</span>, <span class="comment">// I
 				</span><span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="comment">// J
 				</span><span class="number">20</span>, <span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="comment">// K
-				</span><span class="number">30</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">33</span>, <span class="comment">// W
+				</span><span class="number">30</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">33</span>,  <span class="comment">// W
 				</span><span class="number">127</span>, <span class="comment">// Accuracy
 			</span>],
 		);
