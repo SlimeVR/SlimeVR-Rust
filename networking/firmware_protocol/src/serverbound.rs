@@ -42,7 +42,7 @@ pub enum SbPacket {
 	},
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(type = "u32", ctx = "_: deku::ctx::Endian", endian = "big")]
 #[non_exhaustive]
 /// The board design for a SlimeVR tracker
@@ -75,7 +75,7 @@ pub enum BoardType {
 	Unknown(u32),
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(type = "u8", ctx = "_: deku::ctx::Endian", endian = "big")]
 #[non_exhaustive]
 /// The intertial measurement unit in use
@@ -102,7 +102,7 @@ pub enum ImuType {
 	Unknown(u8),
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(type = "u32", ctx = "_: deku::ctx::Endian", endian = "big")]
 #[non_exhaustive]
 /// The family of the MCU in use
@@ -115,7 +115,7 @@ pub enum McuType {
 	Unknown(u32),
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(type = "u8", ctx = "_: deku::ctx::Endian", endian = "big")]
 /// Current status of the sensor
 pub enum SensorStatus {
@@ -127,7 +127,7 @@ pub enum SensorStatus {
 	Offline,
 }
 
-#[derive(Debug, PartialEq, DekuRead, DekuWrite)]
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(type = "u8", ctx = "_: deku::ctx::Endian", endian = "big")]
 /// How should sensor data be treated
 pub enum SensorDataType {
