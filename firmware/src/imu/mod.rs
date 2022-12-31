@@ -22,33 +22,6 @@ use firmware_protocol::ImuType;
 
 pub type Quat = nalgebra::UnitQuaternion<f32>;
 
-pub const IMU_KIND: ImuKind = {
-	#[cfg(any(feature = "imu-mpu6050", feature = "imu-stubbed"))]
-	let v = ImuKind::Mpu6050;
-	#[cfg(feature = "imu-bmi160")]
-	let v = ImuKind::Bmi160;
-	v
-};
-
-#[derive(Debug, Eq, PartialEq)]
-#[allow(dead_code)]
-pub enum ImuKind {
-	Mpu6050,
-	Bmi160,
-}
-impl ImuKind {
-	/// The ID this imu type corresponds to in the firmware protocol.
-	///
-	/// Reference:
-	/// https://github.com/SlimeVR/SlimeVR-Tracker-ESP/blob/cb188cfd7a757fa1fda/src/consts.h#L26
-	pub const fn protocol_id(&self) -> u8 {
-		match self {
-			ImuKind::Mpu6050 => 6,
-			ImuKind::Bmi160 => 8,
-		}
-	}
-}
-
 pub trait Imu {
 	type Error: core::fmt::Debug;
 
