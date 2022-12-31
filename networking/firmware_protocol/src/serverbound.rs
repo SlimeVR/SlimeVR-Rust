@@ -234,6 +234,7 @@ mod tests {
 
 	#[test]
 	fn rotation_data() {
+		#[allow(clippy::zero_prefixed_literal)]
 		test(
 			SbPacket::RotationData {
 				sensor_id: 40,
