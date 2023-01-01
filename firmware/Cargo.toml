@@ -39,8 +39,17 @@ mcu-esp32c3 = [
   "dep:embedded-svc",
   "esp-wifi?/esp32c3",
 ]
-mcu-nrf52840 = ["embassy-nrf/nrf52840", "dep:embassy-usb", "_mcu-f-nrf52"]
-mcu-nrf52832 = ["embassy-nrf/nrf52832", "_mcu-f-nrf52"]
+mcu-nrf52840 = [
+  "embassy-nrf/nrf52840",
+  "dep:embassy-usb",
+  "nrf-softdevice?/nrf52840",
+  "_mcu-f-nrf52",
+]
+mcu-nrf52832 = [
+  "embassy-nrf/nrf52832",
+  "nrf-softdevice?/nrf52832",
+  "_mcu-f-nrf52",
+]
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
@@ -58,6 +67,10 @@ log-uart = ["defmt_esp_println?/uart"]
 
 # Enable to flash without needing `espflash`
 direct-boot = ["esp32c3-hal?/direct-boot"]
+
+# Softdevice versions, when doing `net-ble` or `net-esb` on nrf chips
+softdevice-132 = ["nrf-softdevice/s132"] # TODO: Support other versions too
+softdevice-140 = ["nrf-softdevice/s140"] # TODO: Support other versions too
 
 # All features with underscores are internal only, should not be used by other crates,
 # and are not covered under semver guarantees.
@@ -143,6 +156,14 @@ smoltcp = { version = "0.8", default-features = false, features = [
   "proto-ipv4",
 ], optional = true }
 
+# nrf ble
+nrf-softdevice = { version = "*", default-features = false, features = [
+  "defmt",
+  "ble-peripheral",
+  "ble-central",
+  "critical-section-impl",
+], optional = true }
+
 # Platform independent traits
 embedded-hal = "0.2"
 embedded-svc = { version = "0.23", default-features = false, optional = true, features = [
@@ -195,6 +216,8 @@ embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" 
 embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
 embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
+
+nrf-softdevice = { git = "https://github.com/embassy-rs/nrf-softdevice", rev = "8a3dbb7" }
 
 [profile.dev]
 # lto doesnt work on esp32 (xtensa)

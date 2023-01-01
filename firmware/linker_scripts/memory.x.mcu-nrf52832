@@ -1,8 +1,8 @@
 MEMORY
 {
   /* NOTE 1 K = 1 KiBi = 1024 bytes */
-  /* These values correspond to the NRF52840 with Softdevices S140 7.0.1 */
-  /* To calculate this on your own, see `docs/Softdevice.md` */
-  FLASH : ORIGIN = 0x00027000, LENGTH = 868K
-  RAM : ORIGIN = 0x20020000, LENGTH = 128K
+  /* See `docs/Softdevice.md`. You should not need to change this file */
+  /* The values for `APP_CODE_BASE` and `SD_RAM_SIZE` are filled in by `build.rs` */
+  FLASH : ORIGIN = APP_CODE_BASE, LENGTH = 512K - APP_CODE_BASE
+  RAM : ORIGIN = 0x20000000 + SD_RAM_SIZE, LENGTH = 64K - SD_RAM_SIZE
 }

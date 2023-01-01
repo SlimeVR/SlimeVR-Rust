@@ -29,19 +29,37 @@ You can see here that the softdevice version is `S140 v7.3.0`.
 You should now know your softdevice version, for example `S140 v7.3.0`. If you don't,
 reread [## Finding your softdevice version] or try [## Restoring the softdevice].
 
-Check under the `linker_scripts/` folder to see if we already figured out how to get
-your softdevice version working. If not, you'll have to create your own file, and should
-also open a PR once you get it working to help everyone else out. 
+Check the `build.rs` build script to see the list of known softdevice versions. If you
+don't see yours listed, you'll have to configure the values yourself, and should also
+open a PR once you get it working to help everyone else out. 
 
-### Configuring your own memory.x file
-Now, we need to consult the nrf52 docs to find out what the appropriate values for where
-to put the code in FLASH and RAM.
+### Configuring `build.rs`
+If your softdevice is not listed in `build.rs`, we need to consult the nrf52 docs to
+find out the appropriate values for the `SoftdeviceInfo` struct.
 
 Nordic documents the [memory layout] as having two important parameters, `APP_CODE_BASE`
-and `APP_RAM_BASE`. Unfortunately these values are not easy to find, so we have to
-compute them ourselves.
+and `APP_RAM_BASE`. Unfortunately these values are computed, so we have to compute them
+ourselves. The main one we care about is `APP_CODE_BASE` which will determine where we
+put our code in flash.
 
-Check 
+As the documentation describes, we can compute `APP_CODE_BASE` like this:
+`APP_CODE_BASE = SD_FLASH_SIZE + MBR_SIZE`. You can search for [`SD_FLASH_SIZE`] and
+[`MBR_SIZE`] in the nordic docs to get their values for your softdevice version. For
+S140 v7.3.0, this is `0x26000+0x1000 = 0x27000`. So the struct in `build.rs`
+
+`APP_RAM_BASE` aka `RAM` can be set to `0x20000000 + SD_RAM_SIZE`, and when we run the
+firmware, we where `SD_RAM_SIZE` is the size of the softdevice's ram usage. You can
+set this to `0x0` for now and it will print an error to the logger on boot telling you
+what the correct value is.
+
+So for example, for softdevice S140, we added a softdevice const in `build.rs`:
+```rust
+const S140: SoftdeviceInfo = SoftdeviceInfo {
+  sd_flash_size: 0x26000,
+  mbr_size: 0x1000,
+  sd_ram_size: 0x0 // Default to 0x0 if you're not sure
+}
+```
 
 ## Restoring the softdevice
 If you are not sure what your softdevice version is, or if you accidentally mangled or
@@ -85,9 +103,10 @@ incorrectly, or your hardware is fried. Feel free to open an issue on github, or
 on discord.
 
 
-
 [adafruit]: https://github.com/adafruit/Adafruit_nRF52_Bootloader/releases/
 [probe-rs]: /docs/Debugging.md
 [xiao wiki]: https://wiki.seeedstudio.com/XIAO_BLE/#power-consumption-verification
 [xiao bootloader]: https://github.com/0hotpotman0/BLE_52840_Core/tree/main/bootloader
 [memory layout]: https://infocenter.nordicsemi.com/index.jsp?topic=%2Fsds_s140%2FSDS%2Fs1xx%2Fmem_usage%2Fmem_resource_map_usage.html
+[`SD_FLASH_SIZE`]: https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s140.api.v7.3.0/group___n_r_f___s_d_m___d_e_f_i_n_e_s.html#gab12c6fdc9b9756dc76a8888172ef9a0b
+[`MBR_SIZE`]: https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s140.api.v7.3.0/group___n_r_f___m_b_r___d_e_f_i_n_e_s.html#ga2f71568a2395dc0783c1e6142ef71d5b
