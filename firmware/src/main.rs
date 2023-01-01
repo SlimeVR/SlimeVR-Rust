@@ -66,7 +66,7 @@ fn main() -> ! {
 }
 
 #[cfg(bbq)]
-#[task]
+#[embassy_executor::task]
 async fn logger_task(
 	bbq: defmt_bbq::DefmtConsumer,
 	logger_peripheral: crate::aliases::ඞ::BbqPeripheralConcrete<'static>,
