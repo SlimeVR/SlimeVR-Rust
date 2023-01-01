@@ -39,23 +39,16 @@ mcu-esp32c3 = [
   "dep:embedded-svc",
   "esp-wifi?/esp32c3",
 ]
-mcu-nrf52840 = [
-  "dep:cortex-m",
-  "dep:cortex-m-rt",
-  "dep:alloc-cortex-m",
-  "dep:embassy-usb",
-  "embassy-nrf/nrf52840",
-  "embassy-nrf/time-driver-rtc1",
-  "embassy-executor/integrated-timers",
-  "defmt-bbq",
-]
+mcu-nrf52840 = ["embassy-nrf/nrf52840", "dep:embassy-usb", "_mcu-f-nrf52"]
+mcu-nrf52832 = ["embassy-nrf/nrf52832", "_mcu-f-nrf52"]
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
 
 # Supported IMUs
-imu-mpu6050 = ["mpu6050-dmp"]
-imu-stubbed = []              # Stubs out the IMU
+imu-bmi160 = ["dep:bmi160"]
+imu-mpu6050 = ["dep:mpu6050-dmp"]
+imu-stubbed = []                  # Stubs out the IMU
 
 # Supported defmt loggers
 log-rtt = ["dep:defmt-rtt"]
@@ -65,6 +58,17 @@ log-uart = ["defmt_esp_println?/uart"]
 # Enable to flash without needing `espflash`
 direct-boot = ["esp32c3-hal?/direct-boot"]
 
+# All features with underscores are internal only, should not be used by other crates,
+# and are not covered under semver guarantees.
+# nrf52 family
+_mcu-f-nrf52 = [
+  "dep:cortex-m",
+  "dep:cortex-m-rt",
+  "dep:alloc-cortex-m",
+  "embassy-nrf/time-driver-rtc1",
+  "embassy-executor/integrated-timers",
+  "defmt-bbq",
+]
 
 [dependencies]
 # mcu-esp32 stuff
@@ -84,7 +88,7 @@ esp32c3-hal = { version = "0.4", optional = true, features = [
 riscv-rt = { version = "0.10", optional = true }
 riscv = { version = "0.10", optional = true }
 
-# mcu-nrf52840 stuff
+# mcu-f-nrf52 stuff
 embassy-nrf = { version = "*", optional = true, default-features = false, features = [
   "nightly",          # For usb
   "time",
@@ -151,8 +155,9 @@ defmt-rtt = { version = "0.4", optional = true }
 panic_defmt = { path = "crates/panic_defmt" }
 defmt-bbq = { version = "0.1", optional = true }
 
-# Peripherals
+# Peripheral drivers
 mpu6050-dmp = { version = "0.2", optional = true }
+bmi160 = { version = "0.1", optional = true }
 
 # Other crates
 static_cell = "1"
@@ -174,6 +179,7 @@ cfg_aliases = "0.1.1"
 [patch.crates-io]
 # Enable non-default I2C addresses and InitError
 mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
+bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
 # Emable use of `atomic-polyfill`
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }

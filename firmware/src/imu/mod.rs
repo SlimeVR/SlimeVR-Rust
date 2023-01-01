@@ -9,6 +9,10 @@ mod ඞ {
 #[path = "mpu6050.rs"]
 mod ඞ;
 
+#[cfg(feature = "imu-bmi160")]
+#[path = "bmi160/mod.rs"]
+mod ඞ;
+
 use crate::{networking::Packets, utils::nb2a};
 
 use defmt::{debug, info};

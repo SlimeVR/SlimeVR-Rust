@@ -1,7 +1,7 @@
 extern crate alloc;
 
 // Set up global heap allocator
-#[cfg(esp)]
+#[cfg(mcu_f_esp32)]
 #[global_allocator]
 static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
 
@@ -25,7 +25,7 @@ fn oom(_: core::alloc::Layout) -> ! {
 use panic_defmt as _;
 
 // Set up global defmt logger
-#[cfg(all(esp, any(feature = "log-usb-serial", feature = "log-uart")))]
+#[cfg(all(mcu_f_esp32, any(feature = "log-usb-serial", feature = "log-uart")))]
 use defmt_esp_println as _;
 #[cfg(feature = "log-rtt")]
 use defmt_rtt as _;
@@ -38,9 +38,9 @@ pub fn setup() {
 		static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
 
 		unsafe {
-			#[cfg(esp)]
+			#[cfg(mcu_f_esp32)]
 			ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE);
-			#[cfg(feature = "mcu-nrf52840")]
+			#[cfg(cortex_m)]
 			ALLOCATOR.init(HEAP.as_mut_ptr() as usize, HEAP_SIZE);
 		}
 	}
@@ -55,7 +55,7 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	let mepc = riscv::register::mepc::read();
 	let mcause = riscv::register::mcause::read();
 	let mtval = riscv::register::mtval::read();
-	#[cfg(esp_riscv)]
+	#[cfg(riscv)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
 		for addr in backtrace.into_iter().flatten() {
@@ -73,7 +73,7 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(esp_xtensa)]
+#[cfg(xtensa)]
 #[no_mangle]
 #[link_section = ".rwtext"]
 unsafe extern "C" fn __exception(

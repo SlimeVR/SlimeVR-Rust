@@ -9,9 +9,9 @@ pub enum CbPacket {
 	#[deku(id = "1")]
 	Heartbeat,
 	#[deku(id = "10")]
-	Ping { 
+	Ping {
 		/// Arbitrary bytes sent by the server that must be echoed
-		challenge: [u8; 4]
+		challenge: [u8; 4],
 	},
 }
 
