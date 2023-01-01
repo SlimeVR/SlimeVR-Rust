@@ -25,7 +25,7 @@ fn oom(_: core::alloc::Layout) -> ! {
 use panic_defmt as _;
 
 // Set up global defmt logger
-#[cfg(all(esp, any(feature = "log-usb-serial", feature = "log-uart")))]
+#[cfg(all(mcu_f_esp32, any(feature = "log-usb-serial", feature = "log-uart")))]
 use defmt_esp_println as _;
 #[cfg(feature = "log-rtt")]
 use defmt_rtt as _;
@@ -55,7 +55,7 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 	let mepc = riscv::register::mepc::read();
 	let mcause = riscv::register::mcause::read();
 	let mtval = riscv::register::mtval::read();
-	#[cfg(esp_riscv)]
+	#[cfg(riscv)]
 	{
 		let backtrace = esp_backtrace::arch::backtrace();
 		for addr in backtrace.into_iter().flatten() {
