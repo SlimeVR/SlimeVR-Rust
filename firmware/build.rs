@@ -4,6 +4,7 @@ use feature_utils::mandatory_and_unique;
 mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
+mandatory_and_unique!("net-wifi", "net-stubbed");
 
 /// Use memory.x.feature file as memory map
 macro_rules! memory_x {

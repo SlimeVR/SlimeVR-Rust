@@ -44,6 +44,7 @@ mcu-nrf52832 = ["embassy-nrf/nrf52832", "_mcu-f-nrf52"]
 
 # Wi-fi dependencies
 net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
+net-stubbed = []                           # Stubs out network
 
 # Supported IMUs
 imu-bmi160 = ["dep:bmi160"]

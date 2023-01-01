@@ -8,15 +8,16 @@ pub mod wifi;
 mod packets;
 pub use self::packets::{Connection, Packets};
 
-#[task]
+#[cfg(feature = "net-wifi")]
+pub use self::wifi::ඞ::network_task;
+#[cfg(feature = "net-stubbed")]
+pub use stubbed_network_task as network_task;
+
+/// This does nothing, its a "fake" networking task meant to facilitate testing and
+/// the initial port to a new platform (because there are no networking dependencies).
 #[allow(dead_code)]
-pub async fn network_task(packets: &'static Packets) -> ! {
-	debug!("network_task!");
-
-	#[cfg(feature = "net-wifi")]
-	wifi::ඞ::network_task(packets).await;
-
-	// Network stub. This will discard messages if no other networking system is compiled in
+#[task]
+pub async fn stubbed_network_task(packets: &'static Packets) -> ! {
 	loop {
 		// Dump network messages
 		let _ = packets.serverbound.recv().await;

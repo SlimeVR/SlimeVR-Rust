@@ -1,6 +1,7 @@
 extern crate alloc;
 
-use defmt::{error, info, trace, warn};
+use defmt::{debug, error, info, trace, warn};
+use embassy_executor::task;
 use embassy_futures::{
 	select::{select, Either},
 	yield_now,
@@ -19,7 +20,10 @@ use firmware_protocol::Packet;
 // SlimeVR default UDP port on both sides of connection
 const PORT: u16 = 6969;
 
-pub async fn network_task(packets: &Packets) -> ! {
+#[task]
+pub async fn network_task(packets: &'static Packets) -> ! {
+	debug!("network_task!");
+
 	// TODO: Maybe we should look at the macros in the future for better config
 	// (socket_count, neighbour_cache_count, routes_store_count, multicast_store_count)
 	let mut storage = create_network_stack_storage!(3, 8, 1, 1);
