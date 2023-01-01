@@ -40,7 +40,7 @@ fn main() -> ! {
 	#[cfg(bbq)]
 	let bbq = defmt_bbq::init().unwrap();
 
-	self::globals::setup();
+	crate::globals::setup();
 	debug!("Booted");
 	defmt::trace!("Trace");
 
@@ -56,9 +56,9 @@ fn main() -> ! {
 
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |s| {
-		s.spawn(networking::network_task(packets)).unwrap();
-		s.spawn(networking::protocol_task(packets)).unwrap();
-		s.spawn(imu::imu_task(packets, p.i2c, p.delay)).unwrap();
+		s.spawn(crate::networking::network_task(packets)).unwrap();
+		s.spawn(crate::networking::protocol_task(packets)).unwrap();
+		s.spawn(crate::imu::imu_task(packets, p.i2c, p.delay)).unwrap();
 		#[cfg(bbq)]
 		s.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
 	});
