@@ -25,8 +25,7 @@ use embassy_executor::Executor;
 
 use embedded_hal::blocking::delay::DelayMs;
 
-use imu::imu_task;
-use networking::{network_task, protocol_task, Packets};
+use networking::Packets;
 use static_cell::StaticCell;
 
 #[cfg(cortex_m)]
@@ -57,9 +56,9 @@ fn main() -> ! {
 
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |s| {
-		s.spawn(network_task(packets)).unwrap();
-		s.spawn(protocol_task(packets)).unwrap();
-		s.spawn(imu_task(packets, p.i2c, p.delay)).unwrap();
+		s.spawn(networking::network_task(packets)).unwrap();
+		s.spawn(networking::protocol_task(packets)).unwrap();
+		s.spawn(imu::imu_task(packets, p.i2c, p.delay)).unwrap();
 		#[cfg(bbq)]
 		s.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
 	});
