@@ -33,5 +33,7 @@ we officially have added support for are:
 * nrf52840
 
 ## How to flash the firmware
-This section is out of date, so is the CONTRIBUTING.md.
-We will improve the documentation shortly.
+We are trying to improve our documentation, feel free to open an issue or a PR if
+something is missing/unclear.
+
+The current WIP docs are at [docs/README.md].

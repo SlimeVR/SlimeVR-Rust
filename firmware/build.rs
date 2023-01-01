@@ -1,3 +1,5 @@
+use std::{env, fs, path};
+
 use cfg_aliases::cfg_aliases;
 use feature_utils::mandatory_and_unique;
 
@@ -8,17 +10,12 @@ mandatory_and_unique!("net-wifi", "net-stubbed");
 
 /// Use memory.x.feature file as memory map
 macro_rules! memory_x {
-	($feature:literal) => {
-		#[cfg(feature = $feature)]
+	($mcu:literal) => {
+		#[cfg(feature = $mcu)]
 		{
-			use std::{env, fs, path};
-			let out = path::PathBuf::from(env::var("OUT_DIR").unwrap());
-			fs::write(
-				out.join("memory.x"),
-				include_bytes!(concat!("linker_scripts/memory.x.", $feature)),
-			)
-			.unwrap();
-			println!("cargo:rustc-link-search={}", out.display());
+			let memoryx_content =
+				String::from(include_str!(concat!("linker_scripts/memory.x.", $mcu)));
+			memoryx(memoryx_content)
 		}
 	};
 }
@@ -52,4 +49,49 @@ fn main() {
 
 	memory_x!("mcu-nrf52832");
 	memory_x!("mcu-nrf52840");
+}
+
+fn memoryx(memoryx: String) {
+	#[allow(unused_variables)]
+	let sd_info = SoftdeviceInfo::NONE;
+	#[cfg(feature = "softdevice-140")]
+	let sd_info = SoftdeviceInfo::S140;
+	#[cfg(feature = "softdevice-132")]
+	let sd_info = SoftdeviceInfo::S132;
+
+	let memoryx = memoryx.replace(
+		"APP_CODE_BASE",
+		&format!("{:0x}", sd_info.sd_flash_size + sd_info.mbr_size),
+	);
+	let memoryx =
+		memoryx.replace("SD_RAM_SIZE", &format!("{:0x}", sd_info.sd_ram_size));
+
+	let out = path::PathBuf::from(env::var("OUT_DIR").unwrap());
+	fs::write(out.join("memory.x"), memoryx).unwrap();
+	println!("cargo:rustc-link-search={}", out.display());
+}
+
+struct SoftdeviceInfo {
+	mbr_size: usize,
+	sd_flash_size: usize,
+	sd_ram_size: usize,
+}
+#[allow(dead_code)]
+impl SoftdeviceInfo {
+	const NONE: SoftdeviceInfo = SoftdeviceInfo {
+		mbr_size: 0x1000,
+		sd_flash_size: 0x0,
+		sd_ram_size: 0x0,
+	};
+	const S140: SoftdeviceInfo = SoftdeviceInfo {
+		mbr_size: 0x1000,
+		sd_flash_size: 0x26000,
+		sd_ram_size: 0x0,
+	};
+	const S132: SoftdeviceInfo = SoftdeviceInfo {
+		mbr_size: 0x1000,
+		sd_flash_size: 0x25000,
+		sd_ram_size: 0x0,
+	};
+	// TODO: Support other softdevice versions
 }
