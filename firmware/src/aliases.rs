@@ -20,7 +20,7 @@ pub mod ඞ {
 	pub type BbqPeripheral<'a> = ();
 }
 
-#[cfg(feature = "mcu-nrf52840")]
+#[cfg(mcu_f_nrf52)]
 pub mod ඞ {
 	pub use embassy_time::Delay as DelayConcrete;
 
@@ -30,11 +30,15 @@ pub mod ඞ {
 	pub type UartConcrete<'a> =
 		embassy_nrf::uarte::Uarte<'a, embassy_nrf::peripherals::UARTE0>;
 
+	#[cfg(feature = "mcu-nrf52840")]
 	pub type UsbDriverConcrete<'a> = embassy_nrf::usb::Driver<
 		'a,
 		embassy_nrf::peripherals::USBD,
 		embassy_nrf::usb::PowerUsb,
 	>;
+
+	#[cfg(feature = "mcu-nrf52832")]
+	pub type UsbDriverConcrete<'a> = ();
 
 	#[cfg(all(bbq, feature = "log-usb-serial"))]
 	pub type BbqPeripheralConcrete<'a> = UsbDriverConcrete<'a>;

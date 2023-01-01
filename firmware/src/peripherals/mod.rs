@@ -8,8 +8,8 @@ pub mod ඞ;
 #[path = "esp32c3.rs"]
 pub mod ඞ;
 
-#[cfg(feature = "mcu-nrf52840")]
-#[path = "nrf52840.rs"]
+#[cfg(mcu_f_nrf52)]
+#[path = "nrf52.rs"]
 pub mod ඞ;
 
 /// Holds the peripherals. This merely exists to allow a way to pass around platform

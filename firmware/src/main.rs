@@ -37,7 +37,7 @@ use utils::Unreliable;
 use cortex_m_rt::entry;
 #[cfg(riscv)]
 use riscv_rt::entry;
-#[cfg(esp_xtensa)]
+#[cfg(xtensa)]
 use xtensa_lx_rt::entry;
 
 #[entry]

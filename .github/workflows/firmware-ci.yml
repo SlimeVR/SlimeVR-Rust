@@ -38,7 +38,7 @@ jobs:
     continue-on-error: ${{ matrix.mcu == 'mcu-esp32' }} # Continue if esp32 fails because it's not fully working currently
     strategy:
       matrix:
-        mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840]
+        mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840, mcu-nrf52832]
         imu: [imu-stubbed] # dont add IMUs here
         net: [net-stubbed, net-wifi]
         log: [log-rtt, log-usb-serial, log-uart]
@@ -50,6 +50,8 @@ jobs:
             espname: esp32 # needed for passing to xtensa action
           - mcu: mcu-nrf52840
             target: thumbv7em-none-eabihf
+          - mcu: mcu-nrf52832
+            target: thumbv7em-none-eabihf
 
           - mcu: mcu-esp32c3
             net: net-stubbed
@@ -60,7 +62,8 @@ jobs:
             net: net-stubbed
             log: log-uart
             target: riscv32imc-unknown-none-elf
-            imu: imu-bmi160 # add IMUs inside the include so they are only ran once
+            imu: imu-bmi160
+          # add IMUs inside the include so they are only ran once
           # - mcu: mcu-esp32c3
             # net: net-stubbed
             # log: log-uart
@@ -71,8 +74,12 @@ jobs:
             log: log-usb-serial
           - mcu: mcu-esp32
             log: log-rtt
+          - mcu: mcu-nrf52832
+            log: log-usb-serial
 
           - mcu: mcu-nrf52840
+            net: net-wifi
+          - mcu: mcu-nrf52832
             net: net-wifi
 
     env:
