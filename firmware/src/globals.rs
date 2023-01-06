@@ -32,6 +32,30 @@ use defmt_rtt as _;
 
 /// Sets up any global state
 pub fn setup() {
+	#[cfg(mcu_f_nrf52)]
+	unsafe {
+		#[cfg(feature = "mcu-nrf52832")]
+		use nrf52832_pac as pac;
+		#[cfg(feature = "mcu-nrf52840")]
+		use nrf52840_pac as pac;
+
+		let nvmc = &*pac::NVMC::ptr();
+
+		// UICR.APPROTECT = HwDisabled
+		if *(0x10001208 as *mut u32) != 0x0000_005a {
+			nvmc.config.write(|w| w.wen().wen());
+			while nvmc.ready.read().ready().is_busy() {}
+			core::ptr::write_volatile(0x10001208 as *mut u32, 0x0000_005a);
+			while nvmc.ready.read().ready().is_busy() {}
+			nvmc.config.reset();
+			while nvmc.ready.read().ready().is_busy() {}
+			cortex_m::peripheral::SCB::sys_reset();
+		}
+
+		// APPROTECT.DISABLE = SwDisabled
+		(0x4000_0558 as *mut u32).write_volatile(0x0000_005a);
+	}
+
 	// Initialize the global allocator BEFORE you use it
 	{
 		const HEAP_SIZE: usize = 10 * 1024;
