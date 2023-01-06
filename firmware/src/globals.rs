@@ -32,6 +32,11 @@ use defmt_rtt as _;
 
 /// Sets up any global state
 pub fn setup() {
+	// https://github.com/probe-rs/probe-rs/issues/1324#issuecomment-1356273774
+	// This is done because APProtect is enabled in some devices which basically
+	// disables writing and reading the flash.
+	// More info on the register:
+	// https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52832.ps.v1.1/uicr.html
 	#[cfg(mcu_f_nrf52)]
 	unsafe {
 		#[cfg(feature = "mcu-nrf52832")]
