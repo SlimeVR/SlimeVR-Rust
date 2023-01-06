@@ -3,6 +3,7 @@ use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
 
 use fugit::RateExtU32;
+use paste::paste;
 
 use esp32c3_hal::{
 	clock::{ClockControl, CpuClock},
@@ -10,6 +11,14 @@ use esp32c3_hal::{
 	timer::TimerGroup,
 	Rtc,
 };
+
+macro_rules! map_pin {
+	($io: ident, $pin: expr) => {
+		paste! {
+			$io.pins.[<gpio $pin>]
+		}
+	};
+}
 
 pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	let p = esp32c3_hal::pac::Peripherals::take().unwrap();
@@ -55,8 +64,8 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	// let hz =
 	let i2c = esp32c3_hal::i2c::I2C::new(
 		p.I2C0,
-		io.pins.gpio10,
-		io.pins.gpio8,
+		map_pin!(io, env!("SDA_PIN")),
+		map_pin!(io, env!("SCL_PIN")),
 		400u32.kHz(),
 		&mut system.peripheral_clock_control,
 		&clocks,

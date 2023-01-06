@@ -196,6 +196,7 @@ fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [
   "nalgebra031",
 ] }
+paste = "1.0"
 
 [build-dependencies]
 feature_utils = "0.0.0"
