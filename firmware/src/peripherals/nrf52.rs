@@ -32,7 +32,7 @@ pub fn get_peripherals() -> Peripherals<
 	let twim = {
 		let config = twim::Config::default();
 		let irq = interrupt::take!(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0);
-		Twim::new(p.TWISPI0, irq, p.P0_03, p.P0_04, config)
+		Twim::new(p.TWISPI0, irq, map_pin!(p, env!("SDA_PIN")), map_pin!(p, env!("SCL_PIN")), config)
 	};
 	debug!("Initialized twim");
 
@@ -43,7 +43,6 @@ pub fn get_peripherals() -> Peripherals<
 		let irq = interrupt::take!(UARTE0_UART0);
 		let mut config = uarte::Config::default();
 		config.parity = uarte::Parity::EXCLUDED;
-		p.
 		config.baudrate = uarte::Baudrate::BAUD115200;
 		let rx = p.P0_12;
 		let tx = p.P0_11;
