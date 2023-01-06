@@ -44,11 +44,13 @@ mcu-nrf52840 = [
   "dep:embassy-usb",
   "nrf-softdevice?/nrf52840",
   "_mcu-f-nrf52",
+  "dep:nrf52840-pac",
 ]
 mcu-nrf52832 = [
   "embassy-nrf/nrf52832",
   "nrf-softdevice?/nrf52832",
   "_mcu-f-nrf52",
+  "dep:nrf52832-pac",
 ]
 
 # Wi-fi dependencies
@@ -113,6 +115,8 @@ cortex-m = { version = "0.7", optional = true, features = [
   "critical-section-single-core",
 ] }
 cortex-m-rt = { version = "0.7", optional = true }
+nrf52840-pac = { version = "0.12", optional = true }
+nrf52832-pac = { version = "0.12", optional = true }
 
 
 # Async stuff

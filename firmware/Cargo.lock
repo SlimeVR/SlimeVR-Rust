@@ -845,6 +845,8 @@ dependencies = [
  "nalgebra",
  "nb 1.0.0",
  "nrf-softdevice",
+ "nrf52832-pac",
+ "nrf52840-pac",
  "panic_defmt",
  "riscv 0.10.0",
  "riscv-rt",
