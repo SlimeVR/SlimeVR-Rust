@@ -12,14 +12,14 @@ DEFMT_LOG = "debug"
 SSID = "ssid"
 PASSWORD = "password"
 # esp32c3 pins
-# SDA_PIN = "10"
-# SCL_PIN = "8"
+SDA_PIN = "10"
+SCL_PIN = "8"
 # esp32 pins
 # SDA_PIN = "21"
 # SCL_PIN = "22"
 # nrf52 pins
-SDA_PIN = "0_03"
-SCL_PIN = "0_04"
+# SDA_PIN = "0_03"
+# SCL_PIN = "0_04"
 
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
