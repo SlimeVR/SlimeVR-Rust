@@ -1,12 +1,12 @@
 ################
 # Default config
 [default.probe]
-# protocol = "Jtag" # ESP32*
-protocol = "Swd" # NRF52*
+protocol = "Jtag" # ESP32*
+# protocol = "Swd" # NRF52*
 
 [default.general]
-# chip = "esp32c3"
-chip = "nRF52840_xxAA"
+chip = "esp32c3"
+# chip = "nRF52840_xxAA"
 
 [default.rtt]
 enabled = true
