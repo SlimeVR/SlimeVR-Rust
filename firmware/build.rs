@@ -51,6 +51,7 @@ fn main() {
 	memory_x!("mcu-nrf52840");
 }
 
+#[allow(dead_code)]
 fn memoryx(memoryx: String) {
 	#[allow(unused_variables)]
 	let sd_info = SoftdeviceInfo::NONE;
@@ -61,10 +62,10 @@ fn memoryx(memoryx: String) {
 
 	let memoryx = memoryx.replace(
 		"APP_CODE_BASE",
-		&format!("{:0x}", sd_info.sd_flash_size + sd_info.mbr_size),
+		&format!("{:#x}", sd_info.sd_flash_size + sd_info.mbr_size),
 	);
 	let memoryx =
-		memoryx.replace("SD_RAM_SIZE", &format!("{:0x}", sd_info.sd_ram_size));
+		memoryx.replace("SD_RAM_SIZE", &format!("{:#x}", sd_info.sd_ram_size));
 
 	let out = path::PathBuf::from(env::var("OUT_DIR").unwrap());
 	fs::write(out.join("memory.x"), memoryx).unwrap();
