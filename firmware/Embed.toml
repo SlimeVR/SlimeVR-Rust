@@ -6,7 +6,7 @@ protocol = "Jtag" # ESP32*
 
 [default.general]
 chip = "esp32c3"
-# chip = "nRF52840"
+# chip = "nrf52840"
 
 [default.rtt]
 enabled = true
