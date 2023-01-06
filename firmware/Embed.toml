@@ -40,7 +40,7 @@ enabled = false
 ################
 # This fixes rtt logs from not showing up. Run it once.
 [fixrtt.reset]
-halt_afterwards = true # This is the magic sauce, but WHY? 
+halt_afterwards = true # This is the magic sauce, but WHY?
 
 [fixrtt.gdb]
 enabled = false
