@@ -32,7 +32,13 @@ pub fn get_peripherals() -> Peripherals<
 	let twim = {
 		let config = twim::Config::default();
 		let irq = interrupt::take!(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0);
-		Twim::new(p.TWISPI0, irq, map_pin!(p, env!("SDA_PIN")), map_pin!(p, env!("SCL_PIN")), config)
+		Twim::new(
+			p.TWISPI0,
+			irq,
+			map_pin!(p, env!("SDA_PIN")),
+			map_pin!(p, env!("SCL_PIN")),
+			config,
+		)
 	};
 	debug!("Initialized twim");
 
