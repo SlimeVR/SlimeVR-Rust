@@ -26,7 +26,7 @@ pub fn get_peripherals() -> Peripherals<
 > {
 	let p = embassy_nrf::init(Default::default());
 
-	// Set UICR.APPROTECT register to HwDisabled, on rev 3 boards, to prevent
+	// Fix issue on rev 3 boards where AP is protected, preventing debugging/rtt.
 	// a problem where it blocks the debugger
 	#[cfg(feature = "mcu-nrf52840")] // TODO: Add nrf52832 support
 	{
