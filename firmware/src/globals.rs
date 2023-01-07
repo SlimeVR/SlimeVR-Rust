@@ -32,37 +32,6 @@ use defmt_rtt as _;
 
 /// Sets up any global state
 pub fn setup() {
-	// https://github.com/probe-rs/probe-rs/issues/1324#issuecomment-1356273774
-	// This is done because APProtect is enabled in some devices which basically
-	// disables writing and reading the flash.
-	// More info on the register:
-	// https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52832.ps.v1.1/uicr.html
-	#[cfg(feature = "mcu-nrf52840")] // TODO: Add nrf52832 support
-	unsafe {
-		use nrf52840_pac as pac;
-		let ficr = &*pac::FICR::ptr();
-
-		// Get third character of the variant and check if it's the 'F' (0x46) character
-		// https://infocenter.nordicsemi.com/index.jsp?topic=%2Fps_nrf52840%2Fficr.html&cp=4_0_0_3_3_0_8&anchor=register.INFO.VARIANT
-		if (ficr.info.variant.read().bits() & 0xff00) != 0x4600 {
-			let nvmc = &*pac::NVMC::ptr();
-
-			// UICR.APPROTECT = HwDisabled
-			if *(0x10001208 as *mut u32) != 0x0000_005a {
-				nvmc.config.write(|w| w.wen().wen());
-				while nvmc.ready.read().ready().is_busy() {}
-				core::ptr::write_volatile(0x10001208 as *mut u32, 0x0000_005a);
-				while nvmc.ready.read().ready().is_busy() {}
-				nvmc.config.reset();
-				while nvmc.ready.read().ready().is_busy() {}
-				cortex_m::peripheral::SCB::sys_reset();
-			}
-
-			// APPROTECT.DISABLE = SwDisabled
-			(0x4000_0558 as *mut u32).write_volatile(0x0000_005a);
-		}
-	}
-
 	// Initialize the global allocator BEFORE you use it
 	{
 		const HEAP_SIZE: usize = 10 * 1024;
