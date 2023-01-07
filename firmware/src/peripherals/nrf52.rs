@@ -25,6 +25,86 @@ pub fn get_peripherals() -> Peripherals<
 	UsbDriverConcrete<'static>,
 > {
 	let p = embassy_nrf::init(Default::default());
+
+	// Set UICR.APPROTECT register to HwDisabled, on rev 3 boards, to prevent
+	// a problem where it blocks the debugger
+	#[cfg(feature = "mcu-nrf52840")] // TODO: Add nrf52832 support
+	{
+		use defmt::{error, info};
+		use nrf52840_pac as pac;
+
+		let code = {
+			// Safety: should not have any &mut elsewhere
+			let ficr = unsafe { &*pac::FICR::ptr() };
+			ficr.info.variant.read().bits().to_be_bytes()
+		};
+
+		// Get third character of the variant to determine hardware revision
+		// https://infocenter.nordicsemi.com/index.jsp?topic=%2Fps_nrf52840%2Fficr.html&cp=4_0_0_3_3_0_8&anchor=register.INFO.VARIANT
+		let rev = Revision::from_variant(code);
+		if let Some(rev) = rev {
+			info!("Chip revision: {}", rev);
+			if rev == Revision::Rev3 {
+				// Set UICR.APPROTECT to HwDisable and APPROTECT.DISABLE to SwDisable
+				// todo: Use an updated pac or hal to do this, when it comes out.
+				// This is dangerous because of the lack of proper atomics or against race conditions.
+				unsafe {
+					let nvmc = &*pac::NVMC::ptr();
+					let approtect = &mut (*pac::UICR::ptr().cast_mut()).approtect;
+					const HW_DISABLED: u32 = 0x05a;
+					const SW_DISABLED: u32 = 0x05a;
+
+					if approtect.read().bits() != HW_DISABLED {
+						nvmc.config.write(|w| w.wen().wen());
+						while nvmc.ready.read().ready().is_busy() {}
+						core::ptr::write_volatile(approtect.as_ptr(), HW_DISABLED);
+						while nvmc.ready.read().ready().is_busy() {}
+						nvmc.config.reset();
+						while nvmc.ready.read().ready().is_busy() {}
+						cortex_m::peripheral::SCB::sys_reset();
+					}
+
+					// APPROTECT.DISABLE = SwDisabled
+					(0x4000_0558 as *mut u32).write_volatile(SW_DISABLED);
+				}
+			}
+		} else {
+			error!("Unknown hardware revision!");
+		}
+
+		/// The hardware revision of the chip.
+		/// See https://devzone.nordicsemi.com/f/nordic-q-a/55614/how-to-apply-nordic-software-workarounds-errata-for-a-given-hardware-revision-in-the-field
+		#[derive(defmt::Format, Eq, PartialEq, Copy, Clone)]
+		#[non_exhaustive]
+		enum Revision {
+			EngA,
+			EngB,
+			EngC,
+			EngD,
+			Rev1,
+			Rev2,
+			Rev3,
+		}
+		impl Revision {
+			fn from_variant(bytes: [u8; 4]) -> Option<Revision> {
+				let prefix = bytes[2];
+				let suffix = bytes[3];
+
+				let digit = suffix.is_ascii_digit();
+				Some(match prefix {
+					b'A' => Self::EngA,
+					b'B' => Self::EngB,
+					b'C' if !digit => Self::EngC,
+					b'D' if !digit => Self::EngD,
+					b'C' if digit => Self::Rev1,
+					b'D' if digit => Self::Rev2,
+					b'F' if digit => Self::Rev3,
+					_ => return None,
+				})
+			}
+		}
+	}
+
 	debug!("Initializing TWIM (I2C controller)");
 
 	// IDK how this works, code is from here:
