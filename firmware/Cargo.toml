@@ -71,8 +71,9 @@ log-uart = ["defmt_esp_println?/uart"]
 direct-boot = ["esp32c3-hal?/direct-boot"]
 
 # Softdevice versions, when doing `net-ble` or `net-esb` on nrf chips
-softdevice-132 = ["nrf-softdevice/s132"] # TODO: Support other versions too
-softdevice-140 = ["nrf-softdevice/s140"] # TODO: Support other versions too
+nrf-boot-mbr = []                       # Only the MBR but overwrite softdevice
+nrf-boot-s132 = ["nrf-softdevice/s132"] # use softdevice 132 
+nrf-boot-s140 = ["nrf-softdevice/s140"] # use softdevice 140
 
 # All features with underscores are internal only, should not be used by other crates,
 # and are not covered under semver guarantees.

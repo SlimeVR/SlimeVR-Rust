@@ -1,12 +1,13 @@
 use std::{env, fs, path};
 
 use cfg_aliases::cfg_aliases;
-use feature_utils::mandatory_and_unique;
+use feature_utils::{mandatory_and_unique, unique};
 
 mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 mandatory_and_unique!("net-wifi", "net-stubbed");
+unique!("nrf-boot-mbr", "nrf-boot-s132", "nrf-boot-s140");
 
 /// Use memory.x.feature file as memory map
 macro_rules! memory_x {
@@ -54,53 +55,57 @@ fn main() {
 #[allow(dead_code)]
 fn memoryx(memoryx: String) {
 	#[allow(unused_variables)]
-	let sd_info = SoftdeviceInfo::NONE;
-	#[cfg(feature = "softdevice-140")]
-	let sd_info = SoftdeviceInfo::S140;
-	#[cfg(feature = "softdevice-132")]
-	let sd_info = SoftdeviceInfo::S132;
+	let layout = MemoryLayout::RAW;
+	#[cfg(feature = "nrf-boot-mbr")]
+	let layout = MemoryLayout::MBR_ONLY;
+	#[cfg(feature = "nrf-boot-s140")]
+	let layout = MemoryLayout::S140;
+	#[cfg(feature = "nrf-boot-s132")]
+	let layout = MemoryLayout::S132;
 
 	let memoryx = memoryx.replace(
 		"APP_CODE_BASE",
-		&format!("{:#x}", sd_info.sd_flash_size + sd_info.mbr_size),
+		&format!("{:#x}", layout.sd_flash_size + layout.mbr_size),
 	);
-	let memoryx =
-		memoryx.replace("SD_RAM_SIZE", &format!("{:#x}", sd_info.sd_ram_size));
+	let memoryx = memoryx.replace("SD_RAM_SIZE", &format!("{:#x}", layout.sd_ram_size));
 
 	let out = path::PathBuf::from(env::var("OUT_DIR").unwrap());
 	fs::write(out.join("memory.x"), memoryx).unwrap();
 	println!("cargo:rustc-link-search={}", out.display());
 }
 
-struct SoftdeviceInfo {
+/// Describes data to fill `memory.x` with
+struct MemoryLayout {
 	mbr_size: usize,
 	sd_flash_size: usize,
 	sd_ram_size: usize,
 }
 #[allow(dead_code)]
-impl SoftdeviceInfo {
-	const NONE: SoftdeviceInfo = SoftdeviceInfo {
+impl MemoryLayout {
+	/// No MBR no bootloader no softdevice. Our code is the entry point.
+	const RAW: MemoryLayout = MemoryLayout {
 		mbr_size: 0x0,
 		sd_flash_size: 0x0,
 		sd_ram_size: 0x0,
 	};
-	/// Uses the Master Boot Record, but not softdevice
-	const MBR_ONLY: SoftdeviceInfo = SoftdeviceInfo {
+	/// Uses the Master Boot Record and bootloader, but not softdevice.
+	const MBR_ONLY: MemoryLayout = MemoryLayout {
 		mbr_size: 0x1000,
 		sd_flash_size: 0x0,
 		// TODO: Is this correct? Disabling softdevice requires 8 bytes, but idk what
 		// should happen if softdevice is entirely overwritten with our firmware.
 		sd_ram_size: 0x8,
 	};
-	const S140: SoftdeviceInfo = SoftdeviceInfo {
+	/// Softdevice 140.
+	const S140: MemoryLayout = MemoryLayout {
 		mbr_size: 0x1000,
 		sd_flash_size: 0x26000,
 		sd_ram_size: 0x8,
 	};
-	const S132: SoftdeviceInfo = SoftdeviceInfo {
+	/// Softdevice 132.
+	const S132: MemoryLayout = MemoryLayout {
 		mbr_size: 0x1000,
 		sd_flash_size: 0x25000,
 		sd_ram_size: 0x8,
 	};
-	// TODO: Support other softdevice versions
 }
