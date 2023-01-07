@@ -34,7 +34,7 @@ pub fn get_peripherals() -> Peripherals<
 		use nrf52840_pac as pac;
 
 		let code = {
-			// Safety: should not have any &mut elsewhere
+			// Safety: should not have any references held elsewhere
 			let ficr = unsafe { &*pac::FICR::ptr() };
 			ficr.info.variant.read().bits().to_be_bytes()
 		};
