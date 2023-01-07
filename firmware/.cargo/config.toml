@@ -55,7 +55,7 @@ rustflags = [
   # For cortex-m-rt
   "-C",
   "link-arg=-Tlink.x",
-  # For defmt 
+  # For defmt
   "-C",
   "link-arg=-Tdefmt.x",
 ]

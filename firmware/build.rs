@@ -80,19 +80,27 @@ struct SoftdeviceInfo {
 #[allow(dead_code)]
 impl SoftdeviceInfo {
 	const NONE: SoftdeviceInfo = SoftdeviceInfo {
-		mbr_size: 0x1000,
+		mbr_size: 0x0,
 		sd_flash_size: 0x0,
 		sd_ram_size: 0x0,
+	};
+	/// Uses the Master Boot Record, but not softdevice
+	const MBR_ONLY: SoftdeviceInfo = SoftdeviceInfo {
+		mbr_size: 0x1000,
+		sd_flash_size: 0x0,
+		// TODO: Is this correct? Disabling softdevice requires 8 bytes, but idk what
+		// should happen if softdevice is entirely overwritten with our firmware.
+		sd_ram_size: 0x8,
 	};
 	const S140: SoftdeviceInfo = SoftdeviceInfo {
 		mbr_size: 0x1000,
 		sd_flash_size: 0x26000,
-		sd_ram_size: 0x0,
+		sd_ram_size: 0x8,
 	};
 	const S132: SoftdeviceInfo = SoftdeviceInfo {
 		mbr_size: 0x1000,
 		sd_flash_size: 0x25000,
-		sd_ram_size: 0x0,
+		sd_ram_size: 0x8,
 	};
 	// TODO: Support other softdevice versions
 }

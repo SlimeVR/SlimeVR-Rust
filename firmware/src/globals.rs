@@ -37,7 +37,7 @@ pub fn setup() {
 	// disables writing and reading the flash.
 	// More info on the register:
 	// https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52832.ps.v1.1/uicr.html
-	#[cfg(mcu_f_nrf52)]
+	#[cfg(mcu_f_nrf52_babback_ombamba)] // TODO: Get this working with softdevice.
 	unsafe {
 		#[cfg(feature = "mcu-nrf52832")]
 		use nrf52832_pac as pac;
