@@ -40,6 +40,8 @@ pub enum SbPacket {
 		quat: SlimeQuaternion,
 		calibration_info: u8,
 	},
+	#[deku(id = "21")]
+	UserAction { action: ActionType },
 }
 
 #[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
@@ -137,6 +139,21 @@ pub enum SensorDataType {
 	#[deku(id = "2")]
 	/// Never sent by C++ firmware
 	Correction,
+}
+
+#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
+#[deku(type = "u8", ctx = "_: deku::ctx::Endian", endian = "big")]
+#[non_exhaustive]
+/// The type of user action sent
+pub enum ActionType {
+	#[deku(id = "2")]
+	Reset,
+	#[deku(id = "3")]
+	ResetYaw,
+	#[deku(id = "4")]
+	ResetMounting,
+	#[deku(id_pat = "_")]
+	Unknown(u8),
 }
 
 #[cfg(test)]
@@ -255,6 +272,17 @@ mod tests {
 				20, 21, 22, 23, // K
 				30, 31, 32, 33,  // W
 				127, // Accuracy
+			],
+		);
+	}
+	#[test]
+	fn user_action() {
+		test(
+			SbPacket::UserAction {
+				action: ActionType::ResetYaw,
+			},
+			&[
+				3, // Reset ID
 			],
 		);
 	}
