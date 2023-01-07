@@ -69,6 +69,7 @@ fn memoryx(memoryx: String) {
 	);
 	let memoryx = memoryx.replace("SD_RAM_SIZE", &format!("{:#x}", layout.sd_ram_size));
 
+	// panic!("{}", memoryx); // for debugging
 	let out = path::PathBuf::from(env::var("OUT_DIR").unwrap());
 	fs::write(out.join("memory.x"), memoryx).unwrap();
 	println!("cargo:rustc-link-search={}", out.display());
