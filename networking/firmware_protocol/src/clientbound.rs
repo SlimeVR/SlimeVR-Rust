@@ -13,6 +13,12 @@ pub enum CbPacket {
 		/// Arbitrary bytes sent by the server that must be echoed
 		challenge: [u8; 4],
 	},
+	/// u32::from_be_bytes([3, 'H' as u8, 'e' as u8, 'y' as u8]) -> 55076217
+	#[deku(id = "55076217")]
+	HandshakeResponse {
+		/// Char. SlimeVR Server sends '5' = 53
+		version: u8,
+	},
 }
 
 #[cfg(test)]
@@ -44,5 +50,20 @@ mod tests {
 			},
 			&[1, 2, 3, 4],
 		);
+	}
+
+	#[test]
+	fn handshake_response() {
+		// 3"Hey" -> [3, 72, 101, 121] -> 55076217
+		// " OVR =D " -> [32, 79, 86, 82, 32, 61, 68, 32]
+		// u64::from_be_bytes([32, 79, 86, 82, 32, 61, 68, 32]) -> 2328174443102028832
+		let packet = Packet::new(
+			2_328_174_443_102_028_832,
+			CbPacket::HandshakeResponse { version: '5' as u8 },
+		)
+		.to_bytes()
+		.unwrap();
+
+		assert_eq!(&packet, &"\x03Hey OVR =D 5".as_bytes());
 	}
 }
