@@ -125,6 +125,7 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 		CbPacket::Ping { challenge } => {
 			packets.serverbound.send(SbPacket::Ping { challenge }).await;
 		}
+		_ => (),
 	}
 
 	packets
