@@ -3,6 +3,7 @@ use deku::prelude::*;
 
 #[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(ctx = "_: deku::ctx::Endian, tag: u32", id = "tag", endian = "big")]
+#[non_exhaustive]
 pub enum CbPacket {
 	#[deku(id = "0")]
 	Discovery,

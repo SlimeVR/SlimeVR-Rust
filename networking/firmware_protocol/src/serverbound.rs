@@ -5,6 +5,7 @@ use crate::{SlimeQuaternion, SlimeString};
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(ctx = "_: deku::ctx::Endian, tag: u32", id = "tag", endian = "big")]
+#[non_exhaustive]
 pub enum SbPacket {
 	#[deku(id = "0")]
 	Heartbeat,
