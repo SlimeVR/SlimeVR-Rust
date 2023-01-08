@@ -7,7 +7,7 @@ on:
 
 jobs:
   linting:
-    name: Linting
+    name: Linting and Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,6 +20,12 @@ jobs:
           command: fmt
           args: --all --check
 
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all --all-features --all-targets 
+
       - name: Clippy lints
         uses: actions-rs/cargo@v1
         with:
@@ -27,7 +33,7 @@ jobs:
           args: --all --all-features --all-targets --no-deps
 
   test:
-    name: Build and test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
