@@ -46,20 +46,49 @@
 <span id="46">46</span>
 <span id="47">47</span>
 <span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
 </pre><pre class="rust"><code><span class="kw">use </span>alloc::format;
 <span class="kw">use </span>deku::prelude::<span class="kw-2">*</span>;
 
 <span class="attribute">#[derive(Debug, PartialEq, Eq, DekuRead, DekuWrite)]
 #[deku(ctx = <span class="string">&quot;_: deku::ctx::Endian, tag: u32&quot;</span>, id = <span class="string">&quot;tag&quot;</span>, endian = <span class="string">&quot;big&quot;</span>)]
+#[non_exhaustive]
 </span><span class="kw">pub enum </span>CbPacket {
 	<span class="attribute">#[deku(id = <span class="string">&quot;0&quot;</span>)]
 	</span>Discovery,
 	<span class="attribute">#[deku(id = <span class="string">&quot;1&quot;</span>)]
 	</span>Heartbeat,
 	<span class="attribute">#[deku(id = <span class="string">&quot;10&quot;</span>)]
-	</span>Ping { 
+	</span>Ping {
 		<span class="doccomment">/// Arbitrary bytes sent by the server that must be echoed
-		</span>challenge: [u8; <span class="number">4</span>]
+		</span>challenge: [u8; <span class="number">4</span>],
+	},
+	<span class="doccomment">/// u32::from_be_bytes([3, b&#39;H&#39;, b&#39;e&#39;, b&#39;y&#39;]) -&gt; 55076217
+	</span><span class="attribute">#[deku(id = <span class="string">&quot;55076217&quot;</span>)]
+	</span>HandshakeResponse {
+		<span class="doccomment">/// Char. SlimeVR Server sends &#39;5&#39; = 53
+		</span>version: u8,
 	},
 }
 
@@ -92,6 +121,21 @@
 			},
 			<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>],
 		);
+	}
+
+	<span class="attribute">#[test]
+	</span><span class="kw">fn </span>handshake_response() {
+		<span class="comment">// 3&quot;Hey&quot; -&gt; [3, 72, 101, 121] -&gt; 55076217
+		// &quot; OVR =D &quot; -&gt; [32, 79, 86, 82, 32, 61, 68, 32]
+		// u64::from_be_bytes([32, 79, 86, 82, 32, 61, 68, 32]) -&gt; 2328174443102028832
+		</span><span class="kw">let </span>packet = Packet::new(
+			<span class="number">2_328_174_443_102_028_832</span>,
+			CbPacket::HandshakeResponse { version: <span class="string">b&#39;5&#39; </span>},
+		)
+		.to_bytes()
+		.unwrap();
+
+		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>packet, <span class="kw-2">&amp;</span><span class="string">&quot;\x03Hey OVR =D 5&quot;</span>.as_bytes());
 	}
 }
 </code></pre></div>
