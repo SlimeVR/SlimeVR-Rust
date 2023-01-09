@@ -9,17 +9,28 @@ target = "riscv32imc-unknown-none-elf"
 DEFMT_LOG = "debug"
 
 # Change to your wifi's or override with environment variables.
-SSID = "ssid"
-PASSWORD = "password"
-# esp32c3 pins
-SDA_PIN = "10"
+SSID = "change me"
+PASSWORD = "change me"
+
+# -- esp32c3 pins --
 SCL_PIN = "8"
-# esp32 pins
+SDA_PIN = "10"
+INT_0_PIN = "6"
+INT_1_PIN = "7"
+# -- esp32 pins --
 # SDA_PIN = "21"
 # SCL_PIN = "22"
-# nrf52 pins
-# SDA_PIN = "0_03"
-# SCL_PIN = "0_04"
+# INT_0_PIN = "10"
+# INT_1_PIN = "11"
+# TX_PIN = "1"
+# RX_PIN = "3"
+# -- nrf52 pins --
+# SCL_PIN = "0_12"
+# SDA_PIN = "0_13"
+# INT_0_PIN = "0_14"
+# INT_1_PIN = "0_15"
+# TX_PIN = "1_12"
+# RX_PIN = "1_13"
 
 [target.riscv32imc-unknown-none-elf]
 rustflags = [

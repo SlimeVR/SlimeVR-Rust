@@ -129,8 +129,9 @@ pub fn get_peripherals() -> Peripherals<
 		let mut config = uarte::Config::default();
 		config.parity = uarte::Parity::EXCLUDED;
 		config.baudrate = uarte::Baudrate::BAUD115200;
-		let rx = p.P0_12;
-		let tx = p.P0_11;
+		let tx = map_pin!(p, env!("TX_PIN"));
+		let rx = map_pin!(p, env!("RX_PIN"));
+
 		Uarte::new(p.UARTE0, irq, rx, tx, config)
 	};
 	debug!("Initialized uarte");

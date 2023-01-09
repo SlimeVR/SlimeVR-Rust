@@ -30,6 +30,10 @@ use defmt_esp_println as _;
 #[cfg(feature = "log-rtt")]
 use defmt_rtt as _;
 
+// Softdevice brings in a critical section impl
+#[cfg(feature = "nrf-softdevice")]
+use nrf_softdevice as _;
+
 /// Sets up any global state
 pub fn setup() {
 	// Initialize the global allocator BEFORE you use it
