@@ -45,44 +45,44 @@ jobs:
         include:
           - mcu: mcu-esp32c3
             target: riscv32imc-unknown-none-elf
-            sda: "10"
             scl: "8"
+            sda: "10"
           - mcu: mcu-esp32
             target: xtensa-esp32-none-elf
             espname: esp32 # needed for passing to xtensa action
-            sda: "21"
             scl: "22"
+            sda: "21"
           - mcu: mcu-nrf52840
             target: thumbv7em-none-eabihf
-            sda: "0_03"
             scl: "0_04"
+            sda: "0_03"
           - mcu: mcu-nrf52832
             target: thumbv7em-none-eabihf
-            sda: "0_03"
             scl: "0_04"
+            sda: "0_03"
 
           - mcu: mcu-esp32c3
             net: net-stubbed
             log: log-uart
             target: riscv32imc-unknown-none-elf
             imu: imu-mpu6050
-            sda: "10"
             scl: "8"
+            sda: "10"
           - mcu: mcu-esp32c3
             net: net-stubbed
             log: log-uart
             target: riscv32imc-unknown-none-elf
             imu: imu-bmi160
-            sda: "10"
             scl: "8"
+            sda: "10"
           # add IMUs inside the include so they are only ran once
           # - mcu: mcu-esp32c3
             # net: net-stubbed
             # log: log-uart
             # target: riscv32imc-unknown-none-elf
             # imu: imu-bno08x
-            # sda: "10"
             # scl: "8"
+            # sda: "10"
         exclude:
           - mcu: mcu-esp32
             log: log-usb-serial
