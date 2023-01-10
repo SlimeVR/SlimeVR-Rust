@@ -1,0 +1,8 @@
+# TODO: Make this represent a real board
+[pins]
+scl = "1"
+sda = "2"
+int0 = "3"
+int1 = "4"
+tx = "5"
+rx = "6"

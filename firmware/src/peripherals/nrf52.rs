@@ -114,8 +114,8 @@ pub fn get_peripherals() -> Peripherals<
 		Twim::new(
 			p.TWISPI0,
 			irq,
-			map_pin!(p, env!("SDA_PIN")),
-			map_pin!(p, env!("SCL_PIN")),
+			map_pin!(p, env!("PIN_SDA")),
+			map_pin!(p, env!("PIN_SCL")),
 			config,
 		)
 	};
@@ -129,8 +129,9 @@ pub fn get_peripherals() -> Peripherals<
 		let mut config = uarte::Config::default();
 		config.parity = uarte::Parity::EXCLUDED;
 		config.baudrate = uarte::Baudrate::BAUD115200;
-		let rx = p.P0_12;
-		let tx = p.P0_11;
+		let tx = map_pin!(p, env!("PIN_TX"));
+		let rx = map_pin!(p, env!("PIN_RX"));
+
 		Uarte::new(p.UARTE0, irq, rx, tx, config)
 	};
 	debug!("Initialized uarte");

@@ -1,0 +1,26 @@
+[pins]
+
+# Notes:
+# 0.27 internal imu SCL
+# 0.07 internal imu SDA
+# 0.26 Red led
+# 0.30 green led
+# 0.06 blue led
+# 0.17 reg chrg led
+# 1.00 mic clock
+# 0.16 mic data
+# 1.18 mic power
+# 0.10 NFC2
+# 0.09 NFC1
+# 0.14 battery voltage
+# 1.11 tx
+# 1.12 rx
+# there are more...
+
+# TODO: These don't all make sense
+scl = "0_27"
+sda = "0_07"
+int0 = "0_10"
+int1 = "0_09"
+tx = "1_11"
+rx = "1_12"

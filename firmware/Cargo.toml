@@ -15,7 +15,13 @@ rust-version.workspace = true
 
 [features]
 default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
-# default = ["mcu-nrf52840", "imu-stubbed", "log-rtt", "net-stubbed"]
+# default = [
+#   "mcu-nrf52840",
+#   "imu-stubbed",
+#   "log-rtt",
+#   "net-stubbed",
+#   "nrf-boot-s140",
+# ]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 
 # Supported microcontrollers
@@ -70,8 +76,13 @@ log-uart = ["defmt_esp_println?/uart"]
 # Enable to flash without needing `espflash`
 direct-boot = ["esp32c3-hal?/direct-boot"]
 
-# Softdevice versions, when doing `net-ble` or `net-esb` on nrf chips
-nrf-boot-mbr = []                       # Only the MBR but overwrite softdevice
+# nrf-specific bootloader choice
+nrf-boot-none = [ # We are the bootloader
+  "cortex-m?/critical-section-single-core",
+]
+nrf-boot-mbr = [ # Only the MBR but overwrite softdevice
+  "cortex-m?/critical-section-single-core",
+]
 nrf-boot-s132 = ["nrf-softdevice/s132"] # use softdevice 132 
 nrf-boot-s140 = ["nrf-softdevice/s140"] # use softdevice 140
 
@@ -112,9 +123,7 @@ embassy-nrf = { version = "*", optional = true, default-features = false, featur
   "time-driver-rtc1",
 ] }
 alloc-cortex-m = { version = "0.4", optional = true }
-cortex-m = { version = "0.7", optional = true, features = [
-  "critical-section-single-core",
-] }
+cortex-m = { version = "0.7", optional = true }
 cortex-m-rt = { version = "0.7", optional = true }
 nrf52840-pac = { version = "0.12", optional = true }
 nrf52832-pac = { version = "0.12", optional = true }
@@ -202,6 +211,10 @@ paste = "1.0"
 [build-dependencies]
 feature_utils = "0.0.0"
 cfg_aliases = "0.1.1"
+serde = { version = "1", features = ["derive"] }
+toml = "0.5"
+eyre = "0.6"
+color-eyre = "0.6"
 
 
 [patch.crates-io]

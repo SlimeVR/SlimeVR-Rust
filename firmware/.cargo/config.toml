@@ -9,17 +9,12 @@ target = "riscv32imc-unknown-none-elf"
 DEFMT_LOG = "debug"
 
 # Change to your wifi's or override with environment variables.
-SSID = "ssid"
-PASSWORD = "password"
-# esp32c3 pins
-SDA_PIN = "10"
-SCL_PIN = "8"
-# esp32 pins
-# SDA_PIN = "21"
-# SCL_PIN = "22"
-# nrf52 pins
-# SDA_PIN = "0_03"
-# SCL_PIN = "0_04"
+SSID = "change me"
+PASSWORD = "change me"
+
+# Provide this if you have a particular board you want to use. Note that relative paths
+# are resolved from the same folder as `build.rs`.
+# BOARD = "boards/ferrous_slime.toml"
 
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
