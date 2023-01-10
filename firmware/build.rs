@@ -129,7 +129,7 @@ impl MemoryLayout {
 	};
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct BoardConfig {
 	pins: Pins,
 }
