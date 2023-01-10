@@ -1,7 +1,11 @@
-use std::{env, fs, path};
-
 use cfg_aliases::cfg_aliases;
+use eyre::{eyre, Result, WrapErr};
 use feature_utils::mandatory_and_unique;
+use serde::Deserialize;
+use std::{
+	env, fs,
+	path::{self, Path, PathBuf},
+};
 
 mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
@@ -28,7 +32,7 @@ macro_rules! memory_x {
 	};
 }
 
-fn main() {
+fn main() -> Result<()> {
 	#[cfg(all(feature = "mcu-nrf52832", feature = "log-usb-serial"))]
 	compile_error!("the nrf52832 doesn't support USB!");
 
@@ -59,6 +63,11 @@ fn main() {
 
 	memory_x!("mcu-nrf52832");
 	memory_x!("mcu-nrf52840");
+
+	let board_cfg = BoardConfig::from_file(&BoardConfig::get_path()?)?;
+	board_cfg.apply_to_env();
+
+	Ok(())
 }
 
 #[allow(dead_code)]
@@ -118,4 +127,67 @@ impl MemoryLayout {
 		sd_flash_size: 0x25000,
 		sd_ram_size: 0x8,
 	};
+}
+
+#[derive(Deserialize)]
+struct BoardConfig {
+	pins: Pins,
+}
+#[derive(Deserialize)]
+struct Pins {
+	scl: String,
+	sda: String,
+	int0: String,
+	int1: String,
+	tx: String,
+	rx: String,
+}
+impl BoardConfig {
+	/// Loads a board config from a file
+	fn from_file(p: &Path) -> Result<Self> {
+		let s = std::fs::read_to_string(p).wrap_err("Failed to read board toml")?;
+		toml::from_str(&s).wrap_err("Failed to deserialize board toml")
+	}
+	/// Gets the path to the board config, or errors if we can't pick one.
+	fn get_path() -> Result<PathBuf> {
+		std::env::var("BOARD").map(PathBuf::from).or_else(|_| {
+			Self::default_path().ok_or(eyre!(
+				"Please specify a board toml in the `BOARD` environment variable!"
+			))
+		})
+	}
+	/// What the default board config should be, if any
+	fn default_path() -> Option<PathBuf> {
+		let mut boards_dir =
+			PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
+		boards_dir.push("boards");
+		#[allow(unused)]
+		let result: Option<PathBuf> = None;
+
+		#[cfg(feature = "mcu-esp32c3")]
+		let result = Some(boards_dir.join("xiao_esp32c3.toml"));
+		#[cfg(feature = "mcu-esp32")]
+		let result = Some(boards_dir.join("esp32_tmp.toml"));
+		#[cfg(feature = "mcu-nrf52840")]
+		let result = Some(boards_dir.join("xiao_sense.toml"));
+		#[cfg(feature = "mcu-nrf52832")]
+		let result = Some(boards_dir.join("nrf52832_tmp.toml"));
+
+		result
+	}
+
+	/// Applies the board config to cargo's environment variables
+	fn apply_to_env(&self) {
+		macro_rules! set_var {
+			($var:literal, $field:ident) => {
+				println!("cargo:rustc-env={}={}", $var, self.pins.$field);
+			};
+		}
+		set_var!("PIN_SCL", scl);
+		set_var!("PIN_SDA", sda);
+		set_var!("PIN_INT0", int0);
+		set_var!("PIN_INT1", int1);
+		set_var!("PIN_TX", tx);
+		set_var!("PIN_RX", rx);
+	}
 }

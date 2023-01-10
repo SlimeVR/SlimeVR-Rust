@@ -12,25 +12,9 @@ DEFMT_LOG = "debug"
 SSID = "change me"
 PASSWORD = "change me"
 
-# -- esp32c3 pins --
-SCL_PIN = "8"
-SDA_PIN = "10"
-INT_0_PIN = "6"
-INT_1_PIN = "7"
-# -- esp32 pins --
-# SDA_PIN = "21"
-# SCL_PIN = "22"
-# INT_0_PIN = "10"
-# INT_1_PIN = "11"
-# TX_PIN = "1"
-# RX_PIN = "3"
-# -- nrf52 pins --
-# SCL_PIN = "0_12"
-# SDA_PIN = "0_13"
-# INT_0_PIN = "0_14"
-# INT_1_PIN = "0_15"
-# TX_PIN = "1_12"
-# RX_PIN = "1_13"
+# Provide this if you have a particular board you want to use. Note that relative paths
+# are resolved from the same folder as `build.rs`.
+# BOARD = "boards/ferrous_slime.toml"
 
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
