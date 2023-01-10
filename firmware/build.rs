@@ -133,7 +133,7 @@ impl MemoryLayout {
 struct BoardConfig {
 	pins: Pins,
 }
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct Pins {
 	scl: String,
 	sda: String,
