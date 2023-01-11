@@ -167,7 +167,7 @@ impl BoardConfig {
 		#[cfg(feature = "mcu-esp32c3")]
 		let result = Some(boards_dir.join("xiao_esp32c3.toml"));
 		#[cfg(feature = "mcu-esp32")]
-		let result = Some(boards_dir.join("esp32_tmp.toml"));
+		let result = Some(boards_dir.join("devkitv1_esp32.toml"));
 		#[cfg(feature = "mcu-nrf52840")]
 		let result = Some(boards_dir.join("xiao_sense.toml"));
 		#[cfg(feature = "mcu-nrf52832")]

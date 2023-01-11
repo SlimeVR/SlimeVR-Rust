@@ -1,0 +1,15 @@
+# Board notes:
+# https://github.com/esp-rs/esp-rust-board#project-specification
+# IMU sensor (ICM42670-P) is in 0x68
+# Temperature and Humidity (SHTC3) is in 0x70
+# GPIO2 WS2812 LED
+# GPIO7 LED
+# GPIO9 Button/Boot 
+
+[pins]
+scl = "8"
+sda = "10"
+int0 = "6"
+int1 = "7"
+tx = "21"
+rx = "20"
