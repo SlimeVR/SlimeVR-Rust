@@ -1,0 +1,12 @@
+# Board notes:
+# https://randomnerdtutorials.com/esp32-pinout-reference-gpios/
+
+# All numbers are equal to D<number>
+# so D22 is pin 22  
+[pins]
+scl = "22"
+sda = "21"
+int0 = "34"
+int1 = "35"
+tx = "1" # this is rx0
+rx = "3" # this is tx0

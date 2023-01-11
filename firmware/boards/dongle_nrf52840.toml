@@ -1,0 +1,19 @@
+# Board notes:
+# https://docs.zephyrproject.org/2.6.0/boards/arm/nrf52840dongle_nrf52840/doc/index.html
+# https://ar.mouser.com/datasheet/2/297/Nordic_06192018_PCA10059_Schematic_And_PCB-1372278.pdf
+# https://infocenter.nordicsemi.com/topic/ug_nrf52840_dongle/UG/nrf52840_Dongle/hw_description.html
+# 0.06 Green LED0
+# 0.08 Red LED1
+# 1.09 Green LED1
+# 0.12 Blue LED1
+# 1.06 BUTTON1
+# 0.18 RESET Button
+
+[pins]
+# I2C/Twim pins can only be 0.
+scl = "0_13"
+sda = "0_15"
+int0 = "0_17"
+int1 = "0_20"
+tx = "1_15"
+rx = "1_13"
