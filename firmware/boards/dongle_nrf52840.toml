@@ -1,6 +1,6 @@
 # Board notes:
 # https://docs.zephyrproject.org/2.6.0/boards/arm/nrf52840dongle_nrf52840/doc/index.html
-# https://ar.mouser.com/datasheet/2/297/Nordic_06192018_PCA10059_Schematic_And_PCB-1372278.pdf
+# https://www.mouser.com/datasheet/2/297/Nordic_06192018_PCA10059_Schematic_And_PCB-1372278.pdf
 # https://infocenter.nordicsemi.com/topic/ug_nrf52840_dongle/UG/nrf52840_Dongle/hw_description.html
 # 0.06 Green LED0
 # 0.08 Red LED1
