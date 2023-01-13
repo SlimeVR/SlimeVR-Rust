@@ -20,8 +20,8 @@ pub trait SerializeExact {
 	/// # Panics
 	/// May panic if `f` returns an Ok variant with a buffer that is not the exact size as
 	/// `f`'s argument.
-	fn serialize_direct<'a, 'b>(
+	fn serialize_exact<'a, 'b>(
 		&'a mut self,
-		f: impl FnOnce(u16) -> nb::Result<&'b mut [u8], Self::Error>, // TODO: This might not work
+		f: impl FnOnce(usize) -> nb::Result<&'b mut [u8], Self::Error>, // TODO: This might not work
 	) -> nb::Result<(), Self::Error>;
 }
