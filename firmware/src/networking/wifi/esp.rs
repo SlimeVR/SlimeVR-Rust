@@ -13,7 +13,7 @@ use esp_wifi::{
 };
 use smoltcp::{socket::UdpPacketMetadata, wire::Ipv4Address};
 
-use crate::networking::Packets;
+use crate::networking::protocol::Packets;
 use firmware_protocol::Packet;
 
 // SlimeVR default UDP port on both sides of connection
