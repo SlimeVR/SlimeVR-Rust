@@ -22,6 +22,6 @@ pub trait SerializeExact {
 	/// `f`'s argument.
 	fn serialize_exact<'a, 'b>(
 		&'a mut self,
-		f: impl FnOnce(u16) -> nb::Result<&'b mut [u8], Self::Error>, // TODO: This might not work
+		f: impl FnOnce(usize) -> nb::Result<&'b mut [u8], Self::Error>, // TODO: This might not work
 	) -> nb::Result<(), Self::Error>;
 }
