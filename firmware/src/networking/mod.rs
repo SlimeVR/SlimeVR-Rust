@@ -2,6 +2,9 @@ pub mod protocol;
 #[cfg(feature = "net-wifi")]
 pub mod wifi;
 
+#[cfg(feature = "net-ble")]
+pub mod ble;
+
 use defmt::debug;
 use embassy_executor::task;
 
@@ -12,6 +15,8 @@ pub async fn network_task(msg_signals: &'static Packets) {
 	debug!("Network task");
 	#[cfg(feature = "net-wifi")]
 	self::wifi::ඞ::network_task(msg_signals).await;
+	#[cfg(feature = "net-ble")]
+	self::ble::ඞ::network_task(msg_signals).await;
 	#[cfg(feature = "net-stubbed")]
 	stubbed_network_task(msg_signals).await;
 }

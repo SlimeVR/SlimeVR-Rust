@@ -161,6 +161,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bleps"
+version = "0.1.0"
+source = "git+https://github.com/bjoernQ/bleps?rev=06e1f7b#06e1f7b3810b7271d1004635842b691adaea4818"
+dependencies = [
+ "embedded-io 0.3.1",
+ "log",
+]
+
+[[package]]
 name = "bmi160"
 version = "0.1.0"
 source = "git+https://github.com/TheButlah/bmi160-rs?rev=e99802b#e99802b801f36509bb769a6646153f0a77ba49c5"
@@ -790,7 +799,7 @@ dependencies = [
 [[package]]
 name = "esp-wifi"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-wifi.git?rev=aa850de#aa850de8e74d5e37addb67b3a66be35ea58029f9"
+source = "git+https://github.com/esp-rs/esp-wifi.git?rev=d478a81#d478a81cd13507365b6885d8f8d29c9e56882b89"
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section",
@@ -889,6 +898,7 @@ name = "firmware"
 version = "0.0.0"
 dependencies = [
  "alloc-cortex-m",
+ "bleps",
  "bmi160",
  "cfg_aliases",
  "color-eyre",

@@ -60,7 +60,8 @@ mcu-nrf52832 = [
 ]
 
 # Wi-fi dependencies
-net-wifi = ["dep:esp-wifi", "dep:smoltcp"] # use wifi
+net-wifi = ["esp-wifi/wifi", "dep:smoltcp"] # use wifi
+net-ble = ["esp-wifi/ble", "dep:bleps"]
 net-stubbed = []                           # Stubs out network
 
 # Supported IMUs
@@ -148,8 +149,7 @@ esp-alloc = { version = "0.1", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "aa850de", features = [
-  "wifi",
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "d478a81", features = [
   "embedded-svc",
 ], optional = true }
 smoltcp = { version = "0.8", default-features = false, features = [
@@ -165,6 +165,9 @@ smoltcp = { version = "0.8", default-features = false, features = [
   "proto-igmp",
   "proto-ipv4",
 ], optional = true }
+
+# Generic BLE
+bleps = { git = "https://github.com/bjoernQ/bleps", rev = "06e1f7b", optional = true }
 
 # nrf ble
 nrf-softdevice = { version = "*", default-features = false, features = [
