@@ -50,7 +50,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	esp32_hal::embassy::init(&clocks, timer0);
 
 	// Initialize esp-wifi stuff
-	#[cfg(feature = "net-wifi")]
+	#[cfg(feature = "esp-wifi")]
 	{
 		esp_wifi::init_heap();
 		let timerg = TimerGroup::new(p.TIMG1, &clocks);

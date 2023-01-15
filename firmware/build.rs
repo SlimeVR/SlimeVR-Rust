@@ -10,7 +10,7 @@ use std::{
 mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
-mandatory_and_unique!("net-wifi", "net-stubbed");
+mandatory_and_unique!("net-wifi", "net-ble", "net-stubbed");
 
 #[cfg(any(feature = "mcu-nrf52840", feature = "mcu-nrf52832"))]
 mandatory_and_unique!(
@@ -50,10 +50,11 @@ fn main() -> Result<()> {
 		riscv: { any(feature = "mcu-esp32c3") },
 	}
 
-	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32c3"))]
-	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x"); // esp-wifi
-	#[cfg(all(feature = "net-wifi", feature = "mcu-esp32"))]
-	println!("cargo:rustc-link-arg=-Tesp32_rom_functions.x"); // esp-wifi
+	// Link into Espressif's radio driver blobs
+	#[cfg(all(feature = "esp-wifi", feature = "mcu-esp32c3"))]
+	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x");
+	#[cfg(all(feature = "esp-wifi", feature = "mcu-esp32"))]
+	println!("cargo:rustc-link-arg=-Tesp32_rom_functions.x");
 
 	// By default, Cargo will re-run a build script whenever
 	// any file in the project changes. By specifying `memory.x`
