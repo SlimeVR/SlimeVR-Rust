@@ -116,7 +116,7 @@ jobs:
       - name: Clippy lints
         run: |
           cargo clippy --target ${{ matrix.target }} --no-default-features --features $FEATURES --message-format=json |
-          clippy-sarif | tee results.sarif | sarif-fmt && sed 's/"uri": "/"uri": "firmware\//g'
+          clippy-sarif | tee results.sarif | sarif-fmt && sed  -i 's/"uri": "/"uri": "firmware\//g' results.sarif
 
       - name: Build
         run: cargo build --target ${{ matrix.target }} --no-default-features --features $FEATURES
