@@ -114,8 +114,9 @@ jobs:
           tool: clippy-sarif,sarif-fmt
 
       - name: Clippy lints
-        run: cargo clippy --target ${{ matrix.target }} --no-default-features --features $FEATURES --message-format=json |
-          clippy-sarif | tee results.sarif | sarif-fmt
+        run: |
+          cargo clippy --target ${{ matrix.target }} --no-default-features --features $FEATURES --message-format=json |
+          clippy-sarif | tee results.sarif | sarif-fmt && sed 's/"uri": "/"uri": "firmware\//g'
 
       - name: Build
         run: cargo build --target ${{ matrix.target }} --no-default-features --features $FEATURES
