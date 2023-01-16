@@ -3,7 +3,7 @@
 extern crate alloc;
 
 mod clientbound;
-mod sansio;
+pub mod sansio;
 mod serverbound;
 
 pub use clientbound::*;
