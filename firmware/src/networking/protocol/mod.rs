@@ -5,6 +5,7 @@ pub use self::packets::Packets;
 
 use defmt::debug;
 use embassy_executor::task;
+use embassy_futures::select::select;
 use firmware_protocol::{
 	BoardType, CbPacket, ImuType, McuType, SbPacket, SensorDataType, SensorStatus,
 };
@@ -30,6 +31,13 @@ pub async fn control_task(
 }
 
 async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
+	let event = select(packets.clientbound.recv(), quat.wait()).await;
+	use embassy_futures::select::Either;
+	match event {
+		Either::First(cb_packet) => todo!(),
+		Either::Second(quat) => todo!(),
+	}
+
 	match packets.clientbound.recv().await {
 		// Identify ourself when discovery packet is received
 		CbPacket::Discovery => {

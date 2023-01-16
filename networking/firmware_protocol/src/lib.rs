@@ -21,9 +21,9 @@ use deku::prelude::*;
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
 #[deku(endian = "e", ctx = "e: deku::ctx::Endian")]
 pub struct SlimeQuaternion {
-	pub i: f32,
-	pub j: f32,
-	pub k: f32,
+	pub x: f32,
+	pub y: f32,
+	pub z: f32,
 	pub w: f32,
 }
 
