@@ -258,9 +258,9 @@ mod tests {
 				sensor_id: 40,
 				data_type: SensorDataType::Normal,
 				quat: SlimeQuaternion {
-					i: f32::from_be_bytes([00, 01, 02, 03]),
-					j: f32::from_be_bytes([10, 11, 12, 13]),
-					k: f32::from_be_bytes([20, 21, 22, 23]),
+					x: f32::from_be_bytes([00, 01, 02, 03]),
+					y: f32::from_be_bytes([10, 11, 12, 13]),
+					z: f32::from_be_bytes([20, 21, 22, 23]),
 					w: f32::from_be_bytes([30, 31, 32, 33]),
 				},
 				calibration_info: 127,
