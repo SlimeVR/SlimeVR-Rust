@@ -60,7 +60,7 @@ fn main() -> ! {
 
 	static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 	EXECUTOR.init(Executor::new()).run(move |s| {
-		s.spawn(crate::networking::protocol::control_task(packets, quat))
+		s.spawn(crate::networking::protocol::protocol_task(packets, quat))
 			.unwrap();
 		s.spawn(crate::networking::network_task(packets)).unwrap();
 		s.spawn(crate::imu::imu_task(quat, p.i2c, p.delay)).unwrap();

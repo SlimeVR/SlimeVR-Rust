@@ -4,6 +4,7 @@ extern crate alloc;
 
 mod clientbound;
 pub mod sansio;
+mod serialization;
 mod serverbound;
 
 pub use clientbound::*;
@@ -34,16 +35,27 @@ macro_rules! impl_Nalgebra {
 		impl From<Quaternion<f32>> for SlimeQuaternion {
 			fn from(q: Quaternion<f32>) -> Self {
 				Self {
-					i: q.i,
-					j: q.j,
-					k: q.k,
+					x: q.i,
+					y: q.j,
+					z: q.k,
 					w: q.w,
 				}
 			}
 		}
 		impl From<SlimeQuaternion> for Quaternion<f32> {
 			fn from(q: SlimeQuaternion) -> Self {
-				Self::new(q.w, q.i, q.j, q.k)
+				Self::new(q.w, q.x, q.y, q.z)
+			}
+		}
+
+		impl From<UnitQuaternion<f32>> for SlimeQuaternion {
+			fn from(q: UnitQuaternion<f32>) -> Self {
+				Self {
+					x: q.i,
+					y: q.j,
+					z: q.k,
+					w: q.w,
+				}
 			}
 		}
 	};
@@ -51,17 +63,17 @@ macro_rules! impl_Nalgebra {
 
 #[cfg(any(test, feature = "nalgebra032"))]
 mod nalgebra032_impls {
-	use nalgebra032::Quaternion;
+	use nalgebra032::{Quaternion, UnitQuaternion};
 	impl_Nalgebra!();
 }
 #[cfg(any(test, feature = "nalgebra031"))]
 mod nalgebra031_impls {
-	use nalgebra031::Quaternion;
+	use nalgebra031::{Quaternion, UnitQuaternion};
 	impl_Nalgebra!();
 }
 #[cfg(any(test, feature = "nalgebra030"))]
 mod nalgebra030_impls {
-	use nalgebra030::Quaternion;
+	use nalgebra030::{Quaternion, UnitQuaternion};
 	impl_Nalgebra!();
 }
 

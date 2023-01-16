@@ -11,8 +11,6 @@ use crate::{
 
 use replace_with::replace_with;
 
-mod serialization;
-
 /// A buffer of `SbPacket` that *must all be sent* before other functions on the
 /// protocol are invoked.
 #[derive(Debug)]
@@ -53,17 +51,16 @@ macro_rules! assert_empty {
 }
 
 #[derive(Debug, derive_more::From)]
-pub enum ProtocolState {
+pub enum State {
 	Disconnected(Disconnected),
 	Connected(Connected),
 }
-impl ProtocolState {
+impl State {
 	pub const fn new() -> Self {
 		Self::Disconnected(Disconnected)
 	}
 
-	/// Process a newly received message. This will update (and possibly transition) to
-	/// a new state, while enqueueing any serverbound packets that should be sent into
+	/// Process a newly received message, enqueueing any serverbound messages in
 	/// `sb_buf`.
 	///
 	/// # Panics
@@ -81,8 +78,8 @@ impl ProtocolState {
 			|taken| {
 				// Now we can use the owned value in functions that expect an owned type.
 				match taken {
-					ProtocolState::Disconnected(s) => s.received_msg(cb, sb_buf),
-					ProtocolState::Connected(s) => s.received_msg(cb, sb_buf),
+					State::Disconnected(s) => s.received_msg(cb, sb_buf),
+					State::Connected(s) => s.received_msg(cb, sb_buf),
 				}
 			},
 		);
@@ -92,18 +89,13 @@ impl ProtocolState {
 #[derive(Debug)]
 pub struct Disconnected;
 impl Disconnected {
-	/// Process a newly received message. This will update (and possibly transition) to
-	/// a new state, while pushing any serverbound packets that should be sent to
+	/// Process a newly received message, enqueueing any serverbound messages in
 	/// `sb_buf`.
 	///
 	/// # Panics
 	/// Panics if `!sb_buf.is_empty()`. You are only supposed to call this function when
 	/// all serverbound packets have already been sent.
-	pub fn received_msg<'b>(
-		self,
-		cb: CbPacket,
-		sb_buf: &'b mut SbBuf,
-	) -> ProtocolState {
+	pub fn received_msg<'b>(self, cb: CbPacket, sb_buf: &'b mut SbBuf) -> State {
 		assert_empty!(sb_buf);
 		match cb {
 			CbPacket::Discovery => {
@@ -137,11 +129,13 @@ impl Disconnected {
 #[derive(Debug)]
 pub struct Connected {}
 impl Connected {
-	pub fn received_msg<'b>(
-		self,
-		cb: CbPacket,
-		sb_buf: &'b mut SbBuf,
-	) -> ProtocolState {
+	/// Process a newly received message, enqueueing any serverbound messages in
+	/// `sb_buf`.
+	///
+	/// # Panics
+	/// Panics if `!sb_buf.is_empty()`. You are only supposed to call this function when
+	/// all serverbound packets have already been sent.
+	pub fn received_msg<'b>(self, cb: CbPacket, sb_buf: &'b mut SbBuf) -> State {
 		assert_empty!(sb_buf);
 		match cb {
 			// When heartbeat is received, we should reply with another heartbeat.
@@ -158,12 +152,17 @@ impl Connected {
 		}
 	}
 
+	/// Enqueues an imu update in `SbBuf`.
+	///
+	/// # Panics
+	/// Panics if `!sb_buf.is_empty()`. You are only supposed to call this function when
+	/// all serverbound packets have already been sent.
 	pub fn send_imu(
-		&mut self,
+		self,
 		sensor_id: u8,
 		quat: SlimeQuaternion,
 		sb_buf: &mut SbBuf,
-	) {
+	) -> State {
 		assert_empty!(sb_buf);
 		sb_buf.push(SbPacket::RotationData {
 			sensor_id,
@@ -171,5 +170,6 @@ impl Connected {
 			quat,
 			calibration_info: 0,
 		});
+		self.into()
 	}
 }
