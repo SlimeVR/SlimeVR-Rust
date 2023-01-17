@@ -26,47 +26,42 @@ pub struct SlimeQuaternion {
 	pub w: f32,
 }
 
-#[cfg(any(test, feature = "nalgebra031"))]
-mod nalgebra031_impls {
-	use super::*;
-	use nalgebra031::Quaternion;
-
-	impl From<Quaternion<f32>> for SlimeQuaternion {
-		fn from(q: Quaternion<f32>) -> Self {
-			Self {
-				i: q.i as _,
-				j: q.j as _,
-				k: q.k as _,
-				w: q.w as _,
+#[allow(unused_macros)]
+macro_rules! impl_Nalgebra {
+	() => {
+		use super::*;
+		impl From<Quaternion<f32>> for SlimeQuaternion {
+			fn from(q: Quaternion<f32>) -> Self {
+				Self {
+					i: q.i,
+					j: q.j,
+					k: q.k,
+					w: q.w,
+				}
 			}
 		}
-	}
-	impl From<SlimeQuaternion> for Quaternion<f32> {
-		fn from(q: SlimeQuaternion) -> Self {
-			Self::new(q.w as _, q.i as _, q.j as _, q.k as _)
+		impl From<SlimeQuaternion> for Quaternion<f32> {
+			fn from(q: SlimeQuaternion) -> Self {
+				Self::new(q.w, q.i, q.j, q.k)
+			}
 		}
-	}
+	};
+}
+
+#[cfg(any(test, feature = "nalgebra032"))]
+mod nalgebra032_impls {
+	use nalgebra032::Quaternion;
+	impl_Nalgebra!();
+}
+#[cfg(any(test, feature = "nalgebra031"))]
+mod nalgebra031_impls {
+	use nalgebra031::Quaternion;
+	impl_Nalgebra!();
 }
 #[cfg(any(test, feature = "nalgebra030"))]
 mod nalgebra030_impls {
-	use super::*;
 	use nalgebra030::Quaternion;
-
-	impl From<Quaternion<f32>> for SlimeQuaternion {
-		fn from(q: Quaternion<f32>) -> Self {
-			Self {
-				i: q.i as _,
-				j: q.j as _,
-				k: q.k as _,
-				w: q.w as _,
-			}
-		}
-	}
-	impl From<SlimeQuaternion> for Quaternion<f32> {
-		fn from(q: SlimeQuaternion) -> Self {
-			Self::new(q.w as _, q.i as _, q.j as _, q.k as _)
-		}
-	}
+	impl_Nalgebra!();
 }
 
 #[derive(PartialEq, Eq, Debug, DekuRead, DekuWrite)]
