@@ -7,9 +7,11 @@ edition = "2021"
 [dependencies]
 deku = { version = "0.15", default-features = false, features = ["alloc"] }
 # We support multiple versions of nalgebra since it changes so much.
+nalgebra032 = { package = "nalgebra", version = "0.32", default-features = false, optional = true }
 nalgebra031 = { package = "nalgebra", version = "0.31", default-features = false, optional = true }
 nalgebra030 = { package = "nalgebra", version = "0.30", default-features = false, optional = true }
 
 [dev-dependencies]
+nalgebra032 = { package = "nalgebra", version = "0.32" }
 nalgebra031 = { package = "nalgebra", version = "0.31" }
 nalgebra030 = { package = "nalgebra", version = "0.30" }
