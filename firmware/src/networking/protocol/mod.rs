@@ -5,82 +5,61 @@ pub use self::packets::Packets;
 
 use defmt::debug;
 use embassy_executor::task;
+use embassy_futures::select::select;
 use firmware_protocol::{
-	BoardType, CbPacket, ImuType, McuType, SbPacket, SensorDataType, SensorStatus,
+	sansio::{self, SbBuf},
+	CbPacket, SlimeQuaternion,
 };
 
 use crate::imu::Quat;
-use crate::utils::Unreliable;
-
-#[allow(dead_code)]
-mod v2;
+use crate::utils::{Reliable, Unreliable};
 
 #[task]
-pub async fn control_task(
+pub async fn protocol_task(
 	packets: &'static Packets,
 	quat: &'static Unreliable<Quat>,
 ) -> ! {
 	debug!("Control task!");
 	async {
+		let mut proto_state = sansio::State::new();
+		let mut sb_buf = SbBuf::new();
 		loop {
-			do_work(packets, quat).await;
+			proto_state = match proto_state {
+				sansio::State::Disconnected(s) => {
+					while_disconnected(s, &mut sb_buf, &packets.clientbound).await
+				}
+				sansio::State::Connected(s) => {
+					while_connected(s, &mut sb_buf, &packets.clientbound, quat).await
+				}
+			};
+			while !sb_buf.is_empty() {
+				let sb = sb_buf.pop().unwrap();
+				packets.serverbound.send(sb).await;
+			}
 		}
 	}
 	.await
 }
 
-async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
-	match packets.clientbound.recv().await {
-		// Identify ourself when discovery packet is received
-		CbPacket::Discovery => {
-			packets
-				.serverbound
-				.send(SbPacket::Handshake {
-					// TODO: Compile time constants for board and MCU
-					board: BoardType::Custom,
-					// Should this IMU type be whatever the first IMU of the system is?
-					imu: ImuType::Unknown(0xFF),
-					mcu: McuType::Esp32,
-					imu_info: (0, 0, 0), // These appear to be inert
-					// Needs to be >=9 to use newer protocol, this is hard-coded in
-					// the java server :(
-					build: 10,
-					firmware: "SlimeVR-Rust".into(),
-					mac_address: [0; 6],
-				})
-				.await;
-			debug!("Handshake");
+async fn while_disconnected(
+	state: sansio::Disconnected,
+	sb_buf: &mut SbBuf,
+	cb: &Reliable<CbPacket>,
+) -> sansio::State {
+	let cb_msg = cb.recv().await;
+	state.received_msg(cb_msg, sb_buf)
+}
 
-			// After handshake, we are supposed to send `SensorInfo` only once.
-			packets
-				.serverbound
-				.send(SbPacket::SensorInfo {
-					sensor_id: 0, // First sensor (of two)
-					sensor_status: SensorStatus::Ok,
-					sensor_type: ImuType::Unknown(0xFF),
-				})
-				.await;
-			debug!("SensorInfo");
-		}
-		// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
-		// The protocol is asymmetric so its a bit unintuitive.
-		CbPacket::Heartbeat => {
-			packets.serverbound.send(SbPacket::Heartbeat).await;
-		}
-		// Pings are basically like heartbeats, just echo data back
-		CbPacket::Ping { challenge } => {
-			packets.serverbound.send(SbPacket::Ping { challenge }).await;
-		}
-		_ => (),
+async fn while_connected(
+	state: sansio::Connected,
+	sb_buf: &mut SbBuf,
+	cb: &Reliable<CbPacket>,
+	quat: &Unreliable<Quat>,
+) -> sansio::State {
+	let event = select(cb.recv(), quat.wait()).await;
+	use embassy_futures::select::Either;
+	match event {
+		Either::First(cb_msg) => state.received_msg(cb_msg, sb_buf),
+		Either::Second(quat) => state.send_imu(0, SlimeQuaternion::from(quat), sb_buf),
 	}
-
-	packets
-		.serverbound
-		.send(SbPacket::RotationData {
-			sensor_id: 0,                      // First sensor
-			data_type: SensorDataType::Normal, // Rotation data without magnetometer correction.
-			quat: quat.wait().await.into_inner().into(),
-			calibration_info: 0,
-		})
-		.await;
 }
