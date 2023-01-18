@@ -12,21 +12,22 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
-cortex-m-rt = "0.7"
-panic-halt = "0.2.0"
+cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7.2"
+panic-halt = "0.2"
 defmt = "0.3"
 defmt-rtt = "0.4"
-da14531-hal = "0.2.2"
+da14531-hal = "0.2"
+bitbang-hal = "0.3.2"
 
 [profile.dev]
 codegen-units = 1 # better optimizations
-debug = 2 
-lto = true 
-opt-level = "z" 
+debug = 2
+lto = true
+opt-level = 2
 
 [profile.release]
 codegen-units = 1 # better optimizations
 debug = true # symbols are nice and they don't increase the size on Flash
-lto = true 
-opt-level = "z" 
+lto = true
+opt-level = 2
