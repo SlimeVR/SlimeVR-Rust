@@ -17,7 +17,7 @@ fn main() -> ! {
     let cp = da14531_hal::pac::CorePeripherals::take().unwrap();
 
     let p0 = Parts::new(p.GPIO);
-    let mut led = p0.p0_06.degrade().into_output(PinState::Low);
+    let mut led = p0.p0_09.degrade().into_output(PinState::Low);
 
     let mut delay = Delay::with_source(cp.SYST, 32000000, cortex_m::peripheral::syst::SystClkSource::Core);
     loop {
