@@ -7,7 +7,7 @@ members = [
   "overlay",
   "skeletal_model",
 ]
-exclude = ["nrf_demo", "firmware"]
+exclude = ["da_demo", "nrf_demo", "firmware"]
 default-members = [
   "autoupdater",
   "networking/firmware_protocol",
