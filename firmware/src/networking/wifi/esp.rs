@@ -41,11 +41,7 @@ pub async fn network_task(packets: &Packets) -> ! {
 
 	info!("DHCP IP: {}", client_ip);
 
-	// Our tracker is most likely on the same /24 as the server. Server will broadcast to all a.b.c.255 for auto
-	// discovery, so we just use random IP until we get a discovery packet. 255 in host ip is placeholder till then.
-	let [a, b, c, _] = client_ip;
-	// He's just like me fr
-	let mut host_ip = [a, b, c, 255];
+	let mut server_ip = None; // We don't know the server ip yet.
 
 	// Buffer size of 1536 matches modern MTU sizes and is more than enough for the SlimeVR protocol
 	// Unfortunately esp-wifi won't let us access the underlying tx/rx buffer. Unecessary copy here
@@ -73,27 +69,14 @@ pub async fn network_task(packets: &Packets) -> ! {
 	loop {
 		// Either start sending or receive, if either is available
 		let net = select(
-			packets.serverbound.recv(),
 			recv_bytes(&mut socket, &mut buffer),
+			packets.serverbound.recv(),
 		)
 		.await;
 
-		trace!("Network event {}", defmt::Debug2Format(&net));
-
-		match net {
-			// There is pending outbound packet that should be sent
-			Either::First(msg) => {
-				// Serialize the packet based on our send sequence number
-				let Ok(len) = Packet::new(tx_seq, msg).serialize_into(&mut buffer) else { warn!("Failed to serialize outgoing packet"); continue };
-				tx_seq += 1;
-
-				if let Err(e) = socket.send(Ipv4Address(host_ip), PORT, &buffer[..len])
-				{
-					warn!("Failed to send #{}: {}", tx_seq, defmt::Debug2Format(&e));
-				}
-			}
+		match (net, server_ip) {
 			// There is inbound bytes that should be parsed and processed
-			Either::Second((len, addr, _port)) => {
+			(Either::First((len, addr, _port)), _) => {
 				// Try to optimistically parse all packets that come off the network
 				let Ok(packet) = Packet::deserialize_from(&buffer[..len]) else { trace!("Discarding {}", &buffer[..len]); continue };
 				let (seq, msg) = packet.split();
@@ -116,14 +99,27 @@ pub async fn network_task(packets: &Packets) -> ! {
 				rx_seq = seq;
 
 				// If we received a valid packet, assume they are our real host
-				if host_ip != addr {
+				if server_ip != Some(addr) {
 					info!(
 						"Found SlimeVR server at {}, previously was {}",
-						addr, host_ip
+						addr, server_ip
 					);
-					host_ip = addr;
+					server_ip = Some(addr);
 				}
 			}
+			// There is pending outbound packet that should be sent
+			(Either::Second(msg), Some(server_ip)) => {
+				// Serialize the packet based on our send sequence number
+				let Ok(len) = Packet::new(tx_seq, msg).serialize_into(&mut buffer) else { warn!("Failed to serialize outgoing packet"); continue };
+				tx_seq += 1;
+
+				if let Err(e) =
+					socket.send(Ipv4Address(server_ip), PORT, &buffer[..len])
+				{
+					warn!("Failed to send #{}: {}", tx_seq, defmt::Debug2Format(&e));
+				}
+			}
+			_ => (),
 		}
 	}
 }
