@@ -14,7 +14,7 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
+default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
 # default = [
 #   "mcu-nrf52840",
 #   "imu-stubbed",
@@ -62,7 +62,7 @@ mcu-nrf52832 = [
 # Wi-fi dependencies
 net-wifi = ["esp-wifi/wifi", "dep:smoltcp"] # use wifi
 net-ble = ["esp-wifi/ble", "dep:bleps"]
-net-stubbed = []                           # Stubs out network
+net-stubbed = []                            # Stubs out network
 
 # Supported IMUs
 imu-bmi160 = ["dep:bmi160"]
@@ -205,6 +205,7 @@ fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [
   "nalgebra031",
 ] }
+load-dotenv = "0.1"
 paste = "1.0"
 
 [build-dependencies]

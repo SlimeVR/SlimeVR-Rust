@@ -4,18 +4,6 @@ target = "riscv32imc-unknown-none-elf"
 # target = "thumbv7em-none-eabihf"
 # target = "xtensa-esp32-none-elf"
 
-[env]
-# You can override this via environment variable when building or by changing it here
-DEFMT_LOG = "debug"
-
-# Change to your wifi's or override with environment variables.
-SSID = "change me"
-PASSWORD = "change me"
-
-# Provide this if you have a particular board you want to use. Note that relative paths
-# are resolved from the same folder as `build.rs`.
-# BOARD = "boards/ferrous_slime.toml"
-
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
   # For esp-hal

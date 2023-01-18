@@ -10,6 +10,8 @@
 #![feature(const_fn_floating_point_arithmetic)]
 #![deny(unsafe_op_in_unsafe_fn)]
 
+load_dotenv::try_load_dotenv!();
+
 mod aliases;
 mod globals;
 mod imu;
