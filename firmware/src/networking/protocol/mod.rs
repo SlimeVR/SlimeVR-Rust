@@ -3,9 +3,10 @@
 mod packets;
 pub use self::packets::Packets;
 
-use defmt::debug;
+use defmt::{debug, trace};
 use embassy_executor::task;
 use embassy_futures::select::{select, Either};
+
 use firmware_protocol::{
 	BoardType, CbPacket, ImuType, McuType, SbPacket, SensorDataType, SensorStatus,
 };
@@ -41,6 +42,7 @@ async fn handle_cb_msg(cb_msg: CbPacket, sb_chan: &Reliable<SbPacket>) {
 	match cb_msg {
 		// Identify ourself when discovery packet is received
 		CbPacket::Discovery => {
+			trace!("protocol: received Discovery");
 			sb_chan
 				.send(SbPacket::Handshake {
 					// TODO: Compile time constants for board and MCU
@@ -56,7 +58,6 @@ async fn handle_cb_msg(cb_msg: CbPacket, sb_chan: &Reliable<SbPacket>) {
 					mac_address: [0; 6],
 				})
 				.await;
-			debug!("Handshake");
 
 			// After handshake, we are supposed to send `SensorInfo` only once.
 			sb_chan
@@ -66,15 +67,16 @@ async fn handle_cb_msg(cb_msg: CbPacket, sb_chan: &Reliable<SbPacket>) {
 					sensor_type: ImuType::Unknown(0xFF),
 				})
 				.await;
-			debug!("SensorInfo");
 		}
 		// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
 		// The protocol is asymmetric so its a bit unintuitive.
 		CbPacket::Heartbeat => {
+			trace!("protocol: received Heartbeat");
 			sb_chan.send(SbPacket::Heartbeat).await;
 		}
 		// Pings are basically like heartbeats, just echo data back
 		CbPacket::Ping { challenge } => {
+			trace!("protocol: received Ping");
 			sb_chan.send(SbPacket::Ping { challenge }).await;
 		}
 		_ => (),
