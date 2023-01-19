@@ -1,13 +1,9 @@
 //! This crate reimplements most of the relevant parts of the VQF algorithm from
 //! https://github.com/dlaidig/vqf/blob/f2a63375604e0b025048d181ba6a204e96ce2559/vqf/pyvqf.py Currently this is just
-//! copy-pasted from the python code, but it should be made more idiomatic before actually using it.
+//! copy-pasted from the python code, but it should be made more idiomatic before actually using it. I have marked areas
+//! most likely to contain bugs with ඞ
 //!
 //! The original code is licensed under the MIT license, so this crate is also licensed under the MIT license.
-//!
-//! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//! WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-//! OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-//! OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #![no_std]
 #![allow(non_snake_case)]
@@ -333,6 +329,7 @@ impl Vqf {
 
 			// get rotation matrix corresponding to accGyrQuat
 			let accGyrQuat = self.getQuat6D();
+			// ඞ
 			let R = accGyrQuat.to_rotation_matrix().into_inner();
 
 			// calculate R*b_hat (only the x and y component, as z is not needed)
@@ -365,6 +362,7 @@ impl Vqf {
 				R = Mat3x3::identity();
 				w = Some(Vec3::repeat(self._coeffs.biasRestW));
 			} else if self._params.motionBiasEstEnabled {
+				// ඞ
 				e = Some(Vec3::new(
 					-accEarth[1] / accTs + biasLp[0]
 						- R[0] * bias[0] - R[1] * bias[1]
@@ -420,6 +418,7 @@ impl Vqf {
 				bias = Vec3::from_fn(|x, y| bias[(x, y)].clamp(-biasClip, biasClip));
 			}
 
+			// ඞ
 			self._state.bias = bias;
 		}
 	}
@@ -607,11 +606,13 @@ fn filterVec<const N: usize, const M: usize>(
 		if state[(0, 1)].is_nan() {
 			// first sample
 			state[(0, 1)] = 0.0; // state[0, 1] is used to store the sample count
+					 // ඞ
 			state.get_mut((1, ..)).unwrap().fill(0.0); // state[1, :] is used to store the sum
 		}
 
 		state[(0, 1)] += 1.0;
 		let mut out = nalgebra::Matrix::zeros();
+		// ඞ
 		for (i, x) in x.iter().enumerate() {
 			state[(1, i)] += *x;
 			out[i] = state[(1, i)] / state[(0, 1)];
@@ -620,6 +621,7 @@ fn filterVec<const N: usize, const M: usize>(
 		if state[(0, 1)] * Ts >= tau {
 			for i in 0..N {
 				let init = filterInitialState(out[i], b, a);
+				// ඞ
 				for j in 0..M {
 					state[(j, i)] = init[j];
 				}
@@ -654,9 +656,11 @@ fn filterStep<const N: usize, const M: usize>(
 	// difference equations based on scipy.signal.lfilter documentation
 	// assumes that a0 == 1.0
 	let y = b[0] * x + nalgebra::Matrix::repeat(state[0]);
+	// ඞ
 	for i in 0..N {
 		state[(0, i)] = b[1] * x[i] - a[0] * y[i] + state[(1, i)];
 	}
+	// ඞ
 	for i in 0..N {
 		state[(1, i)] = b[2] * x[i] - a[1] * y[i];
 	}

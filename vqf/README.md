@@ -1,0 +1,11 @@
+# VQF
+
+This crate implements the Versatile Quaternion-based Filter (VQF) for IMU Orientation Estimation from the publication
+
+> D. Laidig and T. Seel. "VQF: Highly Accurate IMU Orientation Estimation with Bias Estimation and Magnetic Disturbance Rejection." Information Fusion 2023, 91, 187--204. doi:10.1016/j.inffus.2022.10.014. [Accepted manuscript available at arXiv:2203.17024.]
+
+This code in its current form is a direct port of the Python code originally provided [here](https://github.com/dlaidig/vqf/)
+
+## License
+Unlike rest of this repository, the VQF is exclusively licensed under the [MIT License](/LICENSE-MIT).
+
