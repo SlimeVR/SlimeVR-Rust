@@ -260,7 +260,7 @@ opt-level = 'z'
 
 [workspace]
 resolver = "2"
-members = ["crates/panic_defmt", "crates/defmt_esp_println"]
+members = ["crates/panic_defmt", "crates/defmt_esp_println", "crates/vqf"]
 
 [workspace.package]
 license = "MIT OR Apache-2.0"
