@@ -7,5 +7,6 @@ This crate implements the Versatile Quaternion-based Filter (VQF) for IMU Orient
 This code in its current form is a direct port of the Python code originally provided [here](https://github.com/dlaidig/vqf/)
 
 ## License
-Unlike rest of this repository, the VQF is exclusively licensed under the [MIT License](/LICENSE-MIT).
+Copyright 2021 Daniel Laidig <laidig@control.tu-berlin.de>
 
+Licensed under the [MIT License](https://spdx.org/licenses/MIT.html)
