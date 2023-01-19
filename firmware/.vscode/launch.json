@@ -13,15 +13,16 @@
                 "resetAfterFlashing": true,
                 "haltAfterReset": true,
             },
-            "runtimeExecutable": "/Users/ryan.butler/.cargo/bin/probe-rs-debugger",
-            "consoleLogLevel": "Debug",
+            "connectUnderReset": true,
+            "runtimeExecutable": "/home/ryan/.cargo/bin/probe-rs-debugger",
+            // "consoleLogLevel": "Trace",
             "name": "probe_rs Executable Test",
-            "chip": "nrf52840", //!MODIFY
-            "wireProtocol": "Swd",
+            "chip": "esp32c3", //!MODIFY
+            "wireProtocol": "Jtag",
             "cwd": "${workspaceFolder}",
             "coreConfigs": [
                 {
-                    "programBinary": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/firmware", //!MODIFY
+                    "programBinary": "${workspaceFolder}/target/riscv32imc-unknown-none-elf/debug/firmware", //!MODIFY
                     "rttEnabled": true,
                 }
             ]

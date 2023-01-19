@@ -450,6 +450,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
+name = "dotenvy"
+version = "0.15.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03d8c417d7a8cb362e0c37e5d815f5eb7c37f79ff93707329d5a194e42e54ca0"
+
+[[package]]
 name = "embassy-cortex-m"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
@@ -914,6 +920,7 @@ dependencies = [
  "defmt-bbq",
  "defmt-rtt",
  "defmt_esp_println",
+ "dotenvy",
  "embassy-executor",
  "embassy-futures 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embassy-nrf",

@@ -42,7 +42,7 @@ impl<I: I2c> Mpu6050<I> {
 					fifo_buf: [0; 28],
 				})
 			},
-			|i| debug!("Retrying IMU connection (attempts so far: {})", i + 1),
+			|i| warn!("Retrying IMU connection (attempts so far: {})", i + 1),
 		)
 		// Map converts from tuple -> struct
 		.map_err(|(i2c, error)| InitError { i2c, error })
