@@ -9,12 +9,13 @@
             "type": "probe-rs-debug",
             "request": "launch",
             "flashingConfig": {
-                "flashingEnabled": true,
+                "flashingEnabled": false,
                 "resetAfterFlashing": true,
                 "haltAfterReset": true,
             },
+            "connectUnderReset": true,
             "runtimeExecutable": "/home/ryan/.cargo/bin/probe-rs-debugger",
-            "consoleLogLevel": "Debug",
+            // "consoleLogLevel": "Trace",
             "name": "probe_rs Executable Test",
             "chip": "esp32c3", //!MODIFY
             "wireProtocol": "Jtag",

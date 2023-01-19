@@ -33,6 +33,7 @@ macro_rules! memory_x {
 }
 
 fn main() -> Result<()> {
+	let _ = dotenvy::dotenv();
 	#[cfg(all(feature = "mcu-nrf52832", feature = "log-usb-serial"))]
 	compile_error!("the nrf52832 doesn't support USB!");
 
@@ -146,7 +147,8 @@ struct Pins {
 impl BoardConfig {
 	/// Loads a board config from a file
 	fn from_file(p: &Path) -> Result<Self> {
-		let s = std::fs::read_to_string(p).wrap_err("Failed to read board toml")?;
+		let s = std::fs::read_to_string(p.clone())
+			.wrap_err(format!("Failed to read board toml: {}", p.display()))?;
 		toml::from_str(&s).wrap_err("Failed to deserialize board toml")
 	}
 	/// Gets the path to the board config, or errors if we can't pick one.

@@ -63,11 +63,12 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	}
 
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
-	// let hz =
+	let sda = map_pin!(io, env!("PIN_SDA"));
+	let scl = map_pin!(io, env!("PIN_SCL"));
 	let i2c = esp32c3_hal::i2c::I2C::new(
 		p.I2C0,
-		map_pin!(io, env!("PIN_SDA")),
-		map_pin!(io, env!("PIN_SCL")),
+		sda,
+		scl,
 		400u32.kHz(),
 		&mut system.peripheral_clock_control,
 		&clocks,
