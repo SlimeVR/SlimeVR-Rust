@@ -444,6 +444,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dotenv"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
+
+[[package]]
 name = "embassy-cortex-m"
 version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=ebc7350#ebc735008f0b1725b22c944cc5f95fe1aacc665b"
@@ -926,6 +932,7 @@ dependencies = [
  "firmware_protocol",
  "fugit",
  "futures-util",
+ "load-dotenv",
  "mpu6050-dmp",
  "nalgebra",
  "nb 1.0.0",
@@ -1132,6 +1139,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e322f259d225fbae43a1b053b2dc6a5968a6bdf8b205f5de684dab485b95030e"
 dependencies = [
  "spinning_top",
+]
+
+[[package]]
+name = "load-dotenv"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71abcf6d8da2a6c163554a61cdbca2438bbe9e687a9c5ebeee12e9af42864b54"
+dependencies = [
+ "dotenv",
 ]
 
 [[package]]

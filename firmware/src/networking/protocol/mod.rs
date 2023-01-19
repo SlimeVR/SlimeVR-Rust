@@ -3,14 +3,16 @@
 mod packets;
 pub use self::packets::Packets;
 
-use defmt::debug;
+use defmt::{debug, trace};
 use embassy_executor::task;
+use embassy_futures::select::{select, Either};
+
 use firmware_protocol::{
 	BoardType, CbPacket, ImuType, McuType, SbPacket, SensorDataType, SensorStatus,
 };
 
 use crate::imu::Quat;
-use crate::utils::Unreliable;
+use crate::utils::{Reliable, Unreliable};
 
 #[allow(dead_code)]
 mod v2;
@@ -23,18 +25,25 @@ pub async fn control_task(
 	debug!("Control task!");
 	async {
 		loop {
-			do_work(packets, quat).await;
+			match select(packets.clientbound.recv(), quat.wait()).await {
+				Either::First(cb_msg) => {
+					handle_cb_msg(cb_msg, &packets.serverbound).await
+				}
+				Either::Second(quat_msg) => {
+					handle_quat(quat_msg, &packets.serverbound).await
+				}
+			}
 		}
 	}
 	.await
 }
 
-async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
-	match packets.clientbound.recv().await {
+async fn handle_cb_msg(cb_msg: CbPacket, sb_chan: &Reliable<SbPacket>) {
+	match cb_msg {
 		// Identify ourself when discovery packet is received
 		CbPacket::Discovery => {
-			packets
-				.serverbound
+			trace!("protocol: received Discovery");
+			sb_chan
 				.send(SbPacket::Handshake {
 					// TODO: Compile time constants for board and MCU
 					board: BoardType::Custom,
@@ -49,38 +58,38 @@ async fn do_work(packets: &Packets, quat: &Unreliable<Quat>) {
 					mac_address: [0; 6],
 				})
 				.await;
-			debug!("Handshake");
 
 			// After handshake, we are supposed to send `SensorInfo` only once.
-			packets
-				.serverbound
+			sb_chan
 				.send(SbPacket::SensorInfo {
 					sensor_id: 0, // First sensor (of two)
 					sensor_status: SensorStatus::Ok,
 					sensor_type: ImuType::Unknown(0xFF),
 				})
 				.await;
-			debug!("SensorInfo");
 		}
 		// When heartbeat is received, we should reply with heartbeat 0 aka Discovery
 		// The protocol is asymmetric so its a bit unintuitive.
 		CbPacket::Heartbeat => {
-			packets.serverbound.send(SbPacket::Heartbeat).await;
+			trace!("protocol: received Heartbeat");
+			sb_chan.send(SbPacket::Heartbeat).await;
 		}
 		// Pings are basically like heartbeats, just echo data back
 		CbPacket::Ping { challenge } => {
-			packets.serverbound.send(SbPacket::Ping { challenge }).await;
+			trace!("protocol: received Ping");
+			sb_chan.send(SbPacket::Ping { challenge }).await;
 		}
 		_ => (),
 	}
+}
 
-	packets
-		.serverbound
+async fn handle_quat(quat: Quat, sb_chan: &Reliable<SbPacket>) {
+	sb_chan
 		.send(SbPacket::RotationData {
 			sensor_id: 0,                      // First sensor
 			data_type: SensorDataType::Normal, // Rotation data without magnetometer correction.
-			quat: quat.wait().await.into_inner().into(),
+			quat: quat.into_inner().into(),
 			calibration_info: 0,
 		})
-		.await;
+		.await
 }
