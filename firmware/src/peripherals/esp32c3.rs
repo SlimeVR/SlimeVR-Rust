@@ -69,7 +69,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 		p.I2C0,
 		sda,
 		scl,
-		400u32.kHz(),
+		100u32.kHz(),
 		&mut system.peripheral_clock_control,
 		&clocks,
 	);

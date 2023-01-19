@@ -223,6 +223,8 @@ dotenvy = "0.15"
 # Enable non-default I2C addresses and InitError
 mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
 bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
+# has a way to release i2c that isn't published
+bno080 = { git = "https://github.com/tstellanova/bno080", rev = "f95e860" }
 
 # Emable use of `atomic-polyfill`
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
