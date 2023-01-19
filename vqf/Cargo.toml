@@ -1,0 +1,10 @@
+[package]
+name = "vqf"
+version = "0.0.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[dependencies]
+nalgebra = { version = "0.32", default-features = false, features = ["libm"] }
+num-traits = { version = "0.2", default-features = false, features = ["libm"] }
