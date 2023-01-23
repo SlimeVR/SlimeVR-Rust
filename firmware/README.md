@@ -31,6 +31,7 @@ we officially have added support for are:
 * esp32c3
 * esp32
 * nrf52840
+* nrf52832
 
 ## How to flash the firmware
 We are trying to improve our documentation, feel free to open an issue or a PR if
