@@ -24,12 +24,7 @@ mod bbq_logger;
 
 use defmt::debug;
 use embassy_executor::Executor;
-use embedded_hal::blocking::delay::DelayMs;
 use static_cell::StaticCell;
-
-use crate::imu::Quat;
-use crate::networking::protocol::Packets;
-use crate::utils::Unreliable;
 
 #[cfg(cortex_m)]
 use cortex_m_rt::entry;
@@ -40,6 +35,11 @@ use xtensa_lx_rt::entry;
 
 #[entry]
 fn main() -> ! {
+	use crate::imu::Quat;
+	use crate::networking::protocol::Packets;
+	use crate::utils::Unreliable;
+	use embedded_hal::blocking::delay::DelayMs;
+
 	#[cfg(bbq)]
 	let bbq = defmt_bbq::init().unwrap();
 

@@ -8,7 +8,7 @@ use std::{
 };
 
 mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
-mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
+mandatory_and_unique!("imu-stubbed", "imu-bno080", "imu-mpu6050", "imu-bmi160");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 mandatory_and_unique!("net-wifi", "net-ble", "net-stubbed");
 
@@ -33,6 +33,7 @@ macro_rules! memory_x {
 }
 
 fn main() -> Result<()> {
+	let _ = dotenvy::dotenv();
 	#[cfg(all(feature = "mcu-nrf52832", feature = "log-usb-serial"))]
 	compile_error!("the nrf52832 doesn't support USB!");
 
@@ -146,7 +147,8 @@ struct Pins {
 impl BoardConfig {
 	/// Loads a board config from a file
 	fn from_file(p: &Path) -> Result<Self> {
-		let s = std::fs::read_to_string(p).wrap_err("Failed to read board toml")?;
+		let s = std::fs::read_to_string(p.clone())
+			.wrap_err(format!("Failed to read board toml: {}", p.display()))?;
 		toml::from_str(&s).wrap_err("Failed to deserialize board toml")
 	}
 	/// Gets the path to the board config, or errors if we can't pick one.

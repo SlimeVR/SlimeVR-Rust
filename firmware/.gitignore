@@ -3,3 +3,4 @@
 *.bin
 *.uf2
 \.env
+/boards/dev.toml # convenient for testing out settings locally

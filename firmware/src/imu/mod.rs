@@ -13,10 +13,13 @@ mod ඞ;
 #[path = "bmi160/mod.rs"]
 mod ඞ;
 
+#[cfg(feature = "imu-bno080")]
+#[path = "bno080.rs"]
+mod ඞ;
+
 use defmt::{debug, info, trace, warn};
 use embassy_executor::task;
 use embassy_futures::yield_now;
-use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
 
 use crate::{
@@ -49,7 +52,7 @@ pub async fn imu_task(
 async fn imu_task_inner(
 	quat_signal: &Unreliable<Quat>,
 	i2c: impl crate::aliases::I2c,
-	mut delay: impl DelayMs<u32>,
+	mut delay: impl crate::aliases::Delay,
 ) -> ! {
 	debug!("Imu task");
 	let mut imu = ඞ::new_imu(i2c, &mut delay);
