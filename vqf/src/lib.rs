@@ -611,7 +611,7 @@ fn filterVec<const N: usize, const M: usize>(
 		}
 
 		state[(0, 1)] += 1.0;
-		let mut out = nalgebra::Matrix::zeros();
+		let mut out = nalgebra::SMatrix::zeros();
 		// ඞ
 		for (i, x) in x.iter().enumerate() {
 			state[(1, i)] += *x;
@@ -655,7 +655,7 @@ fn filterStep<const N: usize, const M: usize>(
 > {
 	// difference equations based on scipy.signal.lfilter documentation
 	// assumes that a0 == 1.0
-	let y = b[0] * x + nalgebra::Matrix::repeat(state[0]);
+	let y = b[0] * x + nalgebra::SMatrix::repeat(state[0]);
 	// ඞ
 	for i in 0..N {
 		state[(0, i)] = b[1] * x[i] - a[0] * y[i] + state[(1, i)];
