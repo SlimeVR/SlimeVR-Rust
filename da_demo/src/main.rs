@@ -1,7 +1,7 @@
 #![no_main]
 #![no_std]
 
-// Needed because of the critical-section stuff not getting loaded :P
+// Ensures that critical-section impls are linked against.
 use cortex_m as _;
 use defmt_rtt as _;
 use panic_halt as _;
