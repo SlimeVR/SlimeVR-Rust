@@ -14,7 +14,7 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
+default = ["mcu-esp32c3", "log-rtt", "net-wifi"]
 # default = [
 #   "mcu-nrf52840",
 #   "imu-stubbed",
@@ -63,11 +63,6 @@ mcu-nrf52832 = [
 net-wifi = ["esp-wifi/wifi", "dep:smoltcp"] # use wifi
 net-ble = ["esp-wifi/ble", "dep:bleps"]
 net-stubbed = []                            # Stubs out network
-
-# Supported IMUs
-imu-bmi160 = ["dep:bmi160"]
-imu-mpu6050 = ["dep:mpu6050-dmp"]
-imu-stubbed = []                  # Stubs out the IMU
 
 # Supported defmt loggers
 log-rtt = ["dep:defmt-rtt"]
@@ -191,8 +186,8 @@ panic_defmt = { path = "crates/panic_defmt" }
 defmt-bbq = { version = "0.1", optional = true }
 
 # Peripheral drivers
-mpu6050-dmp = { version = "0.2", optional = true }
-bmi160 = { version = "0.1", optional = true }
+mpu6050-dmp = "0.2"
+bmi160 = "0.1"
 
 # Other crates
 static_cell = "1"

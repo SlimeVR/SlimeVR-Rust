@@ -1,4 +1,3 @@
-use embassy_futures::yield_now;
 use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 
 /// Signals are used for concurrently updating values, where we only care about
@@ -42,17 +41,4 @@ pub fn retry<A, T, E>(
 		last_result = f(acc);
 	}
 	last_result
-}
-
-/// Converts a nb::Result to an async function by looping and yielding to the async
-/// executor.
-pub async fn nb2a<T, E>(mut f: impl FnMut() -> nb::Result<T, E>) -> Result<T, E> {
-	loop {
-		let v = f();
-		match v {
-			Ok(t) => return Ok(t),
-			Err(nb::Error::Other(e)) => return Err(e),
-			Err(nb::Error::WouldBlock) => yield_now().await,
-		}
-	}
 }
