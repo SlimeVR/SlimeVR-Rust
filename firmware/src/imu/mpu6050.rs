@@ -2,7 +2,7 @@ use super::{Imu, Quat};
 use crate::aliases::I2c;
 use crate::utils;
 
-use defmt::{debug, trace};
+use defmt::{debug, trace, warn};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
 use mpu6050_dmp::address::Address;
