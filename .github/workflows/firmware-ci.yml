@@ -93,9 +93,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Rename .env.template
+      - name: Use .env.template as .env
         run: |
-          mv .env.template .env
+          cp .env.template .env
 
       - name: Install Xtensa toolchain
         if: startsWith(matrix.target, 'xtensa')
