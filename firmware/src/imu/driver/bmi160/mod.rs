@@ -1,9 +1,10 @@
 mod math;
 
-use self::math::discrete_to_radians;
-use super::{Imu, Quat};
+use self::math::{AccelFsr, GyroFsr};
+use super::{Imu, ImuData};
+use crate::aliases::I2c;
+use crate::imu::Vec3;
 use crate::utils;
-use crate::{aliases::I2c, imu::ඞ::math::GyroFsr};
 
 use bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
@@ -81,27 +82,31 @@ impl<I: I2c> Imu for Bmi160<I> {
 
 	const IMU_TYPE: ImuType = ImuType::Bmi160;
 
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
-		let data = self.driver.data(SensorSelector::new().gyro())?;
-		let gyro_vel_euler = data.gyro.unwrap();
+	async fn data(&mut self) -> Result<ImuData, Self::Error> {
+		let data = self.driver.data(SensorSelector::new().gyro().accel())?;
+		let accel = data.accel.unwrap();
+		let gyro = data.gyro.unwrap();
 
 		// TODO: We should probably query the IMU for the FSR instead of assuming the default one.
-		const FSR: GyroFsr = GyroFsr::DEFAULT;
+		const AFSR: AccelFsr = AccelFsr::DEFAULT;
+		const GFSR: GyroFsr = GyroFsr::DEFAULT;
 
 		// TODO: Check that bmi crates conventions for euler angles matches nalgebra.
 		// TODO: Implement sensor fusion and temperature compensation
 		// TODO: This should be integrated to position, lol
-		Ok(nalgebra::UnitQuaternion::from_euler_angles(
-			discrete_to_radians(FSR, gyro_vel_euler.x),
-			discrete_to_radians(FSR, gyro_vel_euler.y),
-			discrete_to_radians(FSR, gyro_vel_euler.z),
-		))
+		Ok(ImuData {
+			accel: Vec3::new(
+				AFSR.convert_ms2(accel.x),
+				AFSR.convert_ms2(accel.y),
+				AFSR.convert_ms2(accel.z),
+			),
+			gyro: Vec3::new(
+				GFSR.convert_rad(gyro.x),
+				GFSR.convert_rad(gyro.y),
+				GFSR.convert_rad(gyro.z),
+			),
+			// 6 dof ought to be enough for everyone
+			mag: None,
+		})
 	}
-}
-
-pub fn new_imu(
-	i2c: impl crate::aliases::I2c,
-	delay: &mut impl DelayMs<u32>,
-) -> impl crate::imu::Imu {
-	Bmi160::new(i2c, delay).expect("Failed to initialize BMI160")
 }

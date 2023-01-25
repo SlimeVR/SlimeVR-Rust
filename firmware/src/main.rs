@@ -8,6 +8,8 @@
 #![feature(alloc_error_handler)]
 // We want to do some floating point math at compile time
 #![feature(const_fn_floating_point_arithmetic)]
+// Asynchronous IMU sampling
+#![feature(async_fn_in_trait)]
 #![deny(unsafe_op_in_unsafe_fn)]
 
 load_dotenv::try_load_dotenv!();

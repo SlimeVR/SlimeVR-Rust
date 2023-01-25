@@ -1,38 +1,20 @@
-mod stubbed;
-
-#[cfg(feature = "imu-stubbed")]
-mod ඞ {
-	pub use crate::imu::stubbed::*;
-}
-
-#[cfg(feature = "imu-mpu6050")]
-#[path = "mpu6050.rs"]
-mod ඞ;
-
-#[cfg(feature = "imu-bmi160")]
-#[path = "bmi160/mod.rs"]
-mod ඞ;
+mod driver;
+mod fusion;
 
 use defmt::{debug, info, trace, warn};
 use embassy_executor::task;
-use embassy_futures::yield_now;
 use embedded_hal::blocking::delay::DelayMs;
-use firmware_protocol::ImuType;
 
 use crate::{
 	aliases::ඞ::{DelayConcrete, I2cConcrete},
-	utils::{nb2a, Unreliable},
+	utils::Unreliable,
 };
 
+pub use driver::*;
+pub use fusion::*;
+
 pub type Quat = nalgebra::UnitQuaternion<f32>;
-
-pub trait Imu {
-	type Error: core::fmt::Debug;
-
-	const IMU_TYPE: ImuType;
-	// TODO: This should be async
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error>;
-}
+pub type Vec3 = nalgebra::Vector3<f32>;
 
 /// Gets data from the IMU
 #[task]
@@ -52,11 +34,14 @@ async fn imu_task_inner(
 	mut delay: impl DelayMs<u32>,
 ) -> ! {
 	debug!("Imu task");
-	let mut imu = ඞ::new_imu(i2c, &mut delay);
+	// We'll do that later
+	let mut imu = fusion::Naive::new(
+		driver::Bmi160::new(i2c, &mut delay).expect("Failed to initialize IMU"),
+	);
 	info!("Initialized IMU!");
 
 	loop {
-		let q = match nb2a(|| imu.quat()).await {
+		let q = match imu.quat().await {
 			Ok(q) => q,
 			Err(err) => {
 				warn!("Error in IMU: {}", defmt::Debug2Format(&err));
@@ -71,6 +56,5 @@ async fn imu_task_inner(
 			q.coords.w
 		);
 		quat_signal.signal(q);
-		yield_now().await // Yield to ensure fairness
 	}
 }

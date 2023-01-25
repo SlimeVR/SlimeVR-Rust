@@ -1,8 +1,9 @@
-use super::{Imu, Quat};
 use crate::aliases::I2c;
+use crate::imu::{FusedImu, Quat};
 use crate::utils;
 
 use defmt::{debug, trace};
+use embassy_futures::yield_now;
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
 use mpu6050_dmp::address::Address;
@@ -49,33 +50,22 @@ impl<I: I2c> Mpu6050<I> {
 	}
 }
 
-impl<I: I2c> Imu for Mpu6050<I> {
+impl<I: I2c> FusedImu for Mpu6050<I> {
 	type Error = mpu6050_dmp::error::Error<I>;
 
 	const IMU_TYPE: ImuType = ImuType::Mpu6050;
 
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
-		if self.mpu.get_fifo_count()? >= 28 {
-			let data = self.mpu.read_fifo(&mut self.fifo_buf)?;
-			let opt = data.get(..16);
-			if let Some(data) = opt {
-				let q = mpu6050_dmp::quaternion::Quaternion::from_bytes(data).unwrap();
-				let q = nalgebra::Quaternion {
-					coords: nalgebra::vector![q.x, q.y, q.z, q.w],
-				};
-				Ok(Quat::from_quaternion(q))
-			} else {
-				Err(nb::Error::WouldBlock)
-			}
-		} else {
-			Err(nb::Error::WouldBlock)
+	async fn quat(&mut self) -> Result<Quat, Self::Error> {
+		while self.mpu.get_fifo_count()? < 28 {
+			// TODO: mmm probably should guess when the next data is available and properly sleep
+			yield_now().await
 		}
-	}
-}
 
-pub fn new_imu(
-	i2c: impl crate::aliases::I2c,
-	delay: &mut impl DelayMs<u32>,
-) -> impl crate::imu::Imu {
-	Mpu6050::new(i2c, delay).expect("Failed to initialize MPU6050")
+		let data = self.mpu.read_fifo(&mut self.fifo_buf)?;
+		let q = mpu6050_dmp::quaternion::Quaternion::from_bytes(&data[..16]).unwrap();
+		let q = nalgebra::Quaternion {
+			coords: nalgebra::vector![q.x, q.y, q.z, q.w],
+		};
+		Ok(Quat::from_quaternion(q))
+	}
 }
