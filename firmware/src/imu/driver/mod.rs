@@ -1,4 +1,5 @@
 mod bmi160;
+mod ism330dhcx;
 mod mpu6050;
 
 use firmware_protocol::ImuType;
@@ -6,6 +7,7 @@ use firmware_protocol::ImuType;
 use super::Vec3;
 
 pub use self::bmi160::Bmi160;
+pub use self::ism330dhcx::Ism330Dhcx;
 pub use self::mpu6050::Mpu6050;
 
 #[derive(Default, Debug)]

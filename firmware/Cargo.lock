@@ -932,6 +932,7 @@ dependencies = [
  "firmware_protocol",
  "fugit",
  "futures-util",
+ "ism330dhcx",
  "load-dotenv",
  "mpu6050-dmp",
  "nalgebra",
@@ -1113,6 +1114,16 @@ name = "indenter"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683"
+
+[[package]]
+name = "ism330dhcx"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9574fc715002016603f290bf977b2c240afaacbd760dbb0d46f4cac06856bc8f"
+dependencies = [
+ "defmt",
+ "embedded-hal 0.2.7",
+]
 
 [[package]]
 name = "lazy_static"
