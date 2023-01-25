@@ -1,4 +1,5 @@
 mod bmi160;
+mod lsm6ds33;
 mod mpu6050;
 
 use firmware_protocol::ImuType;
@@ -6,8 +7,8 @@ use firmware_protocol::ImuType;
 use super::Vec3;
 
 pub use self::bmi160::Bmi160;
+pub use self::lsm6ds33::Lsm6Ds33;
 pub use self::mpu6050::Mpu6050;
-
 #[derive(Default, Debug)]
 pub struct ImuData {
 	/// Acceleration vector in m/s^2
