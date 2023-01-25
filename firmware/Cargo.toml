@@ -188,6 +188,7 @@ defmt-bbq = { version = "0.1", optional = true }
 # Peripheral drivers
 mpu6050-dmp = "0.2"
 bmi160 = "0.1"
+bno055 = "0.3"
 
 # Other crates
 static_cell = "1"
@@ -195,6 +196,7 @@ nb = "1"
 nalgebra = { version = "0.31", default-features = false, features = [
   "macros",
   "libm",
+  "mint",
 ] }
 fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [

@@ -178,6 +178,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "bno055"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b886b6cd2c2ac51e6ce9c9c412c5f925d5f71a2800ba0638ae8d5ef85876420"
+dependencies = [
+ "bitflags",
+ "byteorder",
+ "embedded-hal 0.2.7",
+ "mint",
+]
+
+[[package]]
 name = "bytemuck"
 version = "1.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -906,6 +918,7 @@ dependencies = [
  "alloc-cortex-m",
  "bleps",
  "bmi160",
+ "bno055",
  "cfg_aliases",
  "color-eyre",
  "cortex-m",
@@ -1200,6 +1213,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "mint"
+version = "0.5.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e53debba6bda7a793e5f99b8dacf19e626084f525f7829104ba9898f367d85ff"
+
+[[package]]
 name = "mpu6050-dmp"
 version = "0.2.0"
 source = "git+https://github.com/TheButlah/mpu6050-dmp-rs?rev=77128a75a51547baadc0f0ef99aba4432e848f10#77128a75a51547baadc0f0ef99aba4432e848f10"
@@ -1221,6 +1240,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "20bd243ab3dbb395b39ee730402d2e5405e448c75133ec49cc977762c4cba3d1"
 dependencies = [
  "approx",
+ "mint",
  "nalgebra-macros",
  "num-complex",
  "num-rational",
