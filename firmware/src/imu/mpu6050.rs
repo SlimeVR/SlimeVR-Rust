@@ -2,7 +2,7 @@ use super::{Imu, Quat};
 use crate::aliases::I2c;
 use crate::utils;
 
-use defmt::{debug, trace};
+use defmt::{debug, trace, warn};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
 use mpu6050_dmp::address::Address;
@@ -42,7 +42,7 @@ impl<I: I2c> Mpu6050<I> {
 					fifo_buf: [0; 28],
 				})
 			},
-			|i| debug!("Retrying IMU connection (attempts so far: {})", i + 1),
+			|i| warn!("Retrying IMU connection (attempts so far: {})", i + 1),
 		)
 		// Map converts from tuple -> struct
 		.map_err(|(i2c, error)| InitError { i2c, error })

@@ -3,3 +3,5 @@
 *.bin
 *.uf2
 \.env
+# Convenient for local development. But should not be committed.
+/boards/dev.toml

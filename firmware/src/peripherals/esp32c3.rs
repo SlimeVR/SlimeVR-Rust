@@ -2,7 +2,6 @@ use super::Peripherals;
 use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
 
-use esp32c3_hal::Rng;
 use fugit::RateExtU32;
 use paste::paste;
 
@@ -54,6 +53,7 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	#[cfg(feature = "esp-wifi")]
 	{
 		use esp32c3_hal::systimer::SystemTimer;
+		use esp32c3_hal::Rng;
 
 		esp_wifi::init_heap();
 		let systimer = SystemTimer::new(p.SYSTIMER);
@@ -63,7 +63,6 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	}
 
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
-	// let hz =
 	let i2c = esp32c3_hal::i2c::I2C::new(
 		p.I2C0,
 		map_pin!(io, env!("PIN_SDA")),

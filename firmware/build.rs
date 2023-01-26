@@ -33,6 +33,15 @@ macro_rules! memory_x {
 }
 
 fn main() -> Result<()> {
+	// By default, Cargo will re-run a build script whenever
+	// any rust file in the project changes. This ensures that these additional files
+	// matter too.
+	println!("cargo:rerun-if-changed=linker_scripts/");
+	println!("cargo:rerun-if-changed=boards/");
+
+	// Any relevant env vars for the build script are listed here.
+	println!("cargo:rerun-if-env-changed=BOARD");
+	let _ = dotenvy::dotenv();
 	#[cfg(all(feature = "mcu-nrf52832", feature = "log-usb-serial"))]
 	compile_error!("the nrf52832 doesn't support USB!");
 
@@ -55,12 +64,6 @@ fn main() -> Result<()> {
 	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x");
 	#[cfg(all(feature = "esp-wifi", feature = "mcu-esp32"))]
 	println!("cargo:rustc-link-arg=-Tesp32_rom_functions.x");
-
-	// By default, Cargo will re-run a build script whenever
-	// any file in the project changes. By specifying `memory.x`
-	// here, we ensure the build script is only re-run when
-	// `memory.x` is changed.
-	println!("cargo:rerun-if-changed=linker_scripts/");
 
 	memory_x!("mcu-nrf52832");
 	memory_x!("mcu-nrf52840");
@@ -146,7 +149,8 @@ struct Pins {
 impl BoardConfig {
 	/// Loads a board config from a file
 	fn from_file(p: &Path) -> Result<Self> {
-		let s = std::fs::read_to_string(p).wrap_err("Failed to read board toml")?;
+		let s = std::fs::read_to_string(p)
+			.wrap_err(format!("Failed to read board toml: {}", p.display()))?;
 		toml::from_str(&s).wrap_err("Failed to deserialize board toml")
 	}
 	/// Gets the path to the board config, or errors if we can't pick one.
