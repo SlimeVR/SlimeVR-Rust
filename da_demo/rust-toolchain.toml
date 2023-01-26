@@ -1,5 +1,5 @@
 [toolchain]
-channel = "nightly"
+channel = "nightly-2022-12-18"
 targets = ["thumbv6m-none-eabi"]
 profile = "default"
 components = ["llvm-tools-preview", "rust-src", "rustfmt"]
