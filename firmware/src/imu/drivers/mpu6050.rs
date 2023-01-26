@@ -1,5 +1,5 @@
-use super::{Imu, Quat};
 use crate::aliases::I2c;
+use crate::imu::{FusedImu, Quat};
 use crate::utils;
 
 use defmt::{debug, trace, warn};
@@ -49,7 +49,7 @@ impl<I: I2c> Mpu6050<I> {
 	}
 }
 
-impl<I: I2c> Imu for Mpu6050<I> {
+impl<I: I2c> FusedImu for Mpu6050<I> {
 	type Error = mpu6050_dmp::error::Error<I>;
 
 	const IMU_TYPE: ImuType = ImuType::Mpu6050;
@@ -76,6 +76,6 @@ impl<I: I2c> Imu for Mpu6050<I> {
 pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
-) -> impl crate::imu::Imu {
+) -> impl crate::imu::FusedImu {
 	Mpu6050::new(i2c, delay).expect("Failed to initialize MPU6050")
 }

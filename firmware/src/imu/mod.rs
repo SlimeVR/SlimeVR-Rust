@@ -1,17 +1,5 @@
-mod stubbed;
-
-#[cfg(feature = "imu-stubbed")]
-mod ඞ {
-	pub use crate::imu::stubbed::*;
-}
-
-#[cfg(feature = "imu-mpu6050")]
-#[path = "mpu6050.rs"]
-mod ඞ;
-
-#[cfg(feature = "imu-bmi160")]
-#[path = "bmi160/mod.rs"]
-mod ඞ;
+mod drivers;
+mod fusion;
 
 use defmt::{debug, info, trace, warn};
 use embassy_executor::task;
@@ -25,7 +13,7 @@ use crate::{
 
 pub type Quat = nalgebra::UnitQuaternion<f32>;
 
-pub trait Imu {
+pub trait FusedImu {
 	type Error: core::fmt::Debug;
 
 	const IMU_TYPE: ImuType;
@@ -51,7 +39,7 @@ async fn imu_task_inner(
 	mut delay: impl crate::aliases::Delay,
 ) -> ! {
 	debug!("Imu task");
-	let mut imu = ඞ::new_imu(i2c, &mut delay);
+	let mut imu = self::drivers::ඞ::new_imu(i2c, &mut delay);
 	info!("Initialized IMU!");
 
 	loop {

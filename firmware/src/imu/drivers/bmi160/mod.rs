@@ -1,11 +1,11 @@
 mod math;
 
-use self::math::discrete_to_radians;
-use super::{Imu, Quat};
+use self::math::{discrete_to_radians, GyroFsr};
+use crate::aliases::I2c;
+use crate::imu::{FusedImu, Quat};
 use crate::utils;
-use crate::{aliases::I2c, imu::ඞ::math::GyroFsr};
 
-use bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
+use ::bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
@@ -76,7 +76,7 @@ impl<I: I2c> Bmi160<I> {
 	}
 }
 
-impl<I: I2c> Imu for Bmi160<I> {
+impl<I: I2c> FusedImu for Bmi160<I> {
 	type Error = BmiError<I>;
 
 	const IMU_TYPE: ImuType = ImuType::Bmi160;
@@ -102,6 +102,6 @@ impl<I: I2c> Imu for Bmi160<I> {
 pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
-) -> impl crate::imu::Imu {
+) -> impl crate::imu::FusedImu {
 	Bmi160::new(i2c, delay).expect("Failed to initialize BMI160")
 }
