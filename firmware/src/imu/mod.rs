@@ -39,7 +39,7 @@ async fn imu_task_inner(
 	mut delay: impl crate::aliases::Delay,
 ) -> ! {
 	debug!("Imu task");
-	let mut imu = self::drivers::ඞ::new_imu(i2c, &mut delay);
+	let mut imu = new_imu(i2c, &mut delay);
 	info!("Initialized IMU!");
 
 	loop {
@@ -60,4 +60,18 @@ async fn imu_task_inner(
 		quat_signal.signal(q);
 		yield_now().await // Yield to ensure fairness
 	}
+}
+
+fn new_imu(
+	i2c: impl crate::aliases::I2c,
+	delay: &mut impl crate::aliases::Delay,
+) -> impl FusedImu {
+	use crate::imu::drivers as d;
+
+	#[cfg(feature = "imu-bmi160")]
+	return d::bmi160::new_imu(i2c, delay);
+	#[cfg(feature = "imu-mpu6050")]
+	return d::mpu6050::new_imu(i2c, delay);
+	#[cfg(feature = "imu-stubbed")]
+	return d::stubbed::new_imu(i2c, delay);
 }

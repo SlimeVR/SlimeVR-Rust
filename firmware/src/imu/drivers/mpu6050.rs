@@ -73,9 +73,10 @@ impl<I: I2c> FusedImu for Mpu6050<I> {
 	}
 }
 
+#[allow(dead_code)]
 pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
 ) -> impl crate::imu::FusedImu {
-	Mpu6050::new(i2c, delay).expect("Failed to initialize MPU6050")
+	Mpu6050::new(i2c, delay).expect("Failed to create mpu6050")
 }

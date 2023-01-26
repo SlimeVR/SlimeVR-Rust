@@ -99,6 +99,7 @@ impl<I: I2c> FusedImu for Bmi160<I> {
 	}
 }
 
+#[allow(dead_code)]
 pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
