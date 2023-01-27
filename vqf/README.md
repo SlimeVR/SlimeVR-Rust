@@ -10,3 +10,5 @@ This code in its current form is a direct port of the Python code originally pro
 Copyright 2021 Daniel Laidig <laidig@control.tu-berlin.de>
 
 Licensed under the [MIT License](https://spdx.org/licenses/MIT.html)
+
+All contributors to this crate additionally agree that should the original work be relicensed under a dual MIT/[Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license, their contributions will also be licensed this way.
