@@ -6,6 +6,7 @@ members = [
   "networking/tokio_shutdown",
   "overlay",
   "skeletal_model",
+  "vqf",
 ]
 exclude = ["da_demo", "nrf_demo", "firmware"]
 default-members = [
@@ -14,6 +15,7 @@ default-members = [
   "networking/solarxr",
   "networking/tokio_shutdown",
   "skeletal_model",
+  "vqf",
 ]
 
 resolver = "2"
