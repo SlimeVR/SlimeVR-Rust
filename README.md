@@ -31,7 +31,7 @@ A guide for contributors can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
 
 ## License
-Unless otherwise specified, all code in this repository is dual-licensed under either:
+All code in this repository is dual-licensed under either:
 
 - MIT License ([LICENSE-MIT](LICENSE-MIT))
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
