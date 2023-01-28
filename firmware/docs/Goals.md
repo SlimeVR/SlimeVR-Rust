@@ -11,6 +11,7 @@ Non-Technical:
 * Have sustainability for both the code and contributors. 
 * Collaborate rather than compete with other FBT solutions.
 * Be welcoming to new contributors.
+* 🦀 HAVE FUN 🦀
 
 Technical Goals:
 * Be memory and type safe. Make illegal states unrepresentable in code.
@@ -22,6 +23,7 @@ Technical Goals:
 * Structure our code into reusable libraries, such that they can be utilized by other
   members of the SlimeVR and Rust communities.
 * Sensor fusion is imu-agnostic. We can reuse the algorithms across multiple sensors.
+* Networking protocol is mcu-agnostic.
 
 ## Short Term Goals
 Long term goals are important, but meaningless without short term goals. There is no
@@ -69,6 +71,9 @@ term, even though they are helpful in the long term:
   added support for, like the nrf52840, esp32c3, esp32, nrf52832, should continue to
   work.
 * ~~Supporting every imu under the sun~~. Avoid feature creep. 
+* ~~Supporting mangnetometers~~. I'm very skeptical of the value of magnetometers for
+  FBT, and I don't want us spending time on them at this early stage. The codebase
+  should not even have the conecept of a magnetometer yet. Everything should be 6dof.
 * ~~Having a perfectly architected system~~. We often won't know what the right way is
   to do something, until we have written it once first. Lets write it and then refactor
   once we have experience with what we like and dislike about that implementation.
