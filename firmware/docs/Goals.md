@@ -36,7 +36,7 @@ A firmware MVP has these features:
   accompanying documentation, without a hardware probe.
 * Communicates with the SlimeVR server over UDP on ESP32C3. 
 * Works with SlimeVR server of BLE on nrf52840. Can be accomplished via host-side
-  BLE->UDP conversion program, if that is necessary or eaiser.
+  BLE->UDP conversion program, if that is necessary or easier.
 * Supports commonly used or highly desired IMUs by the SlimeVR community, such as
   MPU6050, BMI160, BNO080, LSM6DS3. Currently, this list is exhaustive. Other IMUs are
   a bonus but not required for the MVP.
