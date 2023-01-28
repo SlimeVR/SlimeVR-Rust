@@ -2,6 +2,12 @@
 An implementation of SlimeVR firmware, built in Rust. Uses `embedded-hal` instead of
 Arduino.
 
+## Project Goals
+Read [Goals.md](docs/Goals.md)
+
+## Contributing
+Read [CONTRIBUTING.md]
+
 ## Target Hardware
 For now, we are only focused on the ESP32 platform, specifically the ESP32-C3, and the NRF52840.
 We think these chips are the best platforms to develop the firmware on.
@@ -37,4 +43,3 @@ we officially have added support for are:
 We are trying to improve our documentation, feel free to open an issue or a PR if
 something is missing/unclear.
 
-The current WIP docs are at [docs/README.md].
