@@ -1,10 +1,19 @@
 # Tips for Writing a Good Pull Request
 
-I (@TheButlah) am a big fan of tiny PRs. In general, as the number of changes in a PR
+I (@thebutlah) am a big fan of tiny PRs. In general, as the number of changes in a PR
 increases, so too does the time it takes to review and discuss that PR, exponentially.
 
-The biggest takeaway from this document is that in general, try to submit a PR as soon
-as you can. For me, that usually at least once in a single session of coding.
+The biggest takeaway is that you should try to break features up into the smallest
+individual components possible, and submit a PR for that as soon as is reasonable.
+For me, that usually is at least once in a single session of coding. Its rare I have
+a feature branch that sits on my fork. Sometimes its necessary, but thats like only
+10% of the time.
+
+If you want to hear more about my opinions or advice, you can expand the below. Or you
+could go code or touch grass instead.
+
+<details>
+<summary>See a text wall...</summary>
 
 ## Ok But, Who Asked?
 Why even care about this at all? The main reason is to be respectful of people's time,
@@ -104,3 +113,5 @@ If you are unfamiliar with git, and aren't comfortable breaking commits up into 
 PRs and similar, ask us for help on discord! We are friendly and are happy to teach.
 Worst case scenario, submit a PR and say "help I don't know how to break it up". The
 other contributors might be able to help :)
+
+</details>
