@@ -6,7 +6,7 @@ Arduino.
 Read [Goals.md](docs/Goals.md)
 
 ## Contributing
-Read [CONTRIBUTING.md]
+Read [CONTRIBUTING.md](docs/CONTRIBUTING.md)
 
 ## Target Hardware
 For now, we are only focused on the ESP32 platform, specifically the ESP32-C3, and the NRF52840.
