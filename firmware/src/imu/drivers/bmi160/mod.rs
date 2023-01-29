@@ -2,8 +2,8 @@ mod math;
 
 use self::math::{discrete_to_radians, GyroFsr};
 use crate::aliases::I2c;
-use crate::imu::{FusedImu, Quat};
-use crate::utils;
+use crate::imu::{FusedData, Imu, Quat};
+use crate::utils::{self, nb2a};
 
 use ::bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
@@ -74,14 +74,8 @@ impl<I: I2c> Bmi160<I> {
 		// Map converts from tuple -> struct
 		.map_err(|(i2c, error)| InitError { i2c, error })
 	}
-}
 
-impl<I: I2c> FusedImu for Bmi160<I> {
-	type Error = BmiError<I>;
-
-	const IMU_TYPE: ImuType = ImuType::Bmi160;
-
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
+	fn quat(&mut self) -> nb::Result<Quat, <Self as Imu>::Error> {
 		let data = self.driver.data(SensorSelector::new().gyro())?;
 		let gyro_vel_euler = data.gyro.unwrap();
 
@@ -99,10 +93,21 @@ impl<I: I2c> FusedImu for Bmi160<I> {
 	}
 }
 
+impl<I: I2c> Imu for Bmi160<I> {
+	type Error = BmiError<I>;
+	type Data = FusedData; //TODO: Stop pretending we are fused.
+
+	const IMU_TYPE: ImuType = ImuType::Bmi160;
+
+	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
+		nb2a(|| self.quat()).await.map(|quat| FusedData { q: quat })
+	}
+}
+
 #[allow(dead_code)]
 pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
-) -> impl crate::imu::FusedImu {
+) -> impl Imu<Data = FusedData> {
 	Bmi160::new(i2c, delay).expect("Failed to initialize BMI160")
 }

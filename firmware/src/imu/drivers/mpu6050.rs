@@ -1,6 +1,6 @@
 use crate::aliases::I2c;
-use crate::imu::{FusedImu, Quat};
-use crate::utils;
+use crate::imu::{FusedData, Imu, Quat};
+use crate::utils::{self, nb2a};
 
 use defmt::{debug, trace, warn};
 use embedded_hal::blocking::delay::DelayMs;
@@ -47,14 +47,8 @@ impl<I: I2c> Mpu6050<I> {
 		// Map converts from tuple -> struct
 		.map_err(|(i2c, error)| InitError { i2c, error })
 	}
-}
 
-impl<I: I2c> FusedImu for Mpu6050<I> {
-	type Error = mpu6050_dmp::error::Error<I>;
-
-	const IMU_TYPE: ImuType = ImuType::Mpu6050;
-
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error> {
+	fn quat(&mut self) -> nb::Result<Quat, <Self as Imu>::Error> {
 		if self.mpu.get_fifo_count()? >= 28 {
 			let data = self.mpu.read_fifo(&mut self.fifo_buf)?;
 			let opt = data.get(..16);
@@ -73,10 +67,21 @@ impl<I: I2c> FusedImu for Mpu6050<I> {
 	}
 }
 
+impl<I: I2c> Imu for Mpu6050<I> {
+	type Error = mpu6050_dmp::error::Error<I>;
+	type Data = FusedData;
+
+	const IMU_TYPE: ImuType = ImuType::Mpu6050;
+
+	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
+		nb2a(|| self.quat()).await.map(|quat| FusedData { q: quat })
+	}
+}
+
 #[allow(dead_code)]
 pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
-) -> impl crate::imu::FusedImu {
+) -> impl Imu<Data = FusedData> {
 	Mpu6050::new(i2c, delay).expect("Failed to create mpu6050")
 }
