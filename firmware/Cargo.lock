@@ -2027,3 +2027,8 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[patch.unused]]
+name = "bitvec"
+version = "1.1.0"
+source = "git+https://github.com/arctic-alpaca/ferrilab.git?rev=e13261a#e13261ad836a5b4e0579d99b75d5603590093e7a"

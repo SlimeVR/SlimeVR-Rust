@@ -235,9 +235,14 @@ dotenvy = "0.15"
 [patch.crates-io]
 bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
-# Emable use of `atomic-polyfill`
+# Enable use of `atomic-polyfill`
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
+
+# Fix xtensa not compiling because bitvec used to use a build.rs for detecting atomic
+# width
+# https://github.com/ferrilab/ferrilab/issues/1
+bitvec = { git = "https://github.com/arctic-alpaca/ferrilab.git", rev = "e13261a" }
 
 # Ensure we use the git version of all of the embassy stuff. Specify it here instead of
 # in [dependencies] because this ensures that we don't duplicate any dependencies like
