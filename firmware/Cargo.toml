@@ -108,20 +108,20 @@ _mcu-f-nrf52 = [
 
 [dependencies]
 # mcu-esp32 stuff
-esp32-hal = { version = "0.7", optional = true, features = [
+esp32-hal = { version = "0.8", optional = true, features = [
   "embassy",
   "embassy-time-timg0",
   "async",
 ] }
 
 # mcu-esp32c3 stuff
-esp32c3-hal = { version = "0.4", optional = true, features = [
+esp32c3-hal = { version = "0.5", optional = true, features = [
   "embassy",
   "embassy-time-timg0",
   "async",
   #"direct-boot",
 ] }
-riscv-rt = { version = "0.10", optional = true }
+riscv-rt = { version = "0.11", optional = true }
 riscv = { version = "0.10", optional = true }
 
 # mcu-f-nrf52 stuff
@@ -160,7 +160,7 @@ esp-alloc = { version = "0.1", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "d478a81", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", branch = "prepare-upcoming-hal", features = [
   "embedded-svc",
 ], optional = true }
 smoltcp = { version = "0.8", default-features = false, features = [
@@ -191,7 +191,7 @@ nrf-softdevice = { version = "*", default-features = false, features = [
 
 # Platform independent traits
 embedded-hal = "0.2"
-embedded-svc = { version = "0.23", default-features = false, optional = true, features = [
+embedded-svc = { version = "0.24", default-features = false, optional = true, features = [
   # "defmt"
   # "nightly",
 ] }
