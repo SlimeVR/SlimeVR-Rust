@@ -12,13 +12,44 @@ use crate::{
 };
 
 pub type Quat = nalgebra::UnitQuaternion<f32>;
+pub type Accel = nalgebra::Vector3<f32>;
+pub type Gyro = nalgebra::Vector3<f32>;
 
-pub trait FusedImu {
-	type Error: core::fmt::Debug;
+pub struct UnfusedData {
+	accel: Accel,
+	gyro: Gyro,
+}
+
+pub struct FusedData {
+	quat: Quat,
+}
+
+/// Represents a sensor fusion algorithm that will take an imu's `UnfusedData` and do math to turn
+/// it into `FusedData`, suitable for use as orientation.
+pub trait Fuser {
+	// TODO: Does a one-in, one-out api here work? Should we reuse a standard trait like a
+	// sink/stream/iterator?
+	// Note: Intentionally not async rn, this should only be doing math, not io or any internal
+	// awaiting.
+	fn process(&mut self, unfused: &UnfusedData) -> FusedData;
+}
+
+pub trait Imu {
+	type Error: core::fmt::Debug; // TODO: Maybe use defmt instead?
+	/// The data that the imu outputs.
+	type Data;
 
 	const IMU_TYPE: ImuType;
-	// TODO: This should be async
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error>;
+	/// Performs IO to get the next data from the imu.
+	async fn next_data(&mut self) -> Result<Self::Data, Self::Error>;
+}
+
+pub struct FusedImu<I: Imu, F: Fuser> {
+	pub imu: I,
+	pub fuser: F,
+}
+impl<I: Imu, F: Fuser> Imu for FusedImu<I, F> {
+	//TODO
 }
 
 /// Gets data from the IMU
@@ -65,7 +96,7 @@ async fn imu_task_inner(
 fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl crate::aliases::Delay,
-) -> impl FusedImu {
+) -> impl Imu<Data = FusedData> {
 	use crate::imu::drivers as d;
 
 	#[cfg(feature = "imu-bmi160")]

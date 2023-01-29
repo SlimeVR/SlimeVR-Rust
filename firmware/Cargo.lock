@@ -941,7 +941,7 @@ dependencies = [
  "futures-util",
  "load-dotenv",
  "mpu6050-dmp",
- "nalgebra 0.31.4",
+ "nalgebra",
  "nb 1.0.0",
  "nrf-softdevice",
  "nrf52832-pac",
@@ -963,7 +963,7 @@ name = "firmware_protocol"
 version = "0.0.0"
 dependencies = [
  "deku",
- "nalgebra 0.31.4",
+ "nalgebra",
 ]
 
 [[package]]
@@ -1232,21 +1232,7 @@ dependencies = [
  "num-complex",
  "num-rational",
  "num-traits",
- "simba 0.7.3",
- "typenum",
-]
-
-[[package]]
-name = "nalgebra"
-version = "0.32.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6515c882ebfddccaa73ead7320ca28036c4bc84c9bcca3cc0cbba8efe89223a"
-dependencies = [
- "approx",
- "num-complex",
- "num-rational",
- "num-traits",
- "simba 0.8.0",
+ "simba",
  "typenum",
 ]
 
@@ -1710,18 +1696,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "simba"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50582927ed6f77e4ac020c057f37a268fc6aebc29225050365aacbb9deeeddc4"
-dependencies = [
- "approx",
- "num-complex",
- "num-traits",
- "paste",
-]
-
-[[package]]
 name = "smoltcp"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1968,14 +1942,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ee8f19f9d74293faf70901bc20ad067dc1ad390d2cbf1e3f75f721ffee908b6"
 dependencies = [
  "vcell",
-]
-
-[[package]]
-name = "vqf"
-version = "0.1.0"
-dependencies = [
- "nalgebra 0.32.1",
- "num-traits",
 ]
 
 [[package]]
