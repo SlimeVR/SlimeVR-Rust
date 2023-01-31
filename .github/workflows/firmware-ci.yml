@@ -35,7 +35,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.mcu == 'mcu-esp32' }} # Continue if esp32 fails because it's not fully working currently
+    # continue-on-error: ${{ matrix.mcu == 'mcu-esp32' }} # Continue if esp32 fails because it's not fully working currently
     strategy:
       matrix:
         mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840, mcu-nrf52832]

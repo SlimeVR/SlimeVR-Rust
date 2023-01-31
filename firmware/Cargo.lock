@@ -842,7 +842,7 @@ dependencies = [
 [[package]]
 name = "esp-wifi"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-wifi.git#05665bc2e68a288fb7461175e4b82c5f6938b1ba"
+source = "git+https://github.com/esp-rs/esp-wifi.git?rev=05665bc#05665bc2e68a288fb7461175e4b82c5f6938b1ba"
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section",

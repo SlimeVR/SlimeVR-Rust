@@ -160,7 +160,7 @@ esp-alloc = { version = "0.1", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", ref = "05665bc", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "05665bc", features = [
   "embedded-svc",
 ], optional = true }
 smoltcp = { version = "0.8", default-features = false, features = [
