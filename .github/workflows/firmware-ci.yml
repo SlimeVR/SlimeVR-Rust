@@ -39,7 +39,6 @@ jobs:
     strategy:
       matrix:
         mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840, mcu-nrf52832]
-        imu: [imu-stubbed] # dont add IMUs here
         net: [net-stubbed, net-wifi]
         log: [log-rtt, log-usb-serial, log-uart]
         include:
@@ -55,22 +54,6 @@ jobs:
             target: thumbv7em-none-eabihf
             boot: nrf-boot-s132
 
-          - mcu: mcu-esp32c3
-            net: net-stubbed
-            log: log-uart
-            target: riscv32imc-unknown-none-elf
-            imu: imu-mpu6050
-          - mcu: mcu-esp32c3
-            net: net-stubbed
-            log: log-uart
-            target: riscv32imc-unknown-none-elf
-            imu: imu-bmi160
-          # add IMUs inside the include so they are only ran once
-          # - mcu: mcu-esp32c3
-            # net: net-stubbed
-            # log: log-uart
-            # target: riscv32imc-unknown-none-elf
-            # imu: imu-bno08x
         exclude:
           - mcu: mcu-esp32
             log: log-usb-serial
@@ -85,7 +68,7 @@ jobs:
             net: net-wifi
 
     env:
-      FEATURES: ${{ format('{0},{1},{2},{3},{4}', matrix.mcu, matrix.imu, matrix.net, matrix.log, matrix.boot) }}
+      FEATURES: ${{ format('{0},{1},{2},{3},imu-stubbed', matrix.mcu,  matrix.net, matrix.log, matrix.boot) }}
     defaults:
       run:
         working-directory: ./firmware
