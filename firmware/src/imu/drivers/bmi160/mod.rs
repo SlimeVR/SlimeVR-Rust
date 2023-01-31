@@ -36,7 +36,7 @@ pub struct Bmi160<I: I2c> {
 impl<I: I2c> Bmi160<I> {
 	pub fn new(i2c: I, delay: &mut impl DelayMs<u32>) -> Result<Self, InitError<I>> {
 		debug!("Constructing BMI160...");
-		let addr = ::bmi160::SlaveAddr::Default;
+		let addr = ::bmi160::SlaveAddr::Alternative(true);
 		debug!("I2C address: {:?}", defmt::Debug2Format(&addr));
 
 		macro_rules! unwrap_or_err {
