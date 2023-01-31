@@ -3,22 +3,60 @@ mod fusion;
 
 use defmt::{debug, info, trace, warn};
 use embassy_executor::task;
-use embassy_futures::yield_now;
 use firmware_protocol::ImuType;
 
 use crate::{
 	aliases::ඞ::{DelayConcrete, I2cConcrete},
-	utils::{nb2a, Unreliable},
+	utils::Unreliable,
 };
 
 pub type Quat = nalgebra::UnitQuaternion<f32>;
+pub type Accel = nalgebra::Vector3<f32>;
+pub type Gyro = nalgebra::Vector3<f32>;
 
-pub trait FusedImu {
-	type Error: core::fmt::Debug;
+pub struct UnfusedData {
+	pub accel: Accel,
+	pub gyro: Gyro,
+}
+
+pub struct FusedData {
+	pub q: Quat,
+}
+
+/// Represents a sensor fusion algorithm that will take an imu's `UnfusedData` and do math to turn
+/// it into `FusedData`, suitable for use as orientation.
+pub trait Fuser {
+	// TODO: Does a one-in, one-out api here work? Should we reuse a standard trait like a
+	// sink/stream/iterator?
+	// Note: Intentionally not async rn, this should only be doing math, not io or any internal
+	// awaiting.
+	fn process(&mut self, unfused: &UnfusedData) -> FusedData;
+}
+
+pub trait Imu {
+	type Error: core::fmt::Debug; // TODO: Maybe use defmt instead?
+	/// The data that the imu outputs.
+	type Data;
 
 	const IMU_TYPE: ImuType;
-	// TODO: This should be async
-	fn quat(&mut self) -> nb::Result<Quat, Self::Error>;
+	/// Performs IO to get the next data from the imu.
+	async fn next_data(&mut self) -> Result<Self::Data, Self::Error>;
+}
+
+pub struct FusedImu<I: Imu, F: Fuser> {
+	pub imu: I,
+	pub fuser: F,
+}
+impl<I: Imu<Data = UnfusedData>, F: Fuser> Imu for FusedImu<I, F> {
+	type Error = I::Error;
+	type Data = FusedData;
+
+	const IMU_TYPE: ImuType = I::IMU_TYPE;
+
+	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
+		let unfused = self.imu.next_data().await?;
+		Ok(self.fuser.process(&unfused))
+	}
 }
 
 /// Gets data from the IMU
@@ -26,25 +64,16 @@ pub trait FusedImu {
 pub async fn imu_task(
 	quat_signal: &'static Unreliable<Quat>,
 	i2c: I2cConcrete<'static>,
-	delay: DelayConcrete,
-) -> ! {
-	imu_task_inner(quat_signal, i2c, delay).await
-}
-
-/// Same as [`imu_task()`] but this version's arguments are type erased behind impl
-/// Trait to avoid accidentally accessing concrete behavior.
-async fn imu_task_inner(
-	quat_signal: &Unreliable<Quat>,
-	i2c: impl crate::aliases::I2c,
-	mut delay: impl crate::aliases::Delay,
+	mut delay: DelayConcrete,
 ) -> ! {
 	debug!("Imu task");
+
 	let mut imu = new_imu(i2c, &mut delay);
 	info!("Initialized IMU!");
 
 	loop {
-		let q = match nb2a(|| imu.quat()).await {
-			Ok(q) => q,
+		let q = match imu.next_data().await {
+			Ok(q) => q.q,
 			Err(err) => {
 				warn!("Error in IMU: {}", defmt::Debug2Format(&err));
 				continue;
@@ -58,14 +87,13 @@ async fn imu_task_inner(
 			q.coords.w
 		);
 		quat_signal.signal(q);
-		yield_now().await // Yield to ensure fairness
 	}
 }
 
 fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl crate::aliases::Delay,
-) -> impl FusedImu {
+) -> impl Imu<Data = FusedData> {
 	use crate::imu::drivers as d;
 
 	#[cfg(feature = "imu-bmi160")]
