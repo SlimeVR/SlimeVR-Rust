@@ -1,6 +1,6 @@
 mod math;
 
-use self::math::{discrete_to_radians, GyroFsr};
+use self::math::GyroFsr;
 use crate::aliases::I2c;
 use crate::imu::{FusedData, Imu, Quat};
 use crate::utils::{self, nb2a};
@@ -86,9 +86,9 @@ impl<I: I2c> Bmi160<I> {
 		// TODO: Implement sensor fusion and temperature compensation
 		// TODO: This should be integrated to position, lol
 		Ok(nalgebra::UnitQuaternion::from_euler_angles(
-			discrete_to_radians(FSR, gyro_vel_euler.x),
-			discrete_to_radians(FSR, gyro_vel_euler.y),
-			discrete_to_radians(FSR, gyro_vel_euler.z),
+			FSR.discrete_to_velocity(gyro_vel_euler.x),
+			FSR.discrete_to_velocity(gyro_vel_euler.y),
+			FSR.discrete_to_velocity(gyro_vel_euler.z),
 		))
 	}
 }
