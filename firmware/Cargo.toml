@@ -14,15 +14,22 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
+default = [
+  "mcu-esp32c3",
+  "imu-stubbed",
+  "log-rtt",
+  "net-wifi",
+  "fusion-stubbed",
+]
 # default = [
 #   "mcu-nrf52840",
 #   "imu-stubbed",
 #   "log-rtt",
 #   "net-stubbed",
 #   "nrf-boot-s140",
+#   "fusion-stubbed",
 # ]
-# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
+# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi", "fusion-stubbed"]
 
 # Supported microcontrollers
 mcu-esp32 = [
@@ -73,6 +80,10 @@ imu-stubbed = [] # Stubs out the IMU
 log-rtt = ["dep:defmt-rtt"]
 log-usb-serial = ["defmt_esp_println?/jtag_serial"]
 log-uart = ["defmt_esp_println?/uart"]
+
+# Fusion algorithms for unfused imus
+fusion-stubbed = [] # Stubs out fusion so it returns the same pose every time
+fusion-dcm = []
 
 # Enable to flash without needing `espflash`
 direct-boot = ["esp32c3-hal?/direct-boot"]
