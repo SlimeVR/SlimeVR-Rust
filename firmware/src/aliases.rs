@@ -15,7 +15,8 @@ pub mod ඞ {
 	pub use esp32c3_hal::ehal;
 	pub use esp32c3_hal::Delay as DelayConcrete;
 
-	pub type I2cConcrete<'a> = esp32c3_hal::i2c::I2C<'a, esp32c3_hal::peripherals::I2C0>;
+	pub type I2cConcrete<'a> =
+		esp32c3_hal::i2c::I2C<'a, esp32c3_hal::peripherals::I2C0>;
 
 	pub type BbqPeripheral<'a> = ();
 }
