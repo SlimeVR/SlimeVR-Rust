@@ -1208,8 +1208,9 @@ dependencies = [
 
 [[package]]
 name = "mpu6050-dmp"
-version = "0.2.0"
-source = "git+https://github.com/TheButlah/mpu6050-dmp-rs?rev=77128a75a51547baadc0f0ef99aba4432e848f10#77128a75a51547baadc0f0ef99aba4432e848f10"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "78ad9db142f17e7e850abb7089a683396a7c5e89cb3b51d5512ded0b844551e4"
 dependencies = [
  "embedded-hal 0.2.7",
  "libm",

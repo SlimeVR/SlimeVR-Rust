@@ -191,7 +191,7 @@ panic_defmt = { path = "crates/panic_defmt" }
 defmt-bbq = { version = "0.1", optional = true }
 
 # Peripheral drivers
-mpu6050-dmp = "0.2"
+mpu6050-dmp = "0.3"
 bmi160 = "0.1"
 
 # Other crates
@@ -218,8 +218,6 @@ color-eyre = "0.6"
 dotenvy = "0.15"
 
 [patch.crates-io]
-# Enable non-default I2C addresses and InitError
-mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
 bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
 # Emable use of `atomic-polyfill`
