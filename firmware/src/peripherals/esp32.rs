@@ -7,7 +7,7 @@ use paste::paste;
 
 use esp32_hal::{
 	clock::{ClockControl, CpuClock},
-	pac,
+	peripherals,
 	prelude::*,
 	timer::TimerGroup,
 	Rtc,
@@ -22,7 +22,7 @@ macro_rules! map_pin {
 }
 
 pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
-	let p = pac::Peripherals::take().unwrap();
+	let p = peripherals::Peripherals::take();
 
 	let mut system = p.DPORT.split();
 	// The ESP-Wifi module requires 240MHz for cpu clock speeed

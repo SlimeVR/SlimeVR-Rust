@@ -5,7 +5,7 @@ pub mod ඞ {
 	pub use esp32_hal::ehal;
 	pub use esp32_hal::Delay as DelayConcrete;
 
-	pub type I2cConcrete<'a> = esp32_hal::i2c::I2C<esp32_hal::pac::I2C0>;
+	pub type I2cConcrete<'a> = esp32_hal::i2c::I2C<esp32_hal::peripherals::I2C0>;
 
 	pub type BbqPeripheral<'a> = ();
 }
@@ -15,7 +15,7 @@ pub mod ඞ {
 	pub use esp32c3_hal::ehal;
 	pub use esp32c3_hal::Delay as DelayConcrete;
 
-	pub type I2cConcrete<'a> = esp32c3_hal::i2c::I2C<esp32c3_hal::pac::I2C0>;
+	pub type I2cConcrete<'a> = esp32c3_hal::i2c::I2C<'a, esp32c3_hal::peripherals::I2C0>;
 
 	pub type BbqPeripheral<'a> = ();
 }

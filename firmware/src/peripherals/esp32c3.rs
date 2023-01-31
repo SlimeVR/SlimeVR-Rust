@@ -21,7 +21,7 @@ macro_rules! map_pin {
 }
 
 pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
-	let p = esp32c3_hal::pac::Peripherals::take().unwrap();
+	let p = esp32c3_hal::peripherals::Peripherals::take();
 
 	let mut system = p.SYSTEM.split();
 	// The ESP-Wifi module requires 160MHz for cpu clock speeed

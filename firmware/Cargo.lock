@@ -725,19 +725,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "embedded-svc"
-version = "0.24.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2079f8182848872fb6e8eed2c1ba3aea409fc71984a9e8090733c08c404e7864"
-dependencies = [
- "embedded-io 0.3.1",
- "enumset",
- "heapless",
- "no-std-net",
- "serde",
-]
-
-[[package]]
 name = "encode_unicode"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -855,13 +842,13 @@ dependencies = [
 [[package]]
 name = "esp-wifi"
 version = "0.1.0"
-source = "git+https://github.com/esp-rs/esp-wifi.git?branch=prepare-upcoming-hal#75eadf4c8d97844040f48c2eecf8e2d092a170c5"
+source = "git+https://github.com/esp-rs/esp-wifi.git#05665bc2e68a288fb7461175e4b82c5f6938b1ba"
 dependencies = [
  "atomic-polyfill 1.0.1",
  "critical-section",
  "embedded-hal 0.2.7",
  "embedded-io 0.3.1",
- "embedded-svc 0.23.2",
+ "embedded-svc",
  "enumset",
  "esp32-hal",
  "esp32c3",
@@ -975,7 +962,7 @@ dependencies = [
  "embassy-time",
  "embassy-usb",
  "embedded-hal 0.2.7",
- "embedded-svc 0.24.0",
+ "embedded-svc",
  "esp-alloc",
  "esp-backtrace",
  "esp-wifi",

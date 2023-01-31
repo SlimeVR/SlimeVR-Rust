@@ -160,7 +160,7 @@ esp-alloc = { version = "0.1", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", branch = "prepare-upcoming-hal", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", ref = "05665bc", features = [
   "embedded-svc",
 ], optional = true }
 smoltcp = { version = "0.8", default-features = false, features = [
@@ -191,7 +191,7 @@ nrf-softdevice = { version = "*", default-features = false, features = [
 
 # Platform independent traits
 embedded-hal = "0.2"
-embedded-svc = { version = "0.24", default-features = false, optional = true, features = [
+embedded-svc = { version = "0.23.1", default-features = false, optional = true, features = [
   # "defmt"
   # "nightly",
 ] }
