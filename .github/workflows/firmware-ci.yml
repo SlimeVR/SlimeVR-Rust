@@ -68,7 +68,7 @@ jobs:
             net: net-wifi
 
     env:
-      FEATURES: ${{ format('{0},{1},{2},{3},imu-stubbed', matrix.mcu,  matrix.net, matrix.log, matrix.boot) }}
+      FEATURES: ${{ format('{0},{1},{2},{3},imu-stubbed,fusion-stubbed', matrix.mcu,  matrix.net, matrix.log, matrix.boot) }}
     defaults:
       run:
         working-directory: ./firmware

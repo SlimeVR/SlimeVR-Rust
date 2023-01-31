@@ -1,8 +1,7 @@
 use dcmimu::DCMIMU;
 use embassy_time::Instant;
-use firmware_protocol::ImuType;
 
-use crate::imu::{FusedData, Fuser, Imu, Quat, UnfusedData};
+use crate::imu::{FusedData, Fuser, Quat, UnfusedData};
 
 /// Extended Kalman filtering in direction cosine matrix formation
 pub struct Dcm {
@@ -11,6 +10,7 @@ pub struct Dcm {
 }
 
 impl Dcm {
+	#[allow(dead_code)]
 	pub fn new() -> Self {
 		Self {
 			dcm: DCMIMU::new(),

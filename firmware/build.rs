@@ -11,6 +11,7 @@ mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840"
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 mandatory_and_unique!("net-wifi", "net-ble", "net-stubbed");
+mandatory_and_unique!("fusion-stubbed", "fusion-dcm");
 
 #[cfg(any(feature = "mcu-nrf52840", feature = "mcu-nrf52832"))]
 mandatory_and_unique!(

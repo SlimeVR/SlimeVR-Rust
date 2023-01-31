@@ -2,13 +2,16 @@ mod math;
 
 use self::math::GyroFsr;
 use crate::aliases::I2c;
-use crate::imu::{FusedData, Imu, Quat};
-use crate::utils::{self, nb2a};
+use crate::imu::drivers::bmi160::math::AccelFsr;
+use crate::imu::fusion::new_fuser;
+use crate::imu::{FusedData, FusedImu, Imu, UnfusedData};
+use crate::utils;
 
 use ::bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
+use nalgebra::vector;
 
 type BmiDriver<I2c> = ::bmi160::Bmi160<bmi160::interface::I2cInterface<I2c>>;
 // Second generic is `()` because we don't have chip select errors in I2C.
@@ -74,33 +77,36 @@ impl<I: I2c> Bmi160<I> {
 		// Map converts from tuple -> struct
 		.map_err(|(i2c, error)| InitError { i2c, error })
 	}
-
-	fn quat(&mut self) -> nb::Result<Quat, <Self as Imu>::Error> {
-		let data = self.driver.data(SensorSelector::new().gyro())?;
-		let gyro_vel_euler = data.gyro.unwrap();
-
-		// TODO: We should probably query the IMU for the FSR instead of assuming the default one.
-		const FSR: GyroFsr = GyroFsr::DEFAULT;
-
-		// TODO: Check that bmi crates conventions for euler angles matches nalgebra.
-		// TODO: Implement sensor fusion and temperature compensation
-		// TODO: This should be integrated to position, lol
-		Ok(nalgebra::UnitQuaternion::from_euler_angles(
-			FSR.discrete_to_velocity(gyro_vel_euler.x),
-			FSR.discrete_to_velocity(gyro_vel_euler.y),
-			FSR.discrete_to_velocity(gyro_vel_euler.z),
-		))
-	}
 }
 
 impl<I: I2c> Imu for Bmi160<I> {
 	type Error = BmiError<I>;
-	type Data = FusedData; //TODO: Stop pretending we are fused.
+	type Data = UnfusedData;
 
 	const IMU_TYPE: ImuType = ImuType::Bmi160;
 
 	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
-		nb2a(|| self.quat()).await.map(|quat| FusedData { q: quat })
+		let data = self.driver.data(SensorSelector::new().gyro().accel())?;
+		let gyro = data.gyro.unwrap();
+		let accel = data.accel.unwrap();
+
+		// TODO: We should probably query the IMU for the FSR instead of assuming the default one.
+		const GYRO_FSR: GyroFsr = GyroFsr::DEFAULT;
+		const ACCEL_FSR: AccelFsr = AccelFsr::DEFAULT;
+
+		#[inline]
+		const fn g(d: i16) -> f32 {
+			GYRO_FSR.discrete_to_velocity(d)
+		}
+		#[inline]
+		const fn a(d: i16) -> f32 {
+			ACCEL_FSR.discrete_to_accel(d)
+		}
+
+		let gyro = vector![g(gyro.x), g(gyro.y), g(gyro.z)];
+		let accel = vector![a(accel.x), a(accel.y), a(accel.z)];
+
+		Ok(UnfusedData { accel, gyro })
 	}
 }
 
@@ -109,5 +115,9 @@ pub fn new_imu(
 	i2c: impl crate::aliases::I2c,
 	delay: &mut impl DelayMs<u32>,
 ) -> impl Imu<Data = FusedData> {
-	Bmi160::new(i2c, delay).expect("Failed to initialize BMI160")
+	let bmi = Bmi160::new(i2c, delay).expect("Failed to initialize BMI160");
+	FusedImu {
+		fuser: new_fuser(),
+		imu: bmi,
+	}
 }
