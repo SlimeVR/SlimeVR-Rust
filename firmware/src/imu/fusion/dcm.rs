@@ -24,6 +24,7 @@ impl Fuser for Dcm {
 		let last = self.last;
 		self.last = Instant::now();
 		let elapsed = self.last - last;
+		let elapsed = elapsed.as_micros() as f32 / 1_000_000.0;
 
 		let UnfusedData { accel, gyro } = unfused;
 
@@ -31,10 +32,10 @@ impl Fuser for Dcm {
 		let (euler, _) = self.dcm.update(
 			(gyro.x, gyro.y, gyro.z),
 			(accel.x, accel.y, accel.z),
-			elapsed.as_micros() as f32 / 1_000_000.0,
+			elapsed,
 		);
 
-		let q = Quat::from_euler_angles(euler.roll, euler.pitch, euler.roll);
+		let q = Quat::from_euler_angles(euler.roll, euler.pitch, euler.yaw);
 		FusedData { q }
 	}
 }
