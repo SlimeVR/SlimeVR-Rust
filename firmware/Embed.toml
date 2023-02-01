@@ -10,6 +10,7 @@ chip = "esp32c3"
 
 [default.rtt]
 enabled = true
+#up_mode = "BlockIfFull" # Enable this if you need to view all messages
 up_mode = "NoBlockTrim"
 channels = [
 	{ up = 0, down = 0, name = "Firmware logs via defmt", format = "Defmt" },

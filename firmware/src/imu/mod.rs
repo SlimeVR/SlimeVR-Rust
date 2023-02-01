@@ -71,6 +71,7 @@ pub async fn imu_task(
 	let mut imu = new_imu(i2c, &mut delay);
 	info!("Initialized IMU!");
 
+	let mut i = 0;
 	loop {
 		let q = match imu.next_data().await {
 			Ok(q) => q.q,
@@ -79,13 +80,16 @@ pub async fn imu_task(
 				continue;
 			}
 		};
-		trace!(
-			"Quat values: x: {}, y: {}, z: {}, w: {}",
-			q.coords.x,
-			q.coords.y,
-			q.coords.z,
-			q.coords.w
-		);
+		if i % 1000 == 0 {
+			trace!(
+				"Quat values: x: {}, y: {}, z: {}, w: {}",
+				q.coords.x,
+				q.coords.y,
+				q.coords.z,
+				q.coords.w
+			);
+		}
+		i += 1;
 		quat_signal.signal(q);
 	}
 }

@@ -26,8 +26,8 @@ default = [
 #   "imu-stubbed",
 #   "log-rtt",
 #   "net-stubbed",
-#   "nrf-boot-s140",
 #   "fusion-stubbed",
+#   "nrf-boot-s140",
 # ]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi", "fusion-stubbed"]
 
@@ -265,6 +265,9 @@ opt-level = 3
 # https://github.com/esp-rs/xtensa-lx-rt/blob/455d2b77b8a5724d36db0ea66c88467a4515f376/README.md#i-get-linker-errors-when-i-build-for-debug
 [profile.dev.package.xtensa-lx-rt]
 opt-level = 'z'
+
+[profile.release]
+debug = true # Symbols get stripped when flashing anyway
 
 
 ###################
