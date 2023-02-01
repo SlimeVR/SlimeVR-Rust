@@ -187,3 +187,8 @@ pub struct InvalidBitPattern;
 
 #[derive(Debug)]
 pub struct InvalidNum;
+
+#[cfg(test)]
+mod tests {
+	fn asdf() {}
+}
