@@ -9,6 +9,7 @@ use crate::utils;
 
 use ::bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};
 use defmt::{debug, trace};
+use embassy_futures::yield_now;
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
 use nalgebra::vector;
@@ -36,7 +37,7 @@ pub struct Bmi160<I: I2c> {
 impl<I: I2c> Bmi160<I> {
 	pub fn new(i2c: I, delay: &mut impl DelayMs<u32>) -> Result<Self, InitError<I>> {
 		debug!("Constructing BMI160...");
-		let addr = ::bmi160::SlaveAddr::Alternative(true);
+		let addr = ::bmi160::SlaveAddr::Alternative(false);
 		debug!("I2C address: {:?}", defmt::Debug2Format(&addr));
 
 		macro_rules! unwrap_or_err {
@@ -86,6 +87,9 @@ impl<I: I2c> Imu for Bmi160<I> {
 	const IMU_TYPE: ImuType = ImuType::Bmi160;
 
 	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
+		// Avoids permablocking async tasks, since we don't do any actual waiting.
+		yield_now().await;
+
 		let data = self.driver.data(SensorSelector::new().gyro().accel())?;
 		let gyro = data.gyro.unwrap();
 		let accel = data.accel.unwrap();
