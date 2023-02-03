@@ -3,8 +3,8 @@ mod math;
 use self::math::GyroFsr;
 use crate::aliases::I2c;
 use crate::imu::drivers::bmi160::math::AccelFsr;
-use crate::imu::fusion::new_fuser;
-use crate::imu::{FusedData, FusedImu, Imu, UnfusedData};
+use crate::imu::fusion::{new_fuser, FusedImu};
+use crate::imu::{FusedData, Imu, UnfusedData};
 use crate::utils;
 
 use ::bmi160::{AccelerometerPowerMode, GyroscopePowerMode, SensorSelector};

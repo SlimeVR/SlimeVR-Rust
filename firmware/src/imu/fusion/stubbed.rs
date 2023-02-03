@@ -2,7 +2,8 @@ use core::f32::consts::PI;
 
 use embassy_time::Instant;
 
-use crate::imu::{FusedData, Fuser, Quat, UnfusedData};
+use crate::imu::fusion::Fuser;
+use crate::imu::{FusedData, Quat, UnfusedData};
 
 /// A fake fuser that just rotates around the x axis.
 pub struct Stubbed(Instant);

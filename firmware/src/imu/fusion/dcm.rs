@@ -1,7 +1,8 @@
 use dcmimu::DCMIMU;
 use embassy_time::Instant;
 
-use crate::imu::{FusedData, Fuser, Quat, UnfusedData};
+use crate::imu::fusion::Fuser;
+use crate::imu::{FusedData, Quat, UnfusedData};
 
 /// Extended Kalman filtering in direction cosine matrix formation
 pub struct Dcm {
