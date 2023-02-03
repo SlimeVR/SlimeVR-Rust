@@ -23,16 +23,6 @@ pub struct FusedData {
 	pub q: Quat,
 }
 
-/// Represents a sensor fusion algorithm that will take an imu's `UnfusedData` and do math to turn
-/// it into `FusedData`, suitable for use as orientation.
-pub trait Fuser {
-	// TODO: Does a one-in, one-out api here work? Should we reuse a standard trait like a
-	// sink/stream/iterator?
-	// Note: Intentionally not async rn, this should only be doing math, not io or any internal
-	// awaiting.
-	fn process(&mut self, unfused: &UnfusedData) -> FusedData;
-}
-
 pub trait Imu {
 	type Error: core::fmt::Debug; // TODO: Maybe use defmt instead?
 	/// The data that the imu outputs.
@@ -41,22 +31,6 @@ pub trait Imu {
 	const IMU_TYPE: ImuType;
 	/// Performs IO to get the next data from the imu.
 	async fn next_data(&mut self) -> Result<Self::Data, Self::Error>;
-}
-
-pub struct FusedImu<I: Imu, F: Fuser> {
-	pub imu: I,
-	pub fuser: F,
-}
-impl<I: Imu<Data = UnfusedData>, F: Fuser> Imu for FusedImu<I, F> {
-	type Error = I::Error;
-	type Data = FusedData;
-
-	const IMU_TYPE: ImuType = I::IMU_TYPE;
-
-	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
-		let unfused = self.imu.next_data().await?;
-		Ok(self.fuser.process(&unfused))
-	}
 }
 
 /// Gets data from the IMU
