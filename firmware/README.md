@@ -8,7 +8,7 @@ Read [Goals.md](docs/Goals.md)
 ## Contributing
 Read [CONTRIBUTING.md](docs/CONTRIBUTING.md)
 
-## Target Hardware
+## Target Microcontrollers
 For now, we are only focused on the ESP32 platform, specifically the ESP32-C3, and the NRF52840.
 We think these chips are the best platforms to develop the firmware on.
 
@@ -38,6 +38,16 @@ we officially have added support for are:
 * esp32
 * nrf52840
 * nrf52832
+
+## Supported IMUs
+For the initial minimal viable version of the firmware, we are targetting these imus,
+but feel free to add support for more, if you can test and verify the imu.
+
+- [X] MPU6050
+- [X] MPU9250 (6dof)
+- [X] BMI160
+- [ ] LSM6DS3
+- [ ] BNO08X
 
 ## How to flash the firmware
 We are trying to improve our documentation, feel free to open an issue or a PR if
