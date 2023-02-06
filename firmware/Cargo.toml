@@ -67,9 +67,9 @@ mcu-nrf52832 = [
 ]
 
 # Wi-fi dependencies
-net-wifi = ["esp-wifi/wifi", "dep:smoltcp"] # use wifi
-net-ble = ["esp-wifi/ble", "dep:bleps"]
-net-stubbed = []                            # Stubs out network
+net-wifi = ["esp-wifi/wifi", "dep:smoltcp"]                 # use wifi
+net-ble = ["esp-wifi/ble", "dep:bleps", "dep:bleps-macros"]
+net-stubbed = []                                            # Stubs out network
 
 # Supported IMUs
 imu-bmi160 = []
@@ -178,7 +178,8 @@ smoltcp = { version = "0.8", default-features = false, features = [
 ], optional = true }
 
 # Generic BLE
-bleps = { git = "https://github.com/bjoernQ/bleps", rev = "06e1f7b", optional = true }
+bleps = { git = "https://github.com/bjoernQ/bleps", rev = "5ce5ca1", optional = true }
+bleps-macros = { git = "https://github.com/bjoernQ/bleps", rev = "5ce5ca1", optional = true }
 
 # nrf ble
 nrf-softdevice = { version = "*", default-features = false, features = [

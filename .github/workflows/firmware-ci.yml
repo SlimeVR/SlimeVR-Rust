@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix:
         mcu: [mcu-esp32c3, mcu-esp32, mcu-nrf52840, mcu-nrf52832]
-        net: [net-stubbed, net-wifi]
+        net: [net-stubbed, net-wifi, net-ble]
         log: [log-rtt, log-usb-serial, log-uart]
         include:
           - mcu: mcu-esp32c3
@@ -66,6 +66,11 @@ jobs:
             net: net-wifi
           - mcu: mcu-nrf52832
             net: net-wifi
+
+          - mcu: mcu-nrf52840
+            net: net-ble
+          - mcu: mcu-nrf52832
+            net: net-ble
 
     env:
       FEATURES: ${{ format('{0},{1},{2},{3},imu-stubbed,fusion-stubbed', matrix.mcu,  matrix.net, matrix.log, matrix.boot) }}
