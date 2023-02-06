@@ -163,10 +163,22 @@ dependencies = [
 [[package]]
 name = "bleps"
 version = "0.1.0"
-source = "git+https://github.com/bjoernQ/bleps?rev=06e1f7b#06e1f7b3810b7271d1004635842b691adaea4818"
+source = "git+https://github.com/bjoernQ/bleps?rev=5ce5ca1#5ce5ca139fe85c0120e9c2f9607d165d1c32d725"
 dependencies = [
  "embedded-io 0.3.1",
  "log",
+]
+
+[[package]]
+name = "bleps-macros"
+version = "0.1.0"
+source = "git+https://github.com/bjoernQ/bleps?rev=5ce5ca1#5ce5ca139fe85c0120e9c2f9607d165d1c32d725"
+dependencies = [
+ "litrs",
+ "proc-macro2",
+ "quote",
+ "syn",
+ "uuid",
 ]
 
 [[package]]
@@ -920,6 +932,7 @@ version = "0.0.0"
 dependencies = [
  "alloc-cortex-m",
  "bleps",
+ "bleps-macros",
  "bmi160",
  "cfg_aliases",
  "color-eyre",
@@ -1162,6 +1175,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e322f259d225fbae43a1b053b2dc6a5968a6bdf8b205f5de684dab485b95030e"
 dependencies = [
  "spinning_top",
+]
+
+[[package]]
+name = "litrs"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9275e0933cf8bb20f008924c0cb07a0692fe54d8064996520bf998de9eb79aa"
+dependencies = [
+ "proc-macro2",
 ]
 
 [[package]]
