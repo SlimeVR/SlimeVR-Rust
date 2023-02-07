@@ -13,10 +13,8 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 		if let Some(location) = info.location() {
 			let (file, line, column) =
 				(location.file(), location.line(), location.column());
-			error!(
-				"A panic occured in '{}', at line {}, column {}",
-				file, line, column
-			);
+			error!("Panic in '{}'", file);
+			error!("Panic was at line {}, column {}", line, column);
 		} else {
 			error!("A panic occured at an unknown location");
 		}

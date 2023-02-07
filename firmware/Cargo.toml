@@ -14,21 +14,21 @@ rust-version.workspace = true
 
 
 [features]
-default = [
-  "mcu-esp32c3",
-  "imu-stubbed",
-  "log-rtt",
-  "net-wifi",
-  "fusion-stubbed",
-]
 # default = [
-#   "mcu-nrf52840",
+#   "mcu-esp32c3",
 #   "imu-stubbed",
 #   "log-rtt",
-#   "net-stubbed",
+#   "net-wifi",
 #   "fusion-stubbed",
-#   "nrf-boot-s140",
 # ]
+default = [
+  "mcu-nrf52840",
+  "imu-stubbed",
+  "log-rtt",
+  "net-ble",
+  "fusion-stubbed",
+  "nrf-boot-s140",
+]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi", "fusion-stubbed"]
 
 # Supported microcontrollers
@@ -67,9 +67,9 @@ mcu-nrf52832 = [
 ]
 
 # Wi-fi dependencies
-net-wifi = ["esp-wifi/wifi", "dep:smoltcp"]                 # use wifi
-net-ble = ["esp-wifi/ble", "dep:bleps", "dep:bleps-macros"]
-net-stubbed = []                                            # Stubs out network
+net-wifi = ["esp-wifi/wifi", "dep:smoltcp"]                  # use wifi
+net-ble = ["esp-wifi?/ble", "dep:bleps", "dep:bleps-macros"]
+net-stubbed = []                                             # Stubs out network
 
 # Supported IMUs
 imu-bmi160 = []

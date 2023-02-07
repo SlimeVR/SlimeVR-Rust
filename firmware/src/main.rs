@@ -68,8 +68,13 @@ fn main() -> ! {
 			.unwrap();
 		s.spawn(crate::networking::network_task(packets)).unwrap();
 		s.spawn(crate::imu::imu_task(quat, p.i2c, p.delay)).unwrap();
+
 		#[cfg(bbq)]
 		s.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
+
+		#[cfg(any(feature = "nrf-boot-s140", feature = "nrf-boot-s132"))]
+		s.spawn(crate::networking::ble::ඞ::softdevice_task())
+			.unwrap()
 	});
 }
 
