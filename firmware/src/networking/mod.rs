@@ -28,6 +28,5 @@ async fn stubbed_network_task(packets: &Packets) -> ! {
 	loop {
 		// Dump network messages
 		let _ = packets.serverbound.recv().await;
-		defmt::trace!("pretending to do networking..");
 	}
 }
