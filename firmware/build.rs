@@ -39,6 +39,7 @@ fn main() -> Result<()> {
 	// matter too.
 	println!("cargo:rerun-if-changed=linker_scripts/");
 	println!("cargo:rerun-if-changed=boards/");
+	println!("cargo:rerun-if-changed=.env");
 
 	// Any relevant env vars for the build script are listed here.
 	println!("cargo:rerun-if-env-changed=BOARD");
