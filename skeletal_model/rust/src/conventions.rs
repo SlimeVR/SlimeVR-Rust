@@ -12,6 +12,20 @@
 //! # Rotation representation
 //! We use quaternions to represent rotations whenever possible. We try not to use
 //! euler angles in our implementation to avoid possible gimbal lock issues.
+//!
+//! # Frames of reference
+//! There are several different frames of reference (aka spaces) that matter:
+//! * Global space: This is a space that all positional and rotational constraints are
+//!   specified in.
+//! * Sensor spaces: If there are n sensors, there are n sensor spaces, one for each
+//!   sensor. For example, each imu has its own sensor space, generally they are
+//!   automatically aligned to share a gravity vector, but their yaw is unaligned. Note
+//!   that this is not a requirement and the skeletal model makes no assumption that
+//!   they are aligned to gravity.
+//! * Local space: Local space means that transforms are described relative to the
+//!   particular bone in the skeleton. Technically there are many local spaces, one for
+//!   each bone. We usually omit specifying which bone the space belongs to, as its
+//!   implied that we are referring to the parent bone.
 
 use nalgebra::{Unit, Vector3};
 use num_traits::Zero;

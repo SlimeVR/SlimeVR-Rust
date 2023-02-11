@@ -1,7 +1,13 @@
-use crate::bone::BoneMap;
 use crate::newtypes::Global;
-use crate::Point;
+use crate::{Point, UnitQuat};
 
-pub struct CalibrationData {
-	pub positions: BoneMap<Option<Global<Point>>>,
+#[allow(dead_code)]
+pub enum CalibrationData {
+	SixDof {
+		pos: Global<Point>,
+		rot: Global<UnitQuat>,
+	},
+	ThreeDof {
+		rot: Global<UnitQuat>,
+	},
 }

@@ -1,6 +1,7 @@
 //! Contains trivial "newtype" wrappers that add increased type safety.
 
-/// A newtype on `T` that indicates that it is a global transform.
+/// A newtype on `T` that indicates that it is a global transform. See also
+/// [`crate::conventions`].
 #[derive(Debug, PartialEq, Eq, Default)]
 pub struct Global<T: private::Sealed>(pub T);
 
@@ -17,7 +18,8 @@ macro_rules! impl_helper {
 impl_helper!(Global);
 impl_helper!(Local);
 
-/// A newtype on `T` that indicates that it is a local transform.
+/// A newtype on `T` that indicates that it is a local transform. See also
+/// [`crate::conventions`].
 #[derive(Debug, PartialEq, Eq, Default)]
 pub struct Local<T: private::Sealed>(pub T);
 

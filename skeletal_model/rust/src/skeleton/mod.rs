@@ -55,7 +55,7 @@
 //! with nodes.
 //!
 //! #### Edge
-//! * [Rotation](UnitQuat), both the local rotation from calibration, as well as the
+//! * [Rotation](crate::UnitQuat), both the local rotation from calibration, as well as the
 //!   latest global rotation. If the latest global rotation is not directly provided via
 //!   an input tracker, this will be solved for.
 //! * Type of edge (either [`BoneKind`], input tracker, or output tracker)
@@ -129,8 +129,6 @@ impl SkeletonConfig {
 pub struct Skeleton {
 	bone_map: BoneMap<EdgeIndex>,
 	graph: Graph,
-	/// `(leaf_node, tracker_edge)`
-	in_trackers: BoneMap<(NodeIndex, EdgeIndex)>,
 }
 impl Skeleton {
 	/// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
@@ -185,14 +183,8 @@ impl Skeleton {
 		// Map is populated, get rid of the `Optional`
 		let bone_map: BoneMap<EdgeIndex> = bone_map.map(|_kind, bone| bone.unwrap());
 
-		Self {
-			graph: g,
-			bone_map,
-			in_trackers: Default::default(),
-		}
+		Self { graph: g, bone_map }
 	}
-
-	pub fn calibrate(&mut self) {}
 
 	// pub fn attach_input_tracker(
 	// 	&mut self,
