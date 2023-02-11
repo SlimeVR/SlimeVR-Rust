@@ -11,7 +11,6 @@
 use core::f32::consts::PI;
 
 use nalgebra::{ArrayStorage, U2, U9};
-use num_traits::Float;
 
 type Quat = nalgebra::UnitQuaternion<f32>;
 type Vec2 = nalgebra::Vector2<f32>;
