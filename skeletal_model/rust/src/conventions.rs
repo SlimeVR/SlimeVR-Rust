@@ -13,11 +13,10 @@
 //! We use quaternions to represent rotations whenever possible. We try not to use
 //! euler angles in our implementation to avoid possible gimbal lock issues.
 
-#[allow(unused)]
-use crate::prelude::*;
-
 use nalgebra::{Unit, Vector3};
 use num_traits::Zero;
+
+use crate::UnitQuat;
 
 /// A vector in the "up" or `+Y` direction
 #[inline]
@@ -73,7 +72,7 @@ pub fn look_towards(dir: &Vector3<f32>, up: &Vector3<f32>) -> UnitQuat {
 
 #[cfg(test)]
 mod tests {
-	use crate::prelude::*;
+	use super::*;
 
 	use approx::assert_relative_eq;
 	use nalgebra::Vector3;

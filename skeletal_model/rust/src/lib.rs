@@ -70,7 +70,16 @@
 pub mod bone;
 pub mod conventions;
 mod newtypes;
-pub mod prelude;
 pub mod skeleton;
 
+pub use crate::bone::{BoneKind, BoneMap};
 pub use crate::skeleton::Skeleton;
+
+#[allow(unused)]
+pub(crate) use crate::conventions::{forward_vec, right_vec, up_vec};
+#[allow(unused)]
+pub(crate) use crate::newtypes::{Global, Local};
+
+pub type Translation = nalgebra::Translation3<f32>;
+pub type UnitQuat = nalgebra::UnitQuaternion<f32>;
+pub type Point = nalgebra::Point3<f32>;

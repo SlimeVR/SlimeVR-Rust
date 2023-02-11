@@ -1,7 +1,11 @@
-use crate::prelude::*;
-
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::FromPrimitive;
+
+use crate::{
+	conventions::{forward_vec, up_vec},
+	newtypes::{Global, Local},
+	UnitQuat,
+};
 
 #[allow(rustdoc::private_intra_doc_links)]
 /// Describes the various types of bones in the skeleton.

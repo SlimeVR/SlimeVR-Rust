@@ -1,6 +1,4 @@
-//! Contains trivial "newtype" wrappers
-
-use crate::prelude::*;
+//! Contains trivial "newtype" wrappers that add increased type safety.
 
 /// A newtype on `T` that indicates that it is a global transform.
 #[derive(Debug, PartialEq, Eq, Default)]
@@ -24,14 +22,12 @@ impl_helper!(Local);
 pub struct Local<T: private::Sealed>(pub T);
 
 mod private {
-	use super::*;
-
 	/// Private helper trait to limit the types that can go in [`Global`] or [`Local`].
 	///
 	/// For more info about this pattern, see
 	/// [here](https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed)
 	pub trait Sealed {}
-	impl Sealed for Translation {}
-	impl Sealed for UnitQuat {}
-	impl Sealed for Point {}
+	impl Sealed for crate::Translation {}
+	impl Sealed for crate::UnitQuat {}
+	impl Sealed for crate::Point {}
 }

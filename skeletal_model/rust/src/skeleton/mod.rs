@@ -97,6 +97,7 @@
 //! used for the nodes. This order is unspecified, but guaranteed not to change until
 //! new input trackers are added/removed.
 
+mod calibrate;
 mod edge;
 mod node;
 mod solver;
@@ -104,12 +105,12 @@ mod solver;
 pub(crate) use edge::Edge;
 pub(crate) use node::Node;
 
-use crate::prelude::*;
-
 use core::ops::Index;
 use petgraph::graph::{EdgeIndex, NodeIndex};
 
 pub(crate) type Graph = petgraph::graph::UnGraph<Node, Edge>;
+
+use crate::bone::{BoneKind, BoneMap};
 
 /// Used to initialize the [`Skeleton`] with its initial parameters
 pub struct SkeletonConfig {
@@ -128,6 +129,8 @@ impl SkeletonConfig {
 pub struct Skeleton {
 	bone_map: BoneMap<EdgeIndex>,
 	graph: Graph,
+	/// `(leaf_node, tracker_edge)`
+	in_trackers: BoneMap<(NodeIndex, EdgeIndex)>,
 }
 impl Skeleton {
 	/// Creates a new `Skeleton` from [`SkeletonConfig`]. Initially, the skeleton will
@@ -182,8 +185,26 @@ impl Skeleton {
 		// Map is populated, get rid of the `Optional`
 		let bone_map: BoneMap<EdgeIndex> = bone_map.map(|_kind, bone| bone.unwrap());
 
-		Self { graph: g, bone_map }
+		Self {
+			graph: g,
+			bone_map,
+			in_trackers: Default::default(),
+		}
 	}
+
+	pub fn calibrate(&mut self) {}
+
+	// pub fn attach_input_tracker(
+	// 	&mut self,
+	// 	attach_to: BoneKind,
+	// 	pos: Option<Global<Point>>,
+	// 	rotation: Option<
+	// ) {
+	//
+	// 	// asdf
+	// }
+
+	// ---- Private fns ----
 
 	/// Get the nodes of the graph that have a `Some(_)` [`Node::input_pos_g`]
 	fn find_root_nodes(&self) -> impl Iterator<Item = NodeIndex> + '_ {
