@@ -1,0 +1,15 @@
+[package]
+name = "skeletal_model_napi"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+skeletal_model = { path = "../rust" }
+napi = "2"
+napi-derive = "2"
+
+[build-dependencies]
+napi-build = "1"
