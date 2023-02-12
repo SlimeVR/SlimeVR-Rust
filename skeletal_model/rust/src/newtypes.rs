@@ -24,7 +24,8 @@ impl_helper!(Local);
 pub struct Local<T: private::Sealed>(pub T);
 
 mod private {
-	/// Private helper trait to limit the types that can go in [`Global`] or [`Local`].
+	/// Private helper trait to limit the types that can go in [`super::Global`] or
+	/// [`super::Local`].
 	///
 	/// For more info about this pattern, see
 	/// [here](https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed)
