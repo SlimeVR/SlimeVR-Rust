@@ -33,9 +33,9 @@ use crate::{
 /// the various functions implemented on this type for stability.
 ///
 /// [`const`]: https://doc.rust-lang.org/std/keyword.const.html
+/// [`BoneMap`]: super::BoneMap
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]
-#[allow(dead_code)]
 pub enum BoneKind {
 	Neck = 0,
 	Chest,
