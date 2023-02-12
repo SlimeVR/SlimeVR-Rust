@@ -1,7 +1,11 @@
-use crate::prelude::*;
-
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::FromPrimitive;
+
+use crate::{
+	conventions::{forward_vec, up_vec},
+	newtypes::{Global, Local},
+	UnitQuat,
+};
 
 #[allow(rustdoc::private_intra_doc_links)]
 /// Describes the various types of bones in the skeleton.
@@ -29,9 +33,9 @@ use num_traits::FromPrimitive;
 /// the various functions implemented on this type for stability.
 ///
 /// [`const`]: https://doc.rust-lang.org/std/keyword.const.html
+/// [`BoneMap`]: super::BoneMap
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, FromPrimitive, ToPrimitive)]
-#[allow(dead_code)]
 pub enum BoneKind {
 	Neck = 0,
 	Chest,

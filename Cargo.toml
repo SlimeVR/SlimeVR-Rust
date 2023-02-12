@@ -5,7 +5,8 @@ members = [
   "networking/solarxr",
   "networking/tokio_shutdown",
   "overlay",
-  "skeletal_model",
+  "skeletal_model/rust",
+  "skeletal_model/napi",
   "vqf",
 ]
 exclude = ["da_demo", "nrf_demo", "firmware"]
@@ -14,7 +15,8 @@ default-members = [
   "networking/firmware_protocol",
   "networking/solarxr",
   "networking/tokio_shutdown",
-  "skeletal_model",
+  "skeletal_model/rust",
+  "skeletal_model/napi",
   "vqf",
 ]
 

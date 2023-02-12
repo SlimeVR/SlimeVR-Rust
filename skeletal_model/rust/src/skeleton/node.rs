@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{newtypes::Global, Point};
 
 /// `Node`s represent the connections between [`Edge`]s in the skeleton. `Node`s have
 /// positions, but not rotations.
@@ -7,7 +7,6 @@ use crate::prelude::*;
 ///
 /// [`Edge`]: crate::skeleton::Edge
 #[derive(Debug, Default)]
-#[allow(dead_code)]
 #[non_exhaustive]
 pub struct Node {
 	/// Input position in global space. If it is unconstrained, it is `None`.
@@ -15,7 +14,6 @@ pub struct Node {
 	/// The output position of the `Node`. Solving the skeleton updates this.
 	pub output_pos_g: Global<Point>,
 }
-#[allow(dead_code)]
 impl Node {
 	pub fn new() -> Self {
 		Self {

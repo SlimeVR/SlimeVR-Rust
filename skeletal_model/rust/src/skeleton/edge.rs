@@ -1,6 +1,9 @@
-use crate::prelude::*;
-
 use derive_more::From;
+
+use crate::{
+	newtypes::{Global, Local},
+	BoneKind, UnitQuat,
+};
 
 /// The different kinds of edges.
 #[derive(Debug, Eq, PartialEq, Hash, From, Copy, Clone)]

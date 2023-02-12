@@ -55,7 +55,7 @@
 //! with nodes.
 //!
 //! #### Edge
-//! * [Rotation](UnitQuat), both the local rotation from calibration, as well as the
+//! * [Rotation](crate::UnitQuat), both the local rotation from calibration, as well as the
 //!   latest global rotation. If the latest global rotation is not directly provided via
 //!   an input tracker, this will be solved for.
 //! * Type of edge (either [`BoneKind`], input tracker, or output tracker)
@@ -97,6 +97,7 @@
 //! used for the nodes. This order is unspecified, but guaranteed not to change until
 //! new input trackers are added/removed.
 
+mod calibrate;
 mod edge;
 mod node;
 mod solver;
@@ -104,12 +105,12 @@ mod solver;
 pub(crate) use edge::Edge;
 pub(crate) use node::Node;
 
-use crate::prelude::*;
-
 use core::ops::Index;
 use petgraph::graph::{EdgeIndex, NodeIndex};
 
 pub(crate) type Graph = petgraph::graph::UnGraph<Node, Edge>;
+
+use crate::bone::{BoneKind, BoneMap};
 
 /// Used to initialize the [`Skeleton`] with its initial parameters
 pub struct SkeletonConfig {
@@ -184,6 +185,18 @@ impl Skeleton {
 
 		Self { graph: g, bone_map }
 	}
+
+	// pub fn attach_input_tracker(
+	// 	&mut self,
+	// 	attach_to: BoneKind,
+	// 	pos: Option<Global<Point>>,
+	// 	rotation: Option<
+	// ) {
+	//
+	// 	// asdf
+	// }
+
+	// ---- Private fns ----
 
 	/// Get the nodes of the graph that have a `Some(_)` [`Node::input_pos_g`]
 	fn find_root_nodes(&self) -> impl Iterator<Item = NodeIndex> + '_ {

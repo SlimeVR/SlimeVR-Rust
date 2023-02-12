@@ -1,7 +1,8 @@
 //! This crate reimplements most of the relevant parts of the VQF algorithm from
-//! https://github.com/dlaidig/vqf/blob/f2a63375604e0b025048d181ba6a204e96ce2559/vqf/pyvqf.py Currently this is just
-//! copy-pasted from the python code, but it should be made more idiomatic before actually using it. I have marked areas
-//! most likely to contain bugs with ඞ
+//! <https://github.com/dlaidig/vqf/blob/f2a63375604e0b025048d181ba6a204e96ce2559/vqf/pyvqf.py>
+//! Currently this is just copy-pasted from the python code, but it should be made more
+//! idiomatic before actually using it. I have marked areas most likely to contain bugs
+//! with ඞ
 //!
 //! The original code is licensed under the MIT license, so this crate is also licensed under the MIT license.
 
@@ -11,7 +12,6 @@
 use core::f32::consts::PI;
 
 use nalgebra::{ArrayStorage, U2, U9};
-use num_traits::Float;
 
 type Quat = nalgebra::UnitQuaternion<f32>;
 type Vec2 = nalgebra::Vector2<f32>;
