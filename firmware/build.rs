@@ -125,7 +125,7 @@ impl MemoryLayout {
 	const S140: MemoryLayout = MemoryLayout {
 		mbr_size: 0x1000,
 		sd_flash_size: 0x26000,
-		sd_ram_size: 0x8,
+		sd_ram_size: 50_000,
 	};
 	/// Softdevice 132.
 	const S132: MemoryLayout = MemoryLayout {

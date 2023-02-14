@@ -6,6 +6,8 @@ use crate::aliases::ඞ::UsbDriverConcrete;
 
 use defmt::debug;
 use embassy_nrf::interrupt;
+use embassy_nrf::interrupt::InterruptExt;
+use embassy_nrf::interrupt::Priority;
 use embassy_nrf::twim::{self, Twim};
 use embassy_nrf::uarte::{self, Uarte};
 use paste::paste;
@@ -24,7 +26,14 @@ pub fn get_peripherals() -> Peripherals<
 	UartConcrete<'static>,
 	UsbDriverConcrete<'static>,
 > {
-	let p = embassy_nrf::init(Default::default());
+	// With softdevice, certain interrupt priorities are used by softdevice.
+	// https://github.com/embassy-rs/nrf-softdevice#interrupt-priority
+	//
+	// We therefore have to set interrupt priorities manually.
+	let mut cfg = embassy_nrf::config::Config::default();
+	// cfg.gpiote_interrupt_priority = Priority::P2;
+	cfg.time_interrupt_priority = Priority::P2;
+	let p = embassy_nrf::init(cfg);
 
 	// Fix issue on rev 3 boards where AP is protected, preventing debugging/rtt.
 	#[cfg(feature = "mcu-nrf52840")] // TODO: Add nrf52832 support
@@ -111,6 +120,7 @@ pub fn get_peripherals() -> Peripherals<
 	let twim = {
 		let config = twim::Config::default();
 		let irq = interrupt::take!(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0);
+		irq.set_priority(Priority::P3);
 		Twim::new(
 			p.TWISPI0,
 			irq,
@@ -126,6 +136,7 @@ pub fn get_peripherals() -> Peripherals<
 
 	let uarte = {
 		let irq = interrupt::take!(UARTE0_UART0);
+		irq.set_priority(Priority::P3);
 		let mut config = uarte::Config::default();
 		config.parity = uarte::Parity::EXCLUDED;
 		config.baudrate = uarte::Baudrate::BAUD115200;
@@ -142,7 +153,9 @@ pub fn get_peripherals() -> Peripherals<
 	let usb_driver = {
 		use embassy_nrf::usb::{self, Driver};
 		let irq = interrupt::take!(USBD);
+		irq.set_priority(Priority::P3);
 		let power_irq = interrupt::take!(POWER_CLOCK);
+		power_irq.set_priority(Priority::P3);
 		let d = Driver::new(p.USBD, irq, usb::PowerUsb::new(power_irq));
 		debug!("Initialized usb_driver");
 		d
