@@ -17,13 +17,17 @@ use std::collections::HashSet;
 use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
+use winapi;
 
 const CONNECT_STR: &str = "ws://localhost:21110";
 const GIT_VERSION: &str = git_version!();
 
 #[derive(Parser, Debug)]
 #[command(version = GIT_VERSION)]
-struct Args {}
+struct Args {
+    #[arg(short, long, default_value_t = false)]
+	show_console: bool,
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ShutdownReason {
@@ -40,6 +44,19 @@ macro_rules! unwrap_or_continue {
 	}};
 }
 
+fn hide_console_window() {
+    use std::ptr;
+    use winapi::um::wincon::GetConsoleWindow;
+    use winapi::um::winuser::{ShowWindow, SW_HIDE};
+
+    let window = unsafe {GetConsoleWindow()};
+    if window != ptr::null_mut() {
+        unsafe {
+            ShowWindow(window, SW_HIDE);
+        }
+    }
+}
+
 #[tokio::main]
 pub async fn main() -> Result<()> {
 	if std::env::var("RUST_LOG").is_err() {
@@ -48,7 +65,12 @@ pub async fn main() -> Result<()> {
 	pretty_env_logger::init();
 	color_eyre::install()?;
 
-	let _args = Args::parse();
+	let args = Args::parse();
+
+    if !args.show_console  && cfg!(windows){
+        hide_console_window()
+    }
+
 	log::info!("Overlay version: {GIT_VERSION}");
 
 	Toplevel::new()
