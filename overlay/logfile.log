@@ -1,0 +1,5 @@
+INFO - 2023-02-18 21:22:06 - Overlay version: 2f0f931-modified
+INFO - 2023-02-18 21:22:06 - Initializing OpenVR context
+INFO - 2023-02-18 21:22:06 - Overlay Loop
+ERROR - 2023-02-18 21:22:10 - Error while connecting: IO error: 無法連線，因為目標電腦拒絕連線。 (os error 10061)
+ERROR - 2023-02-18 21:22:14 - Error while connecting: IO error: 無法連線，因為目標電腦拒絕連線。 (os error 10061)

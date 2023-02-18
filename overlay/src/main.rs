@@ -58,7 +58,7 @@ fn init_log(show_log: bool) -> Result<()> {
 		std::fs::remove_file(logfile_name)?;
 	}
 
-	let log_pattern = PatternEncoder::new("{h({l})} - {d(%Y-%m-%d %H:%M:%S)} - {m}{n}");
+	let log_pattern = "{h({l})} - {d(%Y-%m-%d %H:%M:%S)} - {m}{n}";
 
 	let window_size = 2;
 	let fixed_window_roller = FixedWindowRoller::builder()
@@ -71,7 +71,7 @@ fn init_log(show_log: bool) -> Result<()> {
 		CompoundPolicy::new(Box::new(size_trigger), Box::new(fixed_window_roller));
 
 	let rolling_file_appender = RollingFileAppender::builder()
-		.encoder(Box::new(log_pattern.clone()))
+		.encoder(Box::new(PatternEncoder::new(log_pattern)))
 		.build(logfile_name, Box::new(compound_policy))?;
 
 	let mut config_builder = Config::builder();
@@ -84,14 +84,14 @@ fn init_log(show_log: bool) -> Result<()> {
 
 	if show_log {
 		let stdout = ConsoleAppender::builder()
-			.encoder(Box::new(log_pattern.clone()))
+			.encoder(Box::new(PatternEncoder::new(log_pattern)))
 			.build();
 		root_builder = root_builder.appender("stdout");
 		config_builder = config_builder
 			.appender(Appender::builder().build("stdout", Box::new(stdout)));
 	}
 
-	let config = config_builder.build(root_builder.build(LevelFilter::Warn))?;
+	let config = config_builder.build(root_builder.build(LevelFilter::Info))?;
 
 	let _log = log4rs::init_config(config)?;
 
