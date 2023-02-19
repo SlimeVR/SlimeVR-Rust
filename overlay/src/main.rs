@@ -9,6 +9,11 @@ use crate::model::{BoneKind, Isometry};
 use clap::Parser;
 use eyre::{Result, WrapErr};
 use git_version::git_version;
+use log4rs::append::rolling_file::policy::compound::roll::fixed_window::FixedWindowRoller;
+use log4rs::append::rolling_file::policy::compound::trigger::size::SizeTrigger;
+use log4rs::append::rolling_file::policy::compound::CompoundPolicy;
+use log4rs::append::rolling_file::RollingFileAppender;
+use log4rs::encode::pattern::PatternEncoder;
 use nalgebra::{Translation3, UnitQuaternion};
 use ovr_overlay as ovr;
 use solarxr::settings::DisplaySettings;
@@ -18,12 +23,19 @@ use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
 
+use log::LevelFilter;
+use log4rs::append::console::ConsoleAppender;
+use log4rs::config::{Appender, Config, Root};
+
 const CONNECT_STR: &str = "ws://localhost:21110";
 const GIT_VERSION: &str = git_version!();
 
 #[derive(Parser, Debug)]
 #[command(version = GIT_VERSION)]
-struct Args {}
+struct Args {
+	#[arg(short, long, default_value_t = false)]
+	show_log: bool,
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ShutdownReason {
@@ -40,15 +52,63 @@ macro_rules! unwrap_or_continue {
 	}};
 }
 
+fn init_log(show_log: bool) -> Result<()> {
+	let logfile_name = "logfile.log";
+	if std::path::Path::new(logfile_name).exists() {
+		std::fs::remove_file(logfile_name)?;
+	}
+
+	let log_pattern = "{h({l})} - {d(%Y-%m-%d %H:%M:%S)} - {m}{n}";
+
+	let window_size = 2;
+	let fixed_window_roller = FixedWindowRoller::builder()
+		.build("log_last_{}.log", window_size)
+		.unwrap();
+	let size_limit = 25 * 1024; // 25MB
+	let size_trigger = SizeTrigger::new(size_limit);
+
+	let compound_policy =
+		CompoundPolicy::new(Box::new(size_trigger), Box::new(fixed_window_roller));
+
+	let rolling_file_appender = RollingFileAppender::builder()
+		.encoder(Box::new(PatternEncoder::new(log_pattern)))
+		.build(logfile_name, Box::new(compound_policy))?;
+
+	let mut config_builder = Config::builder();
+	let mut root_builder = Root::builder();
+
+	root_builder = root_builder.appender("logfile");
+	config_builder = config_builder.appender(
+		Appender::builder().build("logfile", Box::new(rolling_file_appender)),
+	);
+
+	if show_log {
+		let stdout = ConsoleAppender::builder()
+			.encoder(Box::new(PatternEncoder::new(log_pattern)))
+			.build();
+		root_builder = root_builder.appender("stdout");
+		config_builder = config_builder
+			.appender(Appender::builder().build("stdout", Box::new(stdout)));
+	}
+
+	let config = config_builder.build(root_builder.build(LevelFilter::Info))?;
+
+	let _log = log4rs::init_config(config)?;
+
+	Ok(())
+}
+
 #[tokio::main]
 pub async fn main() -> Result<()> {
 	if std::env::var("RUST_LOG").is_err() {
 		std::env::set_var("RUST_LOG", "info");
 	}
-	pretty_env_logger::init();
+
+	let args = Args::parse();
+
+	init_log(args.show_log)?;
 	color_eyre::install()?;
 
-	let _args = Args::parse();
 	log::info!("Overlay version: {GIT_VERSION}");
 
 	Toplevel::new()

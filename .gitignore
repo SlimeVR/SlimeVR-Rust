@@ -7,3 +7,6 @@
 # IDE stuff
 /workspace.code-workspace
 /.vscode/
+
+# Logs
+**/*.log
