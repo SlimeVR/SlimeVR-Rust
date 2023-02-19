@@ -33,7 +33,7 @@ const GIT_VERSION: &str = git_version!();
 #[derive(Parser, Debug)]
 #[command(version = GIT_VERSION)]
 struct Args {
-	#[arg(short, long, default_value_t = false)]
+	#[arg(short, long, default_value_t = true)]
 	show_log: bool,
 }
 
