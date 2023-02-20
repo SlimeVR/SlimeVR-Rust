@@ -22,11 +22,14 @@ use std::collections::HashSet;
 use std::time::Duration;
 use tokio::sync::watch;
 use tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
-use winapi;
 
 use log::LevelFilter;
 use log4rs::append::console::ConsoleAppender;
 use log4rs::config::{Appender, Config, Root};
+
+use std::ptr;
+use winapi::um::wincon::GetConsoleWindow;
+use winapi::um::winuser::{ShowWindow, SW_HIDE};
 
 const CONNECT_STR: &str = "ws://localhost:21110";
 const GIT_VERSION: &str = git_version!();
@@ -56,10 +59,6 @@ macro_rules! unwrap_or_continue {
 }
 
 fn hide_console_window() {
-	use std::ptr;
-	use winapi::um::wincon::GetConsoleWindow;
-	use winapi::um::winuser::{ShowWindow, SW_HIDE};
-
 	let window = unsafe { GetConsoleWindow() };
 	if window != ptr::null_mut() {
 		unsafe {
