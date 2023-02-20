@@ -124,7 +124,8 @@ pub async fn main() -> Result<()> {
 	init_log(args.show_log)?;
 	color_eyre::install()?;
 
-	#[cfg(target_os = "windows")] {
+	#[cfg(target_os = "windows")]
+	{
 		if !args.show_console {
 			hide_console_window()
 		}
