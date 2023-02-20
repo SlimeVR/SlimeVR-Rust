@@ -24,8 +24,10 @@ tokio-graceful-shutdown = "0.11"
 git-version = "0.3"
 log4rs = "1.2.0"
 
+eyre.workspace = true
+log.workspace = true
+
 [target.'cfg(windows)'.dependencies]
 winapi = {version = "0.3", features = ["wincon", "winuser"]}
 
-eyre.workspace = true
-log.workspace = true
+
