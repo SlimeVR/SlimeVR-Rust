@@ -27,10 +27,6 @@ use log::LevelFilter;
 use log4rs::append::console::ConsoleAppender;
 use log4rs::config::{Appender, Config, Root};
 
-use std::ptr;
-use winapi::um::wincon::GetConsoleWindow;
-use winapi::um::winuser::{ShowWindow, SW_HIDE};
-
 const CONNECT_STR: &str = "ws://localhost:21110";
 const GIT_VERSION: &str = git_version!();
 
@@ -58,7 +54,11 @@ macro_rules! unwrap_or_continue {
 	}};
 }
 
+#[cfg(target_os = "windows")]
 fn hide_console_window() {
+	use std::ptr;
+	use winapi::um::wincon::GetConsoleWindow;
+	use winapi::um::winuser::{ShowWindow, SW_HIDE};
 	let window = unsafe { GetConsoleWindow() };
 	if window != ptr::null_mut() {
 		unsafe {
@@ -124,8 +124,10 @@ pub async fn main() -> Result<()> {
 	init_log(args.show_log)?;
 	color_eyre::install()?;
 
-	if !args.show_console && cfg!(windows) {
-		hide_console_window()
+	#[cfg(target_os = "windows")] {
+		if !args.show_console {
+			hide_console_window()
+		}
 	}
 
 	log::info!("Overlay version: {GIT_VERSION}");
