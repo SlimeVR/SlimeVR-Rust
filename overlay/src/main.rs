@@ -61,7 +61,7 @@ fn init_log(show_log: bool) -> Result<()> {
 	let fixed_window_roller = FixedWindowRoller::builder()
 		.build("log_last_{}.log", window_size)
 		.unwrap();
-	let size_limit = 1* 1000 * 1024; // 1MB
+	let size_limit = 1 * 1000 * 1024; // 1MB
 	let size_trigger = SizeTrigger::new(size_limit);
 
 	let compound_policy =
