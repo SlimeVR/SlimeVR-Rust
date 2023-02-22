@@ -2418,6 +2418,7 @@ dependencies = [
  "stackvec",
  "tokio",
  "tokio-graceful-shutdown",
+ "winapi",
 ]
 
 [[package]]

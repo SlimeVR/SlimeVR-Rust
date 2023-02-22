@@ -26,3 +26,8 @@ log4rs = "1.2.0"
 
 eyre.workspace = true
 log.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+winapi = {version = "0.3", features = ["wincon", "winuser"]}
+
+

@@ -33,7 +33,9 @@ const GIT_VERSION: &str = git_version!();
 #[derive(Parser, Debug)]
 #[command(version = GIT_VERSION)]
 struct Args {
-	#[arg(short, long, default_value_t = true)]
+	#[arg(long, default_value_t = false)]
+	show_console: bool,
+	#[arg(long, default_value_t = true)]
 	show_log: bool,
 }
 
@@ -50,6 +52,19 @@ macro_rules! unwrap_or_continue {
 			continue;
 		}
 	}};
+}
+
+#[cfg(target_os = "windows")]
+fn hide_console_window() {
+	use std::ptr;
+	use winapi::um::wincon::GetConsoleWindow;
+	use winapi::um::winuser::{ShowWindow, SW_HIDE};
+	let window = unsafe { GetConsoleWindow() };
+	if window != ptr::null_mut() {
+		unsafe {
+			ShowWindow(window, SW_HIDE);
+		}
+	}
 }
 
 fn init_log(show_log: bool) -> Result<()> {
@@ -108,6 +123,13 @@ pub async fn main() -> Result<()> {
 
 	init_log(args.show_log)?;
 	color_eyre::install()?;
+
+	#[cfg(target_os = "windows")]
+	{
+		if !args.show_console {
+			hide_console_window()
+		}
+	}
 
 	log::info!("Overlay version: {GIT_VERSION}");
 
