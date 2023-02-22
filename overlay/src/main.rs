@@ -54,9 +54,6 @@ macro_rules! unwrap_or_continue {
 
 fn init_log(show_log: bool) -> Result<()> {
 	let logfile_name = "logfile.log";
-	if std::path::Path::new(logfile_name).exists() {
-		std::fs::remove_file(logfile_name)?;
-	}
 
 	let log_pattern = "{h({l})} - {d(%Y-%m-%d %H:%M:%S)} - {m}{n}";
 
@@ -64,7 +61,7 @@ fn init_log(show_log: bool) -> Result<()> {
 	let fixed_window_roller = FixedWindowRoller::builder()
 		.build("log_last_{}.log", window_size)
 		.unwrap();
-	let size_limit = 25 * 1024; // 25MB
+	let size_limit = 1* 1000 * 1024; // 1MB
 	let size_trigger = SizeTrigger::new(size_limit);
 
 	let compound_policy =
