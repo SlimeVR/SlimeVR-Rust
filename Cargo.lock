@@ -762,6 +762,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "enumset"
+version = "1.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19be8061a06ab6f3a6cf21106c873578bf01bd42ad15e0311a9c76161cb1c753"
+dependencies = [
+ "enumset_derive",
+]
+
+[[package]]
+name = "enumset_derive"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03e7b551eba279bf0fa88b83a46330168c1560a52a94f5126f892f0b364ab3e0"
+dependencies = [
+ "darling 0.14.2",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "env_logger"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1500,6 +1521,7 @@ dependencies = [
  "num-complex",
  "num-rational",
  "num-traits",
+ "serde",
  "simba 0.7.3",
  "typenum",
 ]
@@ -1657,6 +1679,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ae39348c8bc5fbd7f40c727a9925f03517afd2ab27d46702108b6a7e5414c19"
 dependencies = [
  "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -1812,10 +1835,10 @@ dependencies = [
 [[package]]
 name = "ovr_overlay"
 version = "0.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bca515c469ad7eb699480b5dc61d1c83e1e9694e7c39435ce458a3f9fbdce14"
+source = "git+https://github.com/TheButlah/ovr_overlay#ffc57149724a9efade7160a2494a882d4c7c92fd"
 dependencies = [
  "derive_more",
+ "enumset",
  "lazy_static",
  "log",
  "nalgebra 0.30.1",
@@ -1827,8 +1850,7 @@ dependencies = [
 [[package]]
 name = "ovr_overlay_sys"
 version = "0.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16b5e4888d82a67dd8c3d47103aa751083bfe88de063ece9846715c2a78fcbab"
+source = "git+https://github.com/TheButlah/ovr_overlay#ffc57149724a9efade7160a2494a882d4c7c92fd"
 dependencies = [
  "autocxx",
  "autocxx-build",
@@ -2414,6 +2436,8 @@ dependencies = [
  "num-derive",
  "num-traits",
  "ovr_overlay",
+ "serde",
+ "serde_json",
  "solarxr",
  "stackvec",
  "tokio",
