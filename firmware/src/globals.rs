@@ -51,9 +51,9 @@ pub fn setup() {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(target_arch = "riscv32")]
+#[cfg(feature = "mcu-esp32c3")]
 #[export_name = "ExceptionHandler"]
-pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
+pub fn custom_exception_handler(trap_frame: &esp32c3_hal::trapframe::TrapFrame) -> ! {
 	use defmt::error;
 
 	let mepc = riscv::register::mepc::read();
@@ -77,12 +77,12 @@ pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(xtensa)]
+#[cfg(feature = "mcu-esp32")]
 #[no_mangle]
 #[link_section = ".rwtext"]
 unsafe extern "C" fn __exception(
-	cause: xtensa_lx_rt::exception::ExceptionCause,
-	context: xtensa_lx_rt::exception::Context,
+	cause: esp32_hal::xtensa_lx_rt::exception::ExceptionCause,
+	context: esp32_hal::xtensa_lx_rt::exception::Context,
 ) {
 	use defmt::error;
 

@@ -18,7 +18,7 @@ default = [
   "mcu-esp32c3",
   "imu-stubbed",
   "log-rtt",
-  "net-wifi",
+  "net-stubbed",
   "fusion-stubbed",
 ]
 # default = [
@@ -29,7 +29,7 @@ default = [
 #   "fusion-stubbed",
 #   "nrf-boot-s140",
 # ]
-# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi", "fusion-stubbed"]
+# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-stubbed", "fusion-stubbed"]
 
 # Supported microcontrollers
 mcu-esp32 = [
@@ -37,7 +37,6 @@ mcu-esp32 = [
   "defmt_esp_println/esp32",
   "esp-backtrace/esp32",
   "xtensa-lx/esp32",
-  "xtensa-lx-rt/esp32",
   "dep:esp-alloc",
   "dep:embedded-svc",
   "esp-wifi?/esp32",
@@ -47,7 +46,6 @@ mcu-esp32c3 = [
   "defmt_esp_println/esp32c3",
   "esp-backtrace/esp32c3",
   "dep:riscv",
-  "dep:riscv-rt",
   "dep:esp-alloc",
   "dep:embedded-svc",
   "esp-wifi?/esp32c3",
@@ -108,20 +106,19 @@ _mcu-f-nrf52 = [
 
 [dependencies]
 # mcu-esp32 stuff
-esp32-hal = { version = "0.7", optional = true, features = [
+esp32-hal = { version = "0.10", optional = true, features = [
   "embassy",
   "embassy-time-timg0",
   "async",
 ] }
 
 # mcu-esp32c3 stuff
-esp32c3-hal = { version = "0.4", optional = true, features = [
+esp32c3-hal = { version = "0.7", optional = true, features = [
   "embassy",
   "embassy-time-timg0",
   "async",
   #"direct-boot",
 ] }
-riscv-rt = { version = "0.10", optional = true }
 riscv = { version = "0.10", optional = true }
 
 # mcu-f-nrf52 stuff
@@ -151,16 +148,15 @@ embassy-sync = { version = "*" }
 futures-util = { version = "0.3", default-features = false }
 
 # esp-xtensa stuff
-xtensa-lx = { version = "0.7", optional = true, default-features = false }
-xtensa-lx-rt = { version = "0.14", optional = true, default-features = false }
+xtensa-lx = { version = "0.8", optional = true, default-features = false }
 
 # esp-generic stuff
 esp-backtrace = { version = "0.4", default-features = false, optional = true }
-esp-alloc = { version = "0.1", optional = true }
+esp-alloc = { version = "0.2", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "d478a81", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "a4d6452", features = [
   "embedded-svc",
 ], optional = true }
 smoltcp = { version = "0.8", default-features = false, features = [
@@ -178,8 +174,8 @@ smoltcp = { version = "0.8", default-features = false, features = [
 ], optional = true }
 
 # Generic BLE
-bleps = { git = "https://github.com/bjoernQ/bleps", rev = "5ce5ca1", optional = true }
-bleps-macros = { git = "https://github.com/bjoernQ/bleps", rev = "5ce5ca1", optional = true }
+bleps = { git = "https://github.com/bjoernQ/bleps", rev = "33fde67", optional = true }
+bleps-macros = { git = "https://github.com/bjoernQ/bleps", rev = "33fde67", optional = true }
 
 # nrf ble
 nrf-softdevice = { version = "*", default-features = false, features = [
@@ -235,9 +231,14 @@ dotenvy = "0.15"
 [patch.crates-io]
 bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
-# Emable use of `atomic-polyfill`
+# Enable use of `atomic-polyfill`
 defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
 defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
+
+# Fix xtensa not compiling because bitvec used to use a build.rs for detecting atomic
+# width
+# https://github.com/ferrilab/ferrilab/issues/1
+bitvec = { git = "https://github.com/arctic-alpaca/ferrilab.git", rev = "e13261a" }
 
 # Ensure we use the git version of all of the embassy stuff. Specify it here instead of
 # in [dependencies] because this ensures that we don't duplicate any dependencies like

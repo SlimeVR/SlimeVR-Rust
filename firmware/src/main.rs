@@ -30,10 +30,10 @@ use static_cell::StaticCell;
 
 #[cfg(cortex_m)]
 use cortex_m_rt::entry;
-#[cfg(riscv)]
-use riscv_rt::entry;
-#[cfg(xtensa)]
-use xtensa_lx_rt::entry;
+#[cfg(feature = "mcu-esp32")]
+use esp32_hal::entry;
+#[cfg(feature = "mcu-esp32c3")]
+use esp32c3_hal::entry;
 
 #[entry]
 fn main() -> ! {
