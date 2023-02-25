@@ -1,6 +1,6 @@
 [toolchain]
-# channel = "nightly-2022-12-18"
-channel = "esp" # for when compiling to xtensa targets
+channel = "nightly-2022-12-18"
+# channel = "esp" # for when compiling to xtensa targets
 targets = [
 	"riscv32imc-unknown-none-elf",
 	"thumbv7em-none-eabihf",
