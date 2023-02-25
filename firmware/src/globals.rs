@@ -51,9 +51,9 @@ pub fn setup() {
 }
 
 /// This will be called when a hardware exception occurs
-#[cfg(target_arch = "riscv32")]
+#[cfg(feature = "mcu-esp32c3")]
 #[export_name = "ExceptionHandler"]
-pub fn custom_exception_handler(trap_frame: &riscv_rt::TrapFrame) -> ! {
+pub fn custom_exception_handler(trap_frame: &esp32c3_hal::trapframe::TrapFrame) -> ! {
 	use defmt::error;
 
 	let mepc = riscv::register::mepc::read();
