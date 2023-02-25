@@ -53,7 +53,8 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	{
 		esp_wifi::init_heap();
 		let timerg = TimerGroup::new(p.TIMG1, &clocks);
-		esp_wifi::initialize(timerg.timer0, p.RNG, &clocks)
+		let rng = esp32_hal::Rng::new(p.RNG);
+		esp_wifi::initialize(timerg.timer0, rng, &clocks)
 			.expect("failed to initialize esp-wifi");
 	}
 

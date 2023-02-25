@@ -62,10 +62,8 @@ fn main() -> Result<()> {
 	}
 
 	// Link into Espressif's radio driver blobs
-	#[cfg(all(feature = "esp-wifi", feature = "mcu-esp32c3"))]
-	println!("cargo:rustc-link-arg=-Tesp32c3_rom_functions.x");
-	#[cfg(all(feature = "esp-wifi", feature = "mcu-esp32"))]
-	println!("cargo:rustc-link-arg=-Tesp32_rom_functions.x");
+	#[cfg(all(feature = "esp-wifi"))]
+	println!("cargo:rustc-link-arg=-Trom_functions.x");
 
 	memory_x!("mcu-nrf52832");
 	memory_x!("mcu-nrf52840");

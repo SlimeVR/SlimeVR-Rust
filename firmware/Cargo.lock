@@ -162,16 +162,16 @@ dependencies = [
 [[package]]
 name = "bleps"
 version = "0.1.0"
-source = "git+https://github.com/bjoernQ/bleps?rev=5ce5ca1#5ce5ca139fe85c0120e9c2f9607d165d1c32d725"
+source = "git+https://github.com/bjoernQ/bleps?rev=33fde67#33fde67257bfbc6c0aebf7649fd302c82ed94c64"
 dependencies = [
- "embedded-io 0.3.1",
+ "embedded-io 0.4.0",
  "log",
 ]
 
 [[package]]
 name = "bleps-macros"
 version = "0.1.0"
-source = "git+https://github.com/bjoernQ/bleps?rev=5ce5ca1#5ce5ca139fe85c0120e9c2f9607d165d1c32d725"
+source = "git+https://github.com/bjoernQ/bleps?rev=33fde67#33fde67257bfbc6c0aebf7649fd302c82ed94c64"
 dependencies = [
  "litrs",
  "proc-macro2",

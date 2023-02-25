@@ -174,8 +174,8 @@ smoltcp = { version = "0.8", default-features = false, features = [
 ], optional = true }
 
 # Generic BLE
-bleps = { git = "https://github.com/bjoernQ/bleps", rev = "5ce5ca1", optional = true }
-bleps-macros = { git = "https://github.com/bjoernQ/bleps", rev = "5ce5ca1", optional = true }
+bleps = { git = "https://github.com/bjoernQ/bleps", rev = "33fde67", optional = true }
+bleps-macros = { git = "https://github.com/bjoernQ/bleps", rev = "33fde67", optional = true }
 
 # nrf ble
 nrf-softdevice = { version = "*", default-features = false, features = [
