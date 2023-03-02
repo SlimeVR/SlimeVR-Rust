@@ -43,19 +43,20 @@ impl<'de> Deserialize<'de> for UniverseId {
 	}
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub(crate) struct UniverseTranslation {
 	pub translation: nalgebra::Translation3<f32>,
 	pub yaw: f32,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct Universe {
+	#[serde(rename = "universeID")]
 	universe_id: UniverseId,
 	standing: UniverseTranslation,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct Document {
 	universes: Vec<Universe>,
 }

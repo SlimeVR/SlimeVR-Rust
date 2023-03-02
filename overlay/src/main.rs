@@ -156,7 +156,7 @@ async fn overlay(
 	log::info!("Acquiring universe");
 	let universe = loop {
 		let id: Result<u64, _> = system_mngr.get_tracked_device_property(
-			orv::TrackedDeviceIndex::HMD,
+			ovr::TrackedDeviceIndex::HMD,
 			ovr::sys::ETrackedDeviceProperty::Prop_CurrentUniverseId_Uint64,
 		);
 		match id {
@@ -164,8 +164,9 @@ async fn overlay(
 				Some(d) => break d,
 				None => {} // TODO: fallback to 0 translation, or maybe standing universe?
 			},
-			Err(_) => {} // TODO: log error, but only once?
+			Err(e) => log::error!("Error: {}", e), // TODO: log error, but only once?
 		}
+		tokio::time::sleep(Duration::from_secs(1)).await;
 	};
 
 	log::info!("Overlay Loop");
@@ -229,13 +230,9 @@ async fn overlay(
 						};
 						let length = b.bone_length();
 
-						let pos = Translation3::new(pos.x(), pos.y(), pos.z())
-							* universe.translation;
+						let pos = Translation3::new(pos.x(), pos.y(), pos.z());
 						let rot = UnitQuaternion::from_quaternion(
 							[rot.x(), rot.y(), rot.z(), rot.w()].into(),
-						) * UnitQuaternion::from_axis_angle(
-							&nalgebra::Vector3::y_axis(),
-							universe.yaw,
 						);
 						if is_skeleton_visible {
 							hidden_bones.remove(&bone_kind);
@@ -264,10 +261,17 @@ async fn overlay(
 				length,
 			} in bones
 			{
-				let iso = Isometry {
+				let mut iso = Isometry {
 					rotation: rot,
 					translation: pos,
 				};
+				// TODO: this isn't correct yet.
+				iso *= universe.translation.inverse();
+				iso *= UnitQuaternion::from_axis_angle(
+					&nalgebra::Vector3::y_axis(),
+					universe.yaw,
+				)
+				.inverse();
 				skeleton.set_isometry(kind, iso);
 				skeleton.set_length(kind, length);
 			}
