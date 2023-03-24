@@ -56,6 +56,33 @@ fn main() -> ! {
 	p.delay.delay_ms(500u32);
 	debug!("Initialized peripherals");
 
+	#[cfg(feature = "net-wifi")]
+	let stack = {
+		use embassy_net::{Config, Stack, StackResources};
+		use esp_wifi::wifi::{WifiDevice, WifiMode};
+		use embassy_net::driver::Driver;
+
+		let (wifi_interface, controller) = esp_wifi::wifi::new(WifiMode::Sta);
+
+		let config = Config::Dhcp(Default::default());
+
+		let seed = 1234; // very random, very secure seed
+
+
+		type SR = StackResources<3>;
+		static STACK_RES: StaticCell<SR> = StaticCell::new();
+		static STACK: StaticCell<Stack<WifiDevice>> = StaticCell::new();
+		// Init network stack
+		let stack = STACK.init(Stack::new(
+			wifi_interface,
+			config,
+			STACK_RES.init(SR::new()),
+			seed
+		)); 
+
+		stack
+	};
+
 	static PACKETS: StaticCell<Packets> = StaticCell::new();
 	let packets: &'static Packets = PACKETS.init(Packets::new());
 
@@ -68,9 +95,22 @@ fn main() -> ! {
 			.unwrap();
 		s.spawn(crate::networking::network_task(packets)).unwrap();
 		s.spawn(crate::imu::imu_task(quat, p.i2c, p.delay)).unwrap();
+
 		#[cfg(bbq)]
 		s.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
+
+		#[cfg(feature = "net-wifi")]
+		s.spawn(wifi_stack_task(stack)).unwrap();
 	});
+}
+
+/// Drives the actual wifi stack
+#[cfg(feature = "net-wifi")]
+#[embassy_executor::task]
+async fn wifi_stack_task(
+	stack: &'static embassy_net::Stack<esp_wifi::wifi::WifiDevice>,
+) -> ! {
+	stack.run.await
 }
 
 #[cfg(bbq)]

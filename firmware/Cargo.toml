@@ -18,7 +18,7 @@ default = [
   "mcu-esp32c3",
   "imu-stubbed",
   "log-rtt",
-  "net-stubbed",
+  "net-wifi",
   "fusion-stubbed",
 ]
 # default = [
@@ -65,7 +65,7 @@ mcu-nrf52832 = [
 ]
 
 # Wi-fi dependencies
-net-wifi = ["esp-wifi/wifi", "dep:smoltcp"]                 # use wifi
+net-wifi = ["esp-wifi/wifi", "dep:embassy-net"]                 # use wifi
 net-ble = ["esp-wifi/ble", "dep:bleps", "dep:bleps-macros"]
 net-stubbed = []                                            # Stubs out network
 
@@ -156,22 +156,27 @@ esp-alloc = { version = "0.2", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "a4d6452", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "76ba312", features = [
   "embedded-svc",
+  "wifi",
+  "embassy-net",
 ], optional = true }
-smoltcp = { version = "0.8", default-features = false, features = [
-  "async",
-  "defmt",
-  "socket-raw",
-  "socket-udp",
-  "socket-tcp",
-  "socket-icmp",
-  "socket-dhcpv4",
-  "medium-ethernet",
-  "proto-dhcpv4",
-  "proto-igmp",
-  "proto-ipv4",
-], optional = true }
+# smoltcp = { version = "0.8", default-features = false, features = [
+#   "async",
+#   "defmt",
+#   "socket-raw",
+#   "socket-udp",
+#   "socket-tcp",
+#   "socket-icmp",
+#   "socket-dhcpv4",
+#   "medium-ethernet",
+#   "proto-dhcpv4",
+#   "proto-igmp",
+#   "proto-ipv4",
+# ], optional = true }
+embassy-net = { version = "*", optional = true, features = [
+  "nightly", "tcp", "udp", "dhcpv4", "medium-ethernet"
+] }
 
 # Generic BLE
 bleps = { git = "https://github.com/bjoernQ/bleps", rev = "33fde67", optional = true }
@@ -244,11 +249,12 @@ bitvec = { git = "https://github.com/arctic-alpaca/ferrilab.git", rev = "e13261a
 # in [dependencies] because this ensures that we don't duplicate any dependencies like
 # `embassy-time`. This avoids bugs like this one:
 # https://github.com/embassy-rs/embassy/issues/1115
-embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
-embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
-embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
-embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
-embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" }
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
+embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
+embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
+embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
+embassy-net = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
 
 nrf-softdevice = { git = "https://github.com/embassy-rs/nrf-softdevice", rev = "8a3dbb7" }
 
