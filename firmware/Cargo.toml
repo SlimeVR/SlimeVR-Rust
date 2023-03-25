@@ -249,12 +249,12 @@ bitvec = { git = "https://github.com/arctic-alpaca/ferrilab.git", rev = "e13261a
 # in [dependencies] because this ensures that we don't duplicate any dependencies like
 # `embassy-time`. This avoids bugs like this one:
 # https://github.com/embassy-rs/embassy/issues/1115
-embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
-embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
-embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
-embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
-embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
-embassy-net = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce" }
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
+embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
+embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
+embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
+embassy-net = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
 
 nrf-softdevice = { git = "https://github.com/embassy-rs/nrf-softdevice", rev = "8a3dbb7" }
 

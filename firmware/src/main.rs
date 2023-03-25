@@ -68,19 +68,15 @@ fn main() -> ! {
 
 		let seed = 1234; // very random, very secure seed
 
-
-		type SR = StackResources<3>;
-		static STACK_RES: StaticCell<SR> = StaticCell::new();
+		static STACK_RES: StaticCell<StackResources<3>> = StaticCell::new();
 		static STACK: StaticCell<Stack<WifiDevice>> = StaticCell::new();
 		// Init network stack
-		let stack = STACK.init(Stack::new(
+		STACK.init(Stack::new(
 			wifi_interface,
 			config,
-			STACK_RES.init(SR::new()),
+			STACK_RES.init(StackResources::new()),
 			seed
-		)); 
-
-		stack
+		))
 	};
 
 	static PACKETS: StaticCell<Packets> = StaticCell::new();
@@ -110,7 +106,7 @@ fn main() -> ! {
 async fn wifi_stack_task(
 	stack: &'static embassy_net::Stack<esp_wifi::wifi::WifiDevice>,
 ) -> ! {
-	stack.run.await
+	stack.run().await
 }
 
 #[cfg(bbq)]
