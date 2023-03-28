@@ -1080,6 +1080,7 @@ dependencies = [
  "paste",
  "riscv",
  "serde",
+ "smoltcp",
  "static_cell",
  "toml",
  "xtensa-lx",

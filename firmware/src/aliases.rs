@@ -19,6 +19,12 @@ pub mod ඞ {
 		esp32c3_hal::i2c::I2C<'a, esp32c3_hal::peripherals::I2C0>;
 
 	pub type BbqPeripheral<'a> = ();
+
+	pub type NetStackConcrete = embassy_net::Stack<esp_wifi::wifi::WifiDevice>;
+	pub struct NetConcrete {
+		pub controller: esp_wifi::wifi::WifiController,
+		pub stack: &'static NetStackConcrete,
+	}
 }
 
 #[cfg(mcu_f_nrf52)]

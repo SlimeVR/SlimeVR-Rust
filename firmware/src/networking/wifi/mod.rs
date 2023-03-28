@@ -1,7 +1,3 @@
-use defmt::{debug, info};
-use embassy_futures::yield_now;
-use embedded_svc::wifi::{ClientConfiguration, Configuration, Wifi};
-
 #[cfg(feature = "net-wifi")]
 #[path = "esp.rs"]
 pub mod ඞ;

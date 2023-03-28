@@ -1,6 +1,7 @@
 use super::Peripherals;
 use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
+use crate::aliases::ඞ::NetConcrete;
 
 use fugit::RateExtU32;
 use paste::paste;
@@ -20,7 +21,16 @@ macro_rules! map_pin {
 	};
 }
 
-pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
+macro_rules! singleton {
+	($t:ty, $val:expr) => {{
+		use ::static_cell::StaticCell;
+		static STATIC_CELL: StaticCell<$t> = StaticCell::new();
+		STATIC_CELL.init($val)
+	}};
+}
+
+pub fn get_peripherals(
+) -> Peripherals<I2cConcrete<'static>, DelayConcrete, (), (), NetConcrete> {
 	let p = esp32c3_hal::peripherals::Peripherals::take();
 
 	let mut system = p.SYSTEM.split();
@@ -50,17 +60,30 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	esp32c3_hal::embassy::init(&clocks, timer0);
 
 	// Initialize esp-wifi stuff
+	#[allow(unused)]
+	let net = ();
 	#[cfg(feature = "esp-wifi")]
-	{
-		use esp32c3_hal::systimer::SystemTimer;
-		use esp32c3_hal::Rng;
+	let net = {
+		use embassy_net::{Config, Stack, StackResources};
+		use esp_wifi::wifi::{WifiDevice, WifiMode};
 
-		esp_wifi::init_heap();
-		let systimer = SystemTimer::new(p.SYSTIMER);
-		let rng = Rng::new(p.RNG);
-		esp_wifi::initialize(systimer.alarm0, rng, &clocks)
-			.expect("failed to initialize esp-wifi");
-	}
+		let (wifi_interface, controller) = esp_wifi::wifi::new(WifiMode::Sta);
+		let config = Config::Dhcp(Default::default());
+
+		let seed = 1234; // very random, very secure seed
+
+		// Init network stack
+		let stack = &*singleton!(
+			Stack<WifiDevice>,
+			Stack::new(
+				wifi_interface,
+				config,
+				singleton!(StackResources<3>, StackResources::<3>::new()),
+				seed
+			)
+		);
+		NetConcrete { controller, stack }
+	};
 
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
 	let i2c = esp32c3_hal::i2c::I2C::new(
@@ -73,5 +96,6 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	);
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
-	Peripherals::new().i2c(i2c).delay(delay)
+
+	Peripherals::new().i2c(i2c).delay(delay).net(net)
 }

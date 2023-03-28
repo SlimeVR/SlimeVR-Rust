@@ -6,15 +6,21 @@ pub mod wifi;
 pub mod ble;
 
 use defmt::debug;
-use embassy_executor::task;
+use embassy_executor::{task, Spawner};
 
+use crate::aliases::ඞ::NetConcrete;
 use crate::networking::protocol::Packets;
 
+// TODO: Does this need a larger task bool because `network_task` may spawn a task?
 #[task]
-pub async fn network_task(msg_signals: &'static Packets) {
+pub async fn network_task(
+	spawner: Spawner,
+	msg_signals: &'static Packets,
+	net: NetConcrete,
+) {
 	debug!("Network task");
 	#[cfg(feature = "net-wifi")]
-	self::wifi::ඞ::network_task(msg_signals).await;
+	self::wifi::ඞ::network_task(spawner, msg_signals, net).await;
 	#[cfg(feature = "net-ble")]
 	self::ble::ඞ::network_task(msg_signals).await;
 	#[cfg(feature = "net-stubbed")]

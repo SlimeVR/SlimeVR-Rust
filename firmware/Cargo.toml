@@ -65,7 +65,7 @@ mcu-nrf52832 = [
 ]
 
 # Wi-fi dependencies
-net-wifi = ["esp-wifi/wifi", "dep:embassy-net"]                 # use wifi
+net-wifi = ["esp-wifi/wifi", "dep:embassy-net", "dep:smoltcp"]                 # use wifi
 net-ble = ["esp-wifi/ble", "dep:bleps", "dep:bleps-macros"]
 net-stubbed = []                                            # Stubs out network
 
@@ -161,19 +161,8 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "76ba312", fe
   "wifi",
   "embassy-net",
 ], optional = true }
-# smoltcp = { version = "0.8", default-features = false, features = [
-#   "async",
-#   "defmt",
-#   "socket-raw",
-#   "socket-udp",
-#   "socket-tcp",
-#   "socket-icmp",
-#   "socket-dhcpv4",
-#   "medium-ethernet",
-#   "proto-dhcpv4",
-#   "proto-igmp",
-#   "proto-ipv4",
-# ], optional = true }
+smoltcp = { version = "0.9", default-features = false, features = [
+], optional = true }
 embassy-net = { version = "*", optional = true, features = [
   "nightly", "tcp", "udp", "dhcpv4", "medium-ethernet"
 ] }
