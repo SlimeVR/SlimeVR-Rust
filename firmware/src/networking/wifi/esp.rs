@@ -35,8 +35,9 @@ pub async fn network_task(packets: &Packets) -> ! {
 	let client_ip = loop {
 		yield_now().await;
 		network.work();
-		let Ok(ip) = network.get_ip_info() else { continue };
-		break ip.ip.octets();
+		if let Ok(ip) = network.get_ip_info() {
+			break ip;
+		}
 	};
 
 	info!("DHCP IP: {}", client_ip);
