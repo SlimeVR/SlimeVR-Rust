@@ -20,7 +20,7 @@ pub async fn network_task(
 ) {
 	debug!("Network task");
 	#[cfg(feature = "net-wifi")]
-	self::wifi::ඞ::network_task(spawner, msg_signals, net).await;
+	self::wifi::network_task(spawner, msg_signals, net).await;
 	#[cfg(feature = "net-ble")]
 	self::ble::ඞ::network_task(msg_signals).await;
 	#[cfg(feature = "net-stubbed")]
