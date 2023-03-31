@@ -29,8 +29,6 @@ pub fn get_peripherals(
 	// The ESP-Wifi module requires 240MHz for cpu clock speeed
 	let clocks =
 		ClockControl::configure(system.clock_control, CpuClock::Clock240MHz).freeze();
-	// Initialize embassy stuff
-	// embassy::init(&clocks);
 
 	// Disable the RTC and TIMG watchdog timers
 	let timer0 = {
