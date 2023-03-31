@@ -66,7 +66,7 @@ fn main() -> ! {
 	EXECUTOR.init(Executor::new()).run(move |s| {
 		s.spawn(crate::networking::protocol::control_task(packets, quat))
 			.unwrap();
-		s.spawn(crate::networking::network_task(s.clone(), packets, p.net))
+		s.spawn(crate::networking::network_task(s, packets, p.net))
 			.unwrap();
 		s.spawn(crate::imu::imu_task(quat, p.i2c, p.delay)).unwrap();
 

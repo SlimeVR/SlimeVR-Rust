@@ -20,10 +20,8 @@ macro_rules! singleton {
 }
 
 fn init_wifi() -> NetConcrete {
-	#[allow(unused_variables)]
-	let net = ();
 	#[cfg(feature = "esp-wifi")]
-	let net = {
+	{
 		use embassy_net::{Config, Stack, StackResources};
 		use esp_wifi::wifi::{WifiDevice, WifiMode};
 
@@ -43,7 +41,5 @@ fn init_wifi() -> NetConcrete {
 			)
 		);
 		NetConcrete { controller, stack }
-	};
-
-	net
+	}
 }
