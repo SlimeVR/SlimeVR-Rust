@@ -2,10 +2,11 @@
 #[path = "esp.rs"]
 pub mod ඞ;
 
-use defmt::{info, trace, warn};
+use defmt::{debug, info, trace, warn};
 use embassy_executor::{task, Spawner};
 use embassy_futures::select::{select, Either};
 use embassy_net::udp::{Error as UdpError, UdpSocket};
+use embassy_time::{Duration, Timer};
 use firmware_protocol::{Packet, SbPacket};
 use smoltcp::socket::udp::PacketMetadata as UdpPacketMetadata;
 use smoltcp::wire::{IpAddress, IpEndpoint};
@@ -107,6 +108,7 @@ impl State {
 /// Drives the actual wifi stack
 #[task]
 async fn wifi_stack_task(stack: &'static crate::aliases::ඞ::NetStackConcrete) -> ! {
+	debug!("Wifi stack task!");
 	stack.run().await
 }
 
@@ -119,11 +121,14 @@ pub async fn network_task(
 	self::ඞ::connect_to_wifi(&mut net).await;
 
 	let stack = net.stack;
-	let ip = stack
-		.config()
-		.expect("TODO: Can getting the stack config fail after connecting?")
-		.address;
-	info!("Connected to wifi, ip: {}", defmt::Debug2Format(&ip));
+
+	let ip = loop {
+		if let Some(ip) = stack.config().map(|c| c.address) {
+			break ip;
+		}
+		Timer::after(Duration::from_millis(500)).await;
+	};
+	debug!("Got ip: {}", defmt::Debug2Format(&ip));
 
 	let mut state = State::new(packets);
 
@@ -192,49 +197,3 @@ async fn recv_bytes<'s>(
 		}
 	}
 }
-
-// pub async fn connect_wifi<W: Wifi>(wifi: &mut W) -> Result<(), W::Error> {
-// 	if !wifi.is_started()? {
-// 		wifi.start()?
-// 	}
-//
-// 	let mut i = 0;
-// 	let ap = loop {
-// 		i += 1;
-// 		debug!("wifi scanning, retry {}...", i);
-// 		let (mut scan_list, count) = wifi.scan_n::<EXPECTED_NEIGHBOURS>()?;
-// 		debug!("found {} APs", count);
-//
-// 		let pos = scan_list.iter().position(|ap| ap.ssid == SSID);
-//
-// 		if let Some(ap) = pos {
-// 			break scan_list.swap_remove(ap);
-// 		} else if i == WIFI_FIND_RETRIES {
-// 			panic!("Couldn't find SSID {}", SSID);
-// 		}
-// 		// TODO: this also should require a ticker
-// 		yield_now().await;
-// 	};
-// 	info!("found SSID {}", SSID);
-// 	let client_config = Configuration::Client(ClientConfiguration {
-// 		ssid: SSID.into(),
-// 		password: PASSWORD.into(),
-// 		bssid: Some(ap.bssid),
-// 		auth_method: ap.auth_method,
-// 		channel: Some(ap.channel),
-// 	});
-// 	wifi.set_configuration(&client_config)?;
-//
-// 	debug!("{:?}", defmt::Debug2Format(&wifi.get_capabilities()?));
-// 	wifi.connect()?;
-//
-// 	loop {
-// 		let res = wifi.is_connected();
-// 		if matches!(res, Ok(true)) {
-// 			break; // connected successfully
-// 		}
-// 		yield_now().await;
-// 	}
-//
-// 	Ok(())
-// }

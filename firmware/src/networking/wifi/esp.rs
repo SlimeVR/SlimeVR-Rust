@@ -20,4 +20,5 @@ pub async fn connect_to_wifi(net: &mut NetConcrete) {
 		warn!("Failed to connect to wifi: {}", defmt::Debug2Format(&e));
 		Timer::after(Duration::from_millis(4000)).await
 	}
+	debug!("Connected to wifi!");
 }

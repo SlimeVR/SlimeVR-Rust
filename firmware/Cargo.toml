@@ -18,7 +18,7 @@ default = [
   "mcu-esp32c3",
   "imu-stubbed",
   "log-rtt",
-  "net-stubbed",
+  "net-wifi",
   "fusion-stubbed",
 ]
 # default = [
@@ -225,10 +225,6 @@ dotenvy = "0.15"
 [patch.crates-io]
 bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
-# Enable use of `atomic-polyfill`
-defmt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
-defmt-rtt = { git = "https://github.com/TheButlah/defmt", rev = "b5d5e316ea56250dcb25b3549bcf4bfdb1687796" }
-
 # Fix xtensa not compiling because bitvec used to use a build.rs for detecting atomic
 # width
 # https://github.com/ferrilab/ferrilab/issues/1
@@ -248,7 +244,7 @@ embassy-net = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb
 nrf-softdevice = { git = "https://github.com/embassy-rs/nrf-softdevice", rev = "8a3dbb7" }
 
 [profile.dev]
-# lto doesnt work on esp32 (xtensa)
+# lto doesnt work for esp-wifi
 lto = false
 # opt-level = "s"
 
@@ -265,6 +261,7 @@ opt-level = 'z'
 
 [profile.release]
 debug = true # Symbols get stripped when flashing anyway
+lto = false # LTO doesn't work for esp-wifi
 
 
 ###################

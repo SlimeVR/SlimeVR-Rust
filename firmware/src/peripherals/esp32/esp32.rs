@@ -48,6 +48,18 @@ pub fn get_peripherals(
 	// Initialize embassy
 	esp32_hal::embassy::init(&clocks, timer0);
 
+	#[cfg(feature = "net-wifi")]
+	{
+		use esp32_hal::Rng;
+
+		esp_wifi::init_heap();
+
+		let timer_group1 = TimerGroup::new(p.TIMG1, &clocks);
+		let rng = Rng::new(p.RNG);
+		esp_wifi::initialize(timer_group1.timer0, rng, &clocks)
+			.expect("failed to initialize esp-wifi");
+	}
+
 	let io = esp32_hal::IO::new(p.GPIO, p.IO_MUX);
 	// let hz =
 	let i2c = esp32_hal::i2c::I2C::new(
@@ -62,7 +74,7 @@ pub fn get_peripherals(
 	let delay = esp32_hal::Delay::new(&clocks);
 
 	#[allow(clippy::let_unit_value)]
-	let net = super::init_wifi();
+	let net = super::init_wifi_stack();
 
 	Peripherals::new().i2c(i2c).delay(delay).net(net)
 }

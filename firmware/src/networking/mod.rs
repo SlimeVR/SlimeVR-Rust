@@ -11,7 +11,6 @@ use embassy_executor::{task, Spawner};
 use crate::aliases::ඞ::NetConcrete;
 use crate::networking::protocol::Packets;
 
-// TODO: Does this need a larger task bool because `network_task` may spawn a task?
 #[task]
 pub async fn network_task(
 	#[allow(unused_variables)] spawner: Spawner,

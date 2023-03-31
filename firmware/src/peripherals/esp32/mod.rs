@@ -19,7 +19,9 @@ macro_rules! singleton {
 	}};
 }
 
-fn init_wifi() -> NetConcrete {
+/// Initializes the esp-wifi controller and stack, but does not initialize
+/// esp-wifi itself.
+fn init_wifi_stack() -> NetConcrete {
 	#[cfg(feature = "net-wifi")]
 	{
 		use embassy_net::{Config, Stack, StackResources};
