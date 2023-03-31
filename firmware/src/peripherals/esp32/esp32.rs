@@ -61,6 +61,7 @@ pub fn get_peripherals(
 
 	let delay = esp32_hal::Delay::new(&clocks);
 
+	#[allow(clippy::let_unit_value)]
 	let net = super::init_wifi();
 
 	Peripherals::new().i2c(i2c).delay(delay).net(net)
