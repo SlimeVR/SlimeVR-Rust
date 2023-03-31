@@ -10,8 +10,8 @@ use defmt::{debug, error, trace, warn};
 use embassy_futures::yield_now;
 use esp_wifi::{self, ble::controller::BleConnector, current_millis};
 
-use crate::networking::Packets;
 use crate::aliases::NetConcrete;
+use crate::networking::Packets;
 
 pub async fn network_task(_packets: &Packets, _net: NetConcrete) -> ! {
 	// HCI is the host-controller interface, which lets the MCU communicate to the BLE hardware through a standard

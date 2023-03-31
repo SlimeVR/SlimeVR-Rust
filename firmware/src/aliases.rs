@@ -57,7 +57,7 @@ pub mod ඞ {
 	pub type UsbDriverConcrete<'a> = embassy_nrf::usb::Driver<
 		'a,
 		embassy_nrf::peripherals::USBD,
-		embassy_nrf::usb::PowerUsb,
+		embassy_nrf::usb::HardwareVbusDetect,
 	>;
 
 	#[cfg(feature = "mcu-nrf52832")]

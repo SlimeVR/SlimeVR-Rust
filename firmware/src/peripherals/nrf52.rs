@@ -141,9 +141,10 @@ pub fn get_peripherals() -> Peripherals<
 	#[cfg(feature = "mcu-nrf52840")]
 	let usb_driver = {
 		use embassy_nrf::usb::{self, Driver};
+
 		let irq = interrupt::take!(USBD);
 		let power_irq = interrupt::take!(POWER_CLOCK);
-		let d = Driver::new(p.USBD, irq, usb::PowerUsb::new(power_irq));
+		let d = Driver::new(p.USBD, irq, usb::HardwareVbusDetect::new(power_irq));
 		debug!("Initialized usb_driver");
 		d
 	};

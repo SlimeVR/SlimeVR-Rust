@@ -14,8 +14,7 @@ use crate::networking::protocol::Packets;
 // TODO: Does this need a larger task bool because `network_task` may spawn a task?
 #[task]
 pub async fn network_task(
-	#[allow(unused_variables)]
-	spawner: Spawner,
+	#[allow(unused_variables)] spawner: Spawner,
 	msg_signals: &'static Packets,
 	net: NetConcrete,
 ) {

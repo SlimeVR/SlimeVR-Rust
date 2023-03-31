@@ -19,7 +19,7 @@ pub async fn logger_task(
 		let len = grant.buf().len();
 		let _result = uart.write(b"got data: ").await;
 		match uart.write_from_ram(grant.buf()).await {
-			Err(Error::DMABufferNotInDataMemory) => {
+			Err(Error::BufferNotInRAM) => {
 				// unreachable!("bbq should always be in RAM")
 				()
 			}
