@@ -21,6 +21,7 @@ macro_rules! map_pin {
 	};
 }
 
+#[allow(unused_macros)]
 macro_rules! singleton {
 	($t:ty, $val:expr) => {{
 		use ::static_cell::StaticCell;

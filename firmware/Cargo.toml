@@ -14,13 +14,13 @@ rust-version.workspace = true
 
 
 [features]
-default = [
-  "mcu-esp32c3",
-  "imu-stubbed",
-  "log-rtt",
-  "net-wifi",
-  "fusion-stubbed",
-]
+# default = [
+#   "mcu-esp32c3",
+#   "imu-stubbed",
+#   "log-rtt",
+#   "net-wifi",
+#   "fusion-stubbed",
+# ]
 # default = [
 #   "mcu-nrf52840",
 #   "imu-stubbed",
@@ -29,7 +29,7 @@ default = [
 #   "fusion-stubbed",
 #   "nrf-boot-s140",
 # ]
-# default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-stubbed", "fusion-stubbed"]
+default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-stubbed", "fusion-stubbed"]
 
 # Supported microcontrollers
 mcu-esp32 = [

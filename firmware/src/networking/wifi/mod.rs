@@ -8,7 +8,7 @@ use embassy_futures::select::{select, Either};
 use embassy_net::udp::{Error as UdpError, UdpSocket};
 use firmware_protocol::{Packet, SbPacket};
 use smoltcp::socket::udp::PacketMetadata as UdpPacketMetadata;
-use smoltcp::wire::{IpEndpoint, IpAddress};
+use smoltcp::wire::{IpAddress, IpEndpoint};
 
 use crate::aliases::ඞ::NetConcrete;
 use crate::networking::protocol::Packets;
@@ -155,18 +155,25 @@ pub async fn network_task(
 
 		match (net, state.server_ip()) {
 			// There is inbound bytes that should be parsed and processed
-			(Either::First((recv_len, endpoint)), _) => state.on_recv(&buffer[..recv_len], endpoint).await, 
+			(Either::First((recv_len, endpoint)), _) => {
+				state.on_recv(&buffer[..recv_len], endpoint).await
+			}
 			// There is pending outbound packet that should be sent
 			(Either::Second(msg), Some(server_ip)) => {
 				let Some(nbytes) = state.on_send(msg, &mut buffer) else {
 					continue;
 				};
 
-				if let Err(e) = socket.send_to(&buffer[..nbytes], (server_ip, PORT)).await
+				if let Err(e) =
+					socket.send_to(&buffer[..nbytes], (server_ip, PORT)).await
 				{
-					warn!("Failed to send #{}: {}", state.tx_seq(), defmt::Debug2Format(&e));
+					warn!(
+						"Failed to send #{}: {}",
+						state.tx_seq(),
+						defmt::Debug2Format(&e)
+					);
 				}
-			},
+			}
 			_ => (),
 		}
 	}
