@@ -1,6 +1,7 @@
-use super::Peripherals;
 use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
+use crate::aliases::ඞ::NetConcrete;
+use crate::peripherals::Peripherals;
 
 use fugit::RateExtU32;
 use paste::paste;
@@ -20,7 +21,8 @@ macro_rules! map_pin {
 	};
 }
 
-pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
+pub fn get_peripherals(
+) -> Peripherals<I2cConcrete<'static>, DelayConcrete, (), (), NetConcrete> {
 	let p = esp32_hal::peripherals::Peripherals::take();
 
 	let mut system = p.DPORT.split();
@@ -48,16 +50,6 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	// Initialize embassy
 	esp32_hal::embassy::init(&clocks, timer0);
 
-	// Initialize esp-wifi stuff
-	#[cfg(feature = "esp-wifi")]
-	{
-		esp_wifi::init_heap();
-		let timerg = TimerGroup::new(p.TIMG1, &clocks);
-		let rng = esp32_hal::Rng::new(p.RNG);
-		esp_wifi::initialize(timerg.timer0, rng, &clocks)
-			.expect("failed to initialize esp-wifi");
-	}
-
 	let io = esp32_hal::IO::new(p.GPIO, p.IO_MUX);
 	// let hz =
 	let i2c = esp32_hal::i2c::I2C::new(
@@ -70,5 +62,8 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	);
 
 	let delay = esp32_hal::Delay::new(&clocks);
-	Peripherals::new().i2c(i2c).delay(delay)
+
+	let net = super::init_wifi();
+
+	Peripherals::new().i2c(i2c).delay(delay).net(net)
 }

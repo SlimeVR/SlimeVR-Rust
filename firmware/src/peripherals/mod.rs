@@ -1,12 +1,11 @@
 //! This module handles the typically platform-dependent setup of the peripherals
 
-#[cfg(feature = "mcu-esp32")]
-#[path = "esp32.rs"]
-pub mod ඞ;
-
-#[cfg(feature = "mcu-esp32c3")]
-#[path = "esp32c3.rs"]
-pub mod ඞ;
+#[cfg(mcu_f_esp32)]
+mod esp32;
+#[cfg(mcu_f_esp32)]
+pub mod ඞ {
+	pub use super::esp32::*;
+}
 
 #[cfg(mcu_f_nrf52)]
 #[path = "nrf52.rs"]

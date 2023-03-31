@@ -10,7 +10,7 @@ use defmt::{debug, error, trace, warn};
 use embassy_futures::yield_now;
 use esp_wifi::{self, ble::controller::BleConnector, current_millis};
 
-use crate::aliases::NetConcrete;
+use crate::aliases::ඞ::NetConcrete;
 use crate::networking::Packets;
 
 pub async fn network_task(_packets: &Packets, _net: NetConcrete) -> ! {

@@ -1,7 +1,7 @@
-use super::Peripherals;
 use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
 use crate::aliases::ඞ::NetConcrete;
+use crate::peripherals::Peripherals;
 
 use fugit::RateExtU32;
 use paste::paste;
@@ -21,15 +21,6 @@ macro_rules! map_pin {
 	};
 }
 
-#[allow(unused_macros)]
-macro_rules! singleton {
-	($t:ty, $val:expr) => {{
-		use ::static_cell::StaticCell;
-		static STATIC_CELL: StaticCell<$t> = StaticCell::new();
-		STATIC_CELL.init($val)
-	}};
-}
-
 pub fn get_peripherals(
 ) -> Peripherals<I2cConcrete<'static>, DelayConcrete, (), (), NetConcrete> {
 	let p = esp32c3_hal::peripherals::Peripherals::take();
@@ -38,8 +29,6 @@ pub fn get_peripherals(
 	// The ESP-Wifi module requires 160MHz for cpu clock speeed
 	let clocks =
 		ClockControl::configure(system.clock_control, CpuClock::Clock160MHz).freeze();
-	// Initialize embassy stuff
-	// embassy::init(&clocks);
 
 	// Disable the RTC and TIMG watchdog timers
 	let timer0 = {
@@ -60,32 +49,6 @@ pub fn get_peripherals(
 	// Initialize embassy
 	esp32c3_hal::embassy::init(&clocks, timer0);
 
-	// Initialize esp-wifi stuff
-	#[allow(unused)]
-	let net = ();
-	#[cfg(feature = "esp-wifi")]
-	let net = {
-		use embassy_net::{Config, Stack, StackResources};
-		use esp_wifi::wifi::{WifiDevice, WifiMode};
-
-		let (wifi_interface, controller) = esp_wifi::wifi::new(WifiMode::Sta);
-		let config = Config::Dhcp(Default::default());
-
-		let seed = 1234; // very random, very secure seed
-
-		// Init network stack
-		let stack = &*singleton!(
-			Stack<WifiDevice>,
-			Stack::new(
-				wifi_interface,
-				config,
-				singleton!(StackResources<3>, StackResources::<3>::new()),
-				seed
-			)
-		);
-		NetConcrete { controller, stack }
-	};
-
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
 	let i2c = esp32c3_hal::i2c::I2C::new(
 		p.I2C0,
@@ -97,6 +60,8 @@ pub fn get_peripherals(
 	);
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
+
+	let net = super::init_wifi();
 
 	Peripherals::new().i2c(i2c).delay(delay).net(net)
 }
