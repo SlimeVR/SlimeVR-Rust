@@ -15,6 +15,19 @@ rustflags = [
   # For defmt
   "-C",
   "link-arg=-Tdefmt.x",
+
+  # enable the atomic codegen option for RISCV
+  "-C", "target-feature=+a",
+
+  # tell the core library have atomics even though it's not specified in the target definition.
+  # NOTE: This is fine for load/store, but we don't support compare-and-swap, so we don't get
+  # full atomic features. For that, atomic_polyfill or the atomic trap handler should be used
+  # instead. But we don't need CAS in the firmware.
+  "--cfg", "target_has_atomic_load_store",
+  "--cfg", 'target_has_atomic_load_store="8"',
+  "--cfg", 'target_has_atomic_load_store="16"',
+  "--cfg", 'target_has_atomic_load_store="32"',
+  "--cfg", 'target_has_atomic_load_store="ptr"',
 ]
 
 [target.xtensa-esp32-none-elf]

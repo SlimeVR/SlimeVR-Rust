@@ -66,8 +66,11 @@ fn main() -> ! {
 	EXECUTOR.init(Executor::new()).run(move |s| {
 		s.spawn(crate::networking::protocol::control_task(packets, quat))
 			.unwrap();
-		s.spawn(crate::networking::network_task(packets)).unwrap();
+		#[allow(clippy::unit_arg)]
+		s.spawn(crate::networking::network_task(s, packets, p.net))
+			.unwrap();
 		s.spawn(crate::imu::imu_task(quat, p.i2c, p.delay)).unwrap();
+
 		#[cfg(bbq)]
 		s.spawn(logger_task(bbq, bbq_peripheral)).unwrap();
 	});

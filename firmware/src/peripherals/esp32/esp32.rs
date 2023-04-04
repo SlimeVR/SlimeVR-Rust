@@ -1,6 +1,7 @@
-use super::Peripherals;
 use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
+use crate::aliases::ඞ::NetConcrete;
+use crate::peripherals::Peripherals;
 
 use fugit::RateExtU32;
 use paste::paste;
@@ -20,15 +21,14 @@ macro_rules! map_pin {
 	};
 }
 
-pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
+pub fn get_peripherals(
+) -> Peripherals<I2cConcrete<'static>, DelayConcrete, (), (), NetConcrete> {
 	let p = esp32_hal::peripherals::Peripherals::take();
 
 	let mut system = p.DPORT.split();
 	// The ESP-Wifi module requires 240MHz for cpu clock speeed
 	let clocks =
 		ClockControl::configure(system.clock_control, CpuClock::Clock240MHz).freeze();
-	// Initialize embassy stuff
-	// embassy::init(&clocks);
 
 	// Disable the RTC and TIMG watchdog timers
 	let timer0 = {
@@ -48,13 +48,15 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	// Initialize embassy
 	esp32_hal::embassy::init(&clocks, timer0);
 
-	// Initialize esp-wifi stuff
-	#[cfg(feature = "esp-wifi")]
+	#[cfg(feature = "net-wifi")]
 	{
+		use esp32_hal::Rng;
+
 		esp_wifi::init_heap();
-		let timerg = TimerGroup::new(p.TIMG1, &clocks);
-		let rng = esp32_hal::Rng::new(p.RNG);
-		esp_wifi::initialize(timerg.timer0, rng, &clocks)
+
+		let timer_group1 = TimerGroup::new(p.TIMG1, &clocks);
+		let rng = Rng::new(p.RNG);
+		esp_wifi::initialize(timer_group1.timer0, rng, &clocks)
 			.expect("failed to initialize esp-wifi");
 	}
 
@@ -70,5 +72,9 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	);
 
 	let delay = esp32_hal::Delay::new(&clocks);
-	Peripherals::new().i2c(i2c).delay(delay)
+
+	#[allow(clippy::let_unit_value)]
+	let net = super::init_wifi_stack();
+
+	Peripherals::new().i2c(i2c).delay(delay).net(net)
 }

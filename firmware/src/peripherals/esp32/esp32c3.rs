@@ -1,6 +1,7 @@
-use super::Peripherals;
 use crate::aliases::ඞ::DelayConcrete;
 use crate::aliases::ඞ::I2cConcrete;
+use crate::aliases::ඞ::NetConcrete;
+use crate::peripherals::Peripherals;
 
 use fugit::RateExtU32;
 use paste::paste;
@@ -20,15 +21,14 @@ macro_rules! map_pin {
 	};
 }
 
-pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
+pub fn get_peripherals(
+) -> Peripherals<I2cConcrete<'static>, DelayConcrete, (), (), NetConcrete> {
 	let p = esp32c3_hal::peripherals::Peripherals::take();
 
 	let mut system = p.SYSTEM.split();
 	// The ESP-Wifi module requires 160MHz for cpu clock speeed
 	let clocks =
 		ClockControl::configure(system.clock_control, CpuClock::Clock160MHz).freeze();
-	// Initialize embassy stuff
-	// embassy::init(&clocks);
 
 	// Disable the RTC and TIMG watchdog timers
 	let timer0 = {
@@ -49,19 +49,6 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	// Initialize embassy
 	esp32c3_hal::embassy::init(&clocks, timer0);
 
-	// Initialize esp-wifi stuff
-	#[cfg(feature = "esp-wifi")]
-	{
-		use esp32c3_hal::systimer::SystemTimer;
-		use esp32c3_hal::Rng;
-
-		esp_wifi::init_heap();
-		let systimer = SystemTimer::new(p.SYSTIMER);
-		let rng = Rng::new(p.RNG);
-		esp_wifi::initialize(systimer.alarm0, rng, &clocks)
-			.expect("failed to initialize esp-wifi");
-	}
-
 	let io = esp32c3_hal::IO::new(p.GPIO, p.IO_MUX);
 	let i2c = esp32c3_hal::i2c::I2C::new(
 		p.I2C0,
@@ -73,5 +60,22 @@ pub fn get_peripherals() -> Peripherals<I2cConcrete<'static>, DelayConcrete> {
 	);
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
-	Peripherals::new().i2c(i2c).delay(delay)
+
+	#[cfg(feature = "net-wifi")]
+	{
+		use esp32c3_hal::systimer::SystemTimer;
+		use esp32c3_hal::Rng;
+
+		esp_wifi::init_heap();
+
+		let systimer = SystemTimer::new(p.SYSTIMER);
+		let rng = Rng::new(p.RNG);
+		esp_wifi::initialize(systimer.alarm0, rng, &clocks)
+			.expect("failed to initialize esp-wifi");
+	}
+
+	#[allow(clippy::let_unit_value)]
+	let net = super::init_wifi_stack();
+
+	Peripherals::new().i2c(i2c).delay(delay).net(net)
 }
