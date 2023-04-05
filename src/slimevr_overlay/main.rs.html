@@ -251,6 +251,85 @@
 <span id="251">251</span>
 <span id="252">252</span>
 <span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
 </pre><pre class="rust"><code><span class="kw">mod </span>color;
 <span class="kw">mod </span>model;
 
@@ -262,6 +341,11 @@
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>eyre::{<span class="prelude-ty">Result</span>, WrapErr};
 <span class="kw">use </span>git_version::git_version;
+<span class="kw">use </span>log4rs::append::rolling_file::policy::compound::roll::fixed_window::FixedWindowRoller;
+<span class="kw">use </span>log4rs::append::rolling_file::policy::compound::trigger::size::SizeTrigger;
+<span class="kw">use </span>log4rs::append::rolling_file::policy::compound::CompoundPolicy;
+<span class="kw">use </span>log4rs::append::rolling_file::RollingFileAppender;
+<span class="kw">use </span>log4rs::encode::pattern::PatternEncoder;
 <span class="kw">use </span>nalgebra::{Translation3, UnitQuaternion};
 <span class="kw">use </span>ovr_overlay <span class="kw">as </span>ovr;
 <span class="kw">use </span>solarxr::settings::DisplaySettings;
@@ -271,12 +355,21 @@
 <span class="kw">use </span>tokio::sync::watch;
 <span class="kw">use </span>tokio_graceful_shutdown::{SubsystemHandle, Toplevel};
 
+<span class="kw">use </span>log::LevelFilter;
+<span class="kw">use </span>log4rs::append::console::ConsoleAppender;
+<span class="kw">use </span>log4rs::config::{Appender, Config, Root};
+
 <span class="kw">const </span>CONNECT_STR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ws://localhost:21110&quot;</span>;
 <span class="kw">const </span>GIT_VERSION: <span class="kw-2">&amp;</span>str = <span class="macro">git_version!</span>();
 
 <span class="attribute">#[derive(Parser, Debug)]
 #[command(version = GIT_VERSION)]
-</span><span class="kw">struct </span>Args {}
+</span><span class="kw">struct </span>Args {
+	<span class="attribute">#[arg(long, default_value_t = <span class="bool-val">false</span>)]
+	</span>show_console: bool,
+	<span class="attribute">#[arg(long, default_value_t = <span class="bool-val">true</span>)]
+	</span>show_log: bool,
+}
 
 <span class="attribute">#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>ShutdownReason {
@@ -293,15 +386,80 @@
 	}};
 }
 
+<span class="attribute">#[cfg(target_os = <span class="string">&quot;windows&quot;</span>)]
+</span><span class="kw">fn </span>hide_console_window() {
+	<span class="kw">use </span>std::ptr;
+	<span class="kw">use </span>winapi::um::wincon::GetConsoleWindow;
+	<span class="kw">use </span>winapi::um::winuser::{ShowWindow, SW_HIDE};
+	<span class="kw">let </span>window = <span class="kw">unsafe </span>{ GetConsoleWindow() };
+	<span class="kw">if </span>window != ptr::null_mut() {
+		<span class="kw">unsafe </span>{
+			ShowWindow(window, SW_HIDE);
+		}
+	}
+}
+
+<span class="kw">fn </span>init_log(show_log: bool) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+	<span class="kw">let </span>logfile_name = <span class="string">&quot;logfile.log&quot;</span>;
+
+	<span class="kw">let </span>log_pattern = <span class="string">&quot;{h({l})} - {d(%Y-%m-%d %H:%M:%S)} - {m}{n}&quot;</span>;
+
+	<span class="kw">let </span>window_size = <span class="number">2</span>;
+	<span class="kw">let </span>fixed_window_roller = FixedWindowRoller::builder()
+		.build(<span class="string">&quot;log_last_{}.log&quot;</span>, window_size)
+		.unwrap();
+	<span class="kw">let </span>size_limit = <span class="number">1 </span>* <span class="number">1000 </span>* <span class="number">1024</span>; <span class="comment">// 1MB
+	</span><span class="kw">let </span>size_trigger = SizeTrigger::new(size_limit);
+
+	<span class="kw">let </span>compound_policy =
+		CompoundPolicy::new(Box::new(size_trigger), Box::new(fixed_window_roller));
+
+	<span class="kw">let </span>rolling_file_appender = RollingFileAppender::builder()
+		.encoder(Box::new(PatternEncoder::new(log_pattern)))
+		.build(logfile_name, Box::new(compound_policy))<span class="question-mark">?</span>;
+
+	<span class="kw">let </span><span class="kw-2">mut </span>config_builder = Config::builder();
+	<span class="kw">let </span><span class="kw-2">mut </span>root_builder = Root::builder();
+
+	root_builder = root_builder.appender(<span class="string">&quot;logfile&quot;</span>);
+	config_builder = config_builder.appender(
+		Appender::builder().build(<span class="string">&quot;logfile&quot;</span>, Box::new(rolling_file_appender)),
+	);
+
+	<span class="kw">if </span>show_log {
+		<span class="kw">let </span>stdout = ConsoleAppender::builder()
+			.encoder(Box::new(PatternEncoder::new(log_pattern)))
+			.build();
+		root_builder = root_builder.appender(<span class="string">&quot;stdout&quot;</span>);
+		config_builder = config_builder
+			.appender(Appender::builder().build(<span class="string">&quot;stdout&quot;</span>, Box::new(stdout)));
+	}
+
+	<span class="kw">let </span>config = config_builder.build(root_builder.build(LevelFilter::Info))<span class="question-mark">?</span>;
+
+	<span class="kw">let </span>_log = log4rs::init_config(config)<span class="question-mark">?</span>;
+
+	<span class="prelude-val">Ok</span>(())
+}
+
 <span class="attribute">#[tokio::main]
 </span><span class="kw">pub async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
 	<span class="kw">if </span>std::env::var(<span class="string">&quot;RUST_LOG&quot;</span>).is_err() {
 		std::env::set_var(<span class="string">&quot;RUST_LOG&quot;</span>, <span class="string">&quot;info&quot;</span>);
 	}
-	pretty_env_logger::init();
+
+	<span class="kw">let </span>args = Args::parse();
+
+	init_log(args.show_log)<span class="question-mark">?</span>;
 	color_eyre::install()<span class="question-mark">?</span>;
 
-	<span class="kw">let </span>_args = Args::parse();
+	<span class="attribute">#[cfg(target_os = <span class="string">&quot;windows&quot;</span>)]
+	</span>{
+		<span class="kw">if </span>!args.show_console {
+			hide_console_window()
+		}
+	}
+
 	<span class="macro">log::info!</span>(<span class="string">&quot;Overlay version: {GIT_VERSION}&quot;</span>);
 
 	Toplevel::new()

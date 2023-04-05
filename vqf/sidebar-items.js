@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["EPS",""]],"fn":[["filterInitialState",""],["filterStep",""],["filterVec",""]],"struct":[["VQFCoefficients",""],["Vqf",""],["VqfParameters",""],["VqfState",""]],"type":[["Mat2x2",""],["Mat2x3",""],["Mat2x9",""],["Mat3x3",""],["Quat",""],["Vec2",""],["Vec3",""]]};
