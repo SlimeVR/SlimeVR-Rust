@@ -7,20 +7,6 @@ use std::{
 	path::{self, Path, PathBuf},
 };
 
-mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
-mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
-mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
-mandatory_and_unique!("net-wifi", "net-ble", "net-stubbed");
-mandatory_and_unique!("fusion-stubbed", "fusion-dcm");
-
-#[cfg(any(feature = "mcu-nrf52840", feature = "mcu-nrf52832"))]
-mandatory_and_unique!(
-	"nrf-boot-none",
-	"nrf-boot-mbr",
-	"nrf-boot-s132",
-	"nrf-boot-s140"
-);
-
 /// Use memory.x.feature file as memory map
 macro_rules! memory_x {
 	($mcu:literal) => {
@@ -40,12 +26,26 @@ fn main() -> Result<()> {
 	println!("cargo:rerun-if-changed=linker_scripts/");
 	println!("cargo:rerun-if-changed=boards/");
 	println!("cargo:rerun-if-changed=.env");
-
-	// Any relevant env vars for the build script are listed here.
 	println!("cargo:rerun-if-env-changed=BOARD");
+
+	load_env_and_aliases();
+	check_features_compatible();
+
+	// Link into Espressif's radio driver blobs
+	#[cfg(all(feature = "esp-wifi"))]
+	println!("cargo:rustc-link-arg=-Trom_functions.x");
+
+	memory_x!("mcu-nrf52832");
+	memory_x!("mcu-nrf52840");
+
+	let board_cfg = BoardConfig::from_file(&BoardConfig::get_path()?)?;
+	board_cfg.apply_to_env();
+
+	Ok(())
+}
+
+fn load_env_and_aliases() {
 	let _ = dotenvy::dotenv();
-	#[cfg(all(feature = "mcu-nrf52832", feature = "log-usb-serial"))]
-	compile_error!("the nrf52832 doesn't support USB!");
 
 	// NOTE: Can't use the `cfg_aliases` in the build script itself, only applies to
 	// rest of codebase.
@@ -60,18 +60,31 @@ fn main() -> Result<()> {
 		xtensa: { any(feature = "mcu-esp32") },
 		riscv: { any(feature = "mcu-esp32c3") },
 	}
+}
 
-	// Link into Espressif's radio driver blobs
-	#[cfg(all(feature = "esp-wifi"))]
-	println!("cargo:rustc-link-arg=-Trom_functions.x");
+fn check_features_compatible() {
+	mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52832", "mcu-nrf52840");
+	mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
+	mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
+	mandatory_and_unique!("net-wifi", "net-ble", "net-stubbed");
+	mandatory_and_unique!("fusion-stubbed", "fusion-dcm");
 
-	memory_x!("mcu-nrf52832");
-	memory_x!("mcu-nrf52840");
+	#[cfg(any(feature = "mcu-nrf52840", feature = "mcu-nrf52832"))]
+	mandatory_and_unique!(
+		"nrf-boot-none",
+		"nrf-boot-mbr",
+		"nrf-boot-s132",
+		"nrf-boot-s140"
+	);
 
-	let board_cfg = BoardConfig::from_file(&BoardConfig::get_path()?)?;
-	board_cfg.apply_to_env();
+	#[cfg(all(
+		feature = "net-wifi",
+		any(feature = "mcu-nrf52840", feature = "mcu-nrf52832")
+	))]
+	compile_error!("nrf52 mcu family doesn't support wifi!");
 
-	Ok(())
+	#[cfg(all(feature = "mcu-nrf52832", feature = "log-usb-serial"))]
+	compile_error!("the nrf52832 doesn't support USB!");
 }
 
 #[allow(dead_code)]

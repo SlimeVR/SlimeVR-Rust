@@ -1,4 +1,5 @@
 pub mod protocol;
+
 #[cfg(feature = "net-wifi")]
 pub mod wifi;
 

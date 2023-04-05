@@ -1,4 +1,4 @@
-#[cfg(feature = "net-wifi")]
+#[cfg(mcu_f_esp32)]
 #[path = "esp.rs"]
 pub mod ඞ;
 
