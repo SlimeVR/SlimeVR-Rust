@@ -33,40 +33,38 @@ default = [
 
 # Supported microcontrollers
 mcu-esp32 = [
+  "_mcu-f-esp32",
   "dep:esp32-hal",
   "defmt_esp_println/esp32",
   "esp-backtrace/esp32",
   "xtensa-lx/esp32",
-  "dep:esp-alloc",
-  "dep:embedded-svc",
-  "esp-wifi?/esp32",
+  "esp-wifi/esp32",
 ]
 mcu-esp32c3 = [
+  "_mcu-f-esp32",
   "dep:esp32c3-hal",
   "defmt_esp_println/esp32c3",
   "esp-backtrace/esp32c3",
   "dep:riscv",
-  "dep:esp-alloc",
-  "dep:embedded-svc",
-  "esp-wifi?/esp32c3",
+  "esp-wifi/esp32c3",
 ]
 mcu-nrf52840 = [
+  "_mcu-f-nrf52",
   "embassy-nrf/nrf52840",
   "dep:embassy-usb",
-  "nrf-softdevice?/nrf52840",
-  "_mcu-f-nrf52",
+  "nrf-softdevice/nrf52840",
   "dep:nrf52840-pac",
 ]
 mcu-nrf52832 = [
-  "embassy-nrf/nrf52832",
-  "nrf-softdevice?/nrf52832",
   "_mcu-f-nrf52",
+  "embassy-nrf/nrf52832",
+  "nrf-softdevice/nrf52832",
   "dep:nrf52832-pac",
 ]
 
 # Wi-fi dependencies
-net-wifi = ["esp-wifi/wifi", "dep:embassy-net", "dep:smoltcp"]                 # use wifi
-net-ble = ["esp-wifi/ble", "dep:bleps", "dep:bleps-macros"]
+net-wifi = ["esp-wifi?/wifi"]                 # use wifi
+net-ble = ["esp-wifi?/ble"]
 net-stubbed = []                                            # Stubs out network
 
 # Supported IMUs
@@ -101,7 +99,16 @@ _mcu-f-nrf52 = [
   "dep:alloc-cortex-m",
   "embassy-nrf/time-driver-rtc1",
   "embassy-executor/integrated-timers",
-  "defmt-bbq",
+  "dep:defmt-bbq",
+]
+
+_mcu-f-esp32 = [
+  "dep:esp-alloc",
+  "dep:embedded-svc",
+  "dep:embassy-net",
+  "dep:smoltcp",
+  "dep:bleps",
+  "dep:bleps-macros",
 ]
 
 [dependencies]
