@@ -14,13 +14,7 @@ rust-version.workspace = true
 
 
 [features]
-default = [
-  "mcu-esp32c3",
-  "imu-stubbed",
-  "log-rtt",
-  "net-wifi",
-  "fusion-stubbed",
-]
+default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-ble", "fusion-stubbed"]
 # default = [
 #   "mcu-nrf52840",
 #   "imu-stubbed",
@@ -32,35 +26,10 @@ default = [
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-stubbed", "fusion-stubbed"]
 
 # Supported microcontrollers
-mcu-esp32 = [
-  "_mcu-f-esp32",
-  "dep:esp32-hal",
-  "defmt_esp_println/esp32",
-  "esp-backtrace/esp32",
-  "xtensa-lx/esp32",
-  "esp-wifi/esp32",
-]
-mcu-esp32c3 = [
-  "_mcu-f-esp32",
-  "dep:esp32c3-hal",
-  "defmt_esp_println/esp32c3",
-  "esp-backtrace/esp32c3",
-  "dep:riscv",
-  "esp-wifi/esp32c3",
-]
-mcu-nrf52840 = [
-  "_mcu-f-nrf52",
-  "embassy-nrf/nrf52840",
-  "dep:embassy-usb",
-  "nrf-softdevice/nrf52840",
-  "dep:nrf52840-pac",
-]
-mcu-nrf52832 = [
-  "_mcu-f-nrf52",
-  "embassy-nrf/nrf52832",
-  "nrf-softdevice/nrf52832",
-  "dep:nrf52832-pac",
-]
+mcu-esp32 = ["_mcu-f-esp32", "dep:esp32-hal", "defmt_esp_println/esp32", "esp-backtrace/esp32", "xtensa-lx/esp32", "esp-wifi/esp32"]
+mcu-esp32c3 = ["_mcu-f-esp32", "dep:esp32c3-hal", "defmt_esp_println/esp32c3", "esp-backtrace/esp32c3", "dep:riscv", "esp-wifi/esp32c3"]
+mcu-nrf52840 = ["_mcu-f-nrf52", "embassy-nrf/nrf52840", "dep:embassy-usb", "nrf-softdevice/nrf52840", "dep:nrf52840-pac"]
+mcu-nrf52832 = ["_mcu-f-nrf52", "embassy-nrf/nrf52832", "nrf-softdevice/nrf52832", "dep:nrf52832-pac"]
 
 # Wi-fi dependencies
 net-wifi = ["esp-wifi?/wifi"]                 # use wifi
@@ -93,23 +62,9 @@ nrf-boot-s140 = ["nrf-softdevice/s140"]                    # use softdevice 140
 # All features with underscores are internal only, should not be used by other crates,
 # and are not covered under semver guarantees.
 # nrf52 family
-_mcu-f-nrf52 = [
-  "dep:cortex-m",
-  "dep:cortex-m-rt",
-  "dep:alloc-cortex-m",
-  "embassy-nrf/time-driver-rtc1",
-  "embassy-executor/integrated-timers",
-  "dep:defmt-bbq",
-]
+_mcu-f-nrf52 = ["dep:cortex-m", "dep:cortex-m-rt", "dep:alloc-cortex-m", "embassy-nrf/time-driver-rtc1", "embassy-executor/integrated-timers", "dep:defmt-bbq"]
 
-_mcu-f-esp32 = [
-  "dep:esp-alloc",
-  "dep:embedded-svc",
-  "dep:embassy-net",
-  "dep:smoltcp",
-  "dep:bleps",
-  "dep:bleps-macros",
-]
+_mcu-f-esp32 = ["dep:esp-alloc", "dep:embedded-svc", "dep:embassy-net", "dep:smoltcp", "dep:bleps", "dep:bleps-macros"]
 
 [dependencies]
 # mcu-esp32 stuff
@@ -219,6 +174,7 @@ firmware_protocol = { path = "../networking/firmware_protocol", features = [
 ] }
 paste = "1.0"
 load-dotenv = "0.1"
+heapless = { version = "0.7", default-features = false }
 
 [build-dependencies]
 feature_utils = "0.0.0"
