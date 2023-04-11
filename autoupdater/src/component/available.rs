@@ -20,8 +20,7 @@ pub struct AvailableComponentsFile {
 
 impl AvailableComponentsFile {
 	pub fn load(path: PathBuf) -> io::Result<AvailableComponentsFile> {
-		let file = File::open(path)?;
-		match serde_yaml::from_reader(file) {
+		match serde_yaml::from_reader(File::open(path)?) {
 			Ok(components) => Ok(components),
 			Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
 		}
