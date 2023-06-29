@@ -4,6 +4,7 @@ mod fusion;
 use defmt::{debug, info, trace, warn};
 use embassy_executor::task;
 use firmware_protocol::ImuType;
+use approx::AbsDiffEq;
 
 use crate::{
 	aliases::ඞ::{DelayConcrete, I2cConcrete},
@@ -46,6 +47,7 @@ pub async fn imu_task(
 	info!("Initialized IMU!");
 
 	let mut i = 0;
+	let mut prev_q = Quat::identity();
 	loop {
 		let q = match imu.next_data().await {
 			Ok(q) => q.q,
@@ -64,7 +66,10 @@ pub async fn imu_task(
 			);
 		}
 		i += 1;
-		quat_signal.signal(q);
+		if !q.abs_diff_eq(&prev_q, 0.0001) {
+			prev_q = q;
+			quat_signal.signal(q);
+		}
 	}
 }
 
