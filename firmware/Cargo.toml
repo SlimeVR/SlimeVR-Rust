@@ -16,7 +16,7 @@ rust-version.workspace = true
 [features]
 default = [
   "mcu-esp32c3",
-  "imu-stubbed",
+  "imu-mpu6050",
   "log-rtt",
   "net-wifi",
   "fusion-stubbed",
@@ -213,6 +213,7 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "macros",
   "libm",
 ] }
+approx = "0.5.1"
 fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [
   "nalgebra031",
