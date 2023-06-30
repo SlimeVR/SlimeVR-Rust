@@ -1,10 +1,10 @@
 mod drivers;
 mod fusion;
 
+use approx::AbsDiffEq;
 use defmt::{debug, info, trace, warn};
 use embassy_executor::task;
 use firmware_protocol::ImuType;
-use approx::AbsDiffEq;
 
 use crate::{
 	aliases::ඞ::{DelayConcrete, I2cConcrete},
