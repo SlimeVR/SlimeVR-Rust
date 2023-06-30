@@ -16,7 +16,7 @@ rust-version.workspace = true
 [features]
 default = [
   "mcu-esp32c3",
-  "imu-mpu6050",
+  "imu-stubbed",
   "log-rtt",
   "net-wifi",
   "fusion-stubbed",
