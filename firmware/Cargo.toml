@@ -167,6 +167,7 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "76ba312", fe
   "embedded-svc",
   "wifi",
   "embassy-net",
+  "ps-min-modem",
 ], optional = true }
 smoltcp = { version = "0.9", default-features = false, features = [
 ], optional = true }
