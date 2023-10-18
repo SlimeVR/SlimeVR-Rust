@@ -130,7 +130,7 @@ impl TryFrom<BodyPart> for BoneKind {
 	fn try_from(other: BodyPart) -> Result<Self, Self::Error> {
 		use BodyPart as O;
 		Ok(match other {
-			O::NONE | O::LEFT_CONTROLLER | O::RIGHT_CONTROLLER => return Err(other),
+			O::NONE => return Err(other),
 
 			O::NECK => Self::Neck,
 			O::CHEST => Self::Chest,

@@ -2454,7 +2454,7 @@ dependencies = [
 [[package]]
 name = "solarxr_protocol"
 version = "0.0.0"
-source = "git+https://github.com/SlimeVR/SolarXR-Protocol?rev=f68b86125f4cddf9a95919b813f67bc067de6b1a#f68b86125f4cddf9a95919b813f67bc067de6b1a"
+source = "git+https://github.com/SlimeVR/SolarXR-Protocol?rev=aeae6b3#aeae6b31e66e4fdf16ef6dfe6ccadff22c22f6c8"
 dependencies = [
  "flatbuffers",
 ]
