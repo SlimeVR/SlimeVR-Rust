@@ -113,14 +113,14 @@ _mcu-f-esp32 = [
 
 [dependencies]
 # mcu-esp32 stuff
-esp32-hal = { version = "0.10", optional = true, features = [
+esp32-hal = { version = "0.16", optional = true, features = [
   "embassy",
   "embassy-time-timg0",
   "async",
 ] }
 
 # mcu-esp32c3 stuff
-esp32c3-hal = { version = "0.7", optional = true, features = [
+esp32c3-hal = { version = "0.13", optional = true, features = [
   "embassy",
   "embassy-time-timg0",
   "async",
@@ -163,16 +163,18 @@ esp-alloc = { version = "0.2", optional = true }
 defmt_esp_println = { path = "crates/defmt_esp_println", optional = true }
 
 # Wi-Fi
-esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "76ba312", features = [
+esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "9e44fe3", features = [
   "embedded-svc",
   "wifi",
   "embassy-net",
 ], optional = true }
-smoltcp = { version = "0.9", default-features = false, features = [
+smoltcp = { version = "0.10", default-features = false, features = [
 ], optional = true }
 embassy-net = { version = "*", optional = true, features = [
   "nightly", "tcp", "udp", "dhcpv4", "medium-ethernet"
 ] }
+atomic-waker = { version = "1.1", default-features = false, features = ["portable-atomic"] }
+portable-atomic = { version = "1.5", default-features = false, features = ["require-cas", "unsafe-assume-single-core"]}
 
 # Generic BLE
 bleps = { git = "https://github.com/bjoernQ/bleps", rev = "33fde67", optional = true }
@@ -241,14 +243,16 @@ bitvec = { git = "https://github.com/arctic-alpaca/ferrilab.git", rev = "e13261a
 # in [dependencies] because this ensures that we don't duplicate any dependencies like
 # `embassy-time`. This avoids bugs like this one:
 # https://github.com/embassy-rs/embassy/issues/1115
-embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
-embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
-embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
-embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
-embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
-embassy-net = { git = "https://github.com/embassy-rs/embassy", rev = "26474ce6eb759e5add1c137f3417845e0797df3a" }
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "e6462f1e88bc37b69af3b47cc22c492ef41d697c" }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "e6462f1e88bc37b69af3b47cc22c492ef41d697c" }
+embassy-nrf = { git = "https://github.com/embassy-rs/embassy", rev = "e6462f1e88bc37b69af3b47cc22c492ef41d697c" }
+embassy-usb = { git = "https://github.com/embassy-rs/embassy", rev = "e6462f1e88bc37b69af3b47cc22c492ef41d697c" }
+embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "e6462f1e88bc37b69af3b47cc22c492ef41d697c" }
+embassy-net = { git = "https://github.com/embassy-rs/embassy", rev = "e6462f1e88bc37b69af3b47cc22c492ef41d697c" }
 
 nrf-softdevice = { git = "https://github.com/embassy-rs/nrf-softdevice", rev = "8a3dbb7" }
+
+atomic_enum = { git = "https://github.com/thebutlah/atomic_enum", rev = "3c90118" }
 
 [profile.dev]
 # lto doesnt work for esp-wifi
