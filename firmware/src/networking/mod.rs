@@ -33,6 +33,6 @@ pub async fn network_task(
 async fn stubbed_network_task(packets: &Packets, _net: NetConcrete) -> ! {
 	loop {
 		// Dump network messages
-		let _ = packets.serverbound.recv().await;
+		let _ = packets.serverbound.receive().await;
 	}
 }

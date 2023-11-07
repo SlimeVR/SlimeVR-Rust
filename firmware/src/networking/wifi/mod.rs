@@ -87,7 +87,8 @@ impl State {
 	/// Returns num bytes of outbound buffer
 	fn on_send(&mut self, outbound: SbPacket, out_buf: &mut [u8]) -> Option<usize> {
 		// Serialize the packet based on our send sequence number
-		let Ok(len) = Packet::new(self.tx_seq().0, outbound).serialize_into(out_buf) else {
+		let Ok(len) = Packet::new(self.tx_seq().0, outbound).serialize_into(out_buf)
+		else {
 			warn!("Failed to serialize outgoing packet");
 			return None;
 		};
@@ -123,7 +124,7 @@ pub async fn network_task(
 	let stack = net.stack;
 
 	let ip = loop {
-		if let Some(ip) = stack.config().map(|c| c.address) {
+		if let Some(ip) = stack.config_v4().map(|c| c.address) {
 			break ip;
 		}
 		Timer::after(Duration::from_millis(500)).await;
@@ -154,7 +155,7 @@ pub async fn network_task(
 		// Either start sending or receive, if either is available
 		let net = select(
 			recv_bytes(&mut socket, &mut buffer),
-			packets.serverbound.recv(),
+			packets.serverbound.receive(),
 		)
 		.await;
 
@@ -193,6 +194,7 @@ async fn recv_bytes<'s>(
 	loop {
 		match socket.recv_from(buffer).await {
 			Ok(v) => return v,
+			Err(UdpError::SocketNotBound) => todo!("refactor go brr"),
 			Err(UdpError::NoRoute) => warn!("UdpError::NoRoute"),
 		}
 	}

@@ -25,7 +25,7 @@ pub async fn control_task(
 	debug!("Control task!");
 	async {
 		loop {
-			match select(packets.clientbound.recv(), quat.wait()).await {
+			match select(packets.clientbound.receive(), quat.wait()).await {
 				Either::First(cb_msg) => {
 					handle_cb_msg(cb_msg, &packets.serverbound).await
 				}
