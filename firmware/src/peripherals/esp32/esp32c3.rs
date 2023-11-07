@@ -25,7 +25,7 @@ pub fn get_peripherals(
 ) -> Peripherals<I2cConcrete<'static>, DelayConcrete, (), (), NetConcrete> {
 	let p = esp32c3_hal::peripherals::Peripherals::take();
 
-	let mut system = p.SYSTEM.split();
+	let system = p.SYSTEM.split();
 	// The ESP-Wifi module requires 160MHz for cpu clock speeed
 	let clocks =
 		ClockControl::configure(system.clock_control, CpuClock::Clock160MHz).freeze();
