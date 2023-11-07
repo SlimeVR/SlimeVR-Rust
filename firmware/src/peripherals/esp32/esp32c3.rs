@@ -55,24 +55,10 @@ pub fn get_peripherals(
 		map_pin!(io, env!("PIN_SDA")),
 		map_pin!(io, env!("PIN_SCL")),
 		400u32.kHz(),
-		&mut system.peripheral_clock_control,
 		&clocks,
 	);
 
 	let delay = esp32c3_hal::Delay::new(&clocks);
-
-	#[cfg(feature = "net-wifi")]
-	{
-		use esp32c3_hal::systimer::SystemTimer;
-		use esp32c3_hal::Rng;
-
-		esp_wifi::init_heap();
-
-		let systimer = SystemTimer::new(p.SYSTIMER);
-		let rng = Rng::new(p.RNG);
-		esp_wifi::initialize(systimer.alarm0, rng, &clocks)
-			.expect("failed to initialize esp-wifi");
-	}
 
 	#[allow(clippy::let_unit_value)]
 	let net = super::init_wifi_stack();

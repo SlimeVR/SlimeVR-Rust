@@ -144,6 +144,8 @@ nrf52832-pac = { version = "0.12", optional = true }
 # Async stuff
 embassy-futures = "0.1.0"
 embassy-executor = { version = "*", features = [
+  "executor-thread",
+  "arch-cortex-m",
   "integrated-timers",
   "nightly",           # Needed for .spawn()
 ] }
@@ -190,7 +192,7 @@ nrf-softdevice = { version = "*", default-features = false, features = [
 
 # Platform independent traits
 embedded-hal = "0.2"
-embedded-svc = { version = "0.23", default-features = false, optional = true, features = [
+embedded-svc = { version = "0.26", default-features = false, optional = true, features = [
   # "defmt"
   # "nightly",
 ] }
