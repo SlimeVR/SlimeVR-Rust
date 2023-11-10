@@ -1,5 +1,6 @@
 mod color;
 mod model;
+mod universe;
 
 pub use self::color::RGBA;
 
@@ -151,6 +152,23 @@ async fn overlay(
 		.build(mngr)
 		.wrap_err("Could not create skeleton")?;
 
+	let system_mngr = &mut context.system_mngr();
+	log::info!("Acquiring universe");
+	let universe = loop {
+		let id: Result<u64, _> = system_mngr.get_tracked_device_property(
+			ovr::TrackedDeviceIndex::HMD,
+			ovr::sys::ETrackedDeviceProperty::Prop_CurrentUniverseId_Uint64,
+		);
+		match id {
+			Ok(id) => match universe::search_universe(&context, id) {
+				Some(d) => break d,
+				None => {} // TODO: fallback to 0 translation, or maybe standing universe?
+			},
+			Err(e) => log::error!("Error: {}", e), // TODO: log error, but only once?
+		}
+		tokio::time::sleep(Duration::from_secs(1)).await;
+	};
+
 	log::info!("Overlay Loop");
 
 	let loop_ = async {
@@ -243,10 +261,17 @@ async fn overlay(
 				length,
 			} in bones
 			{
-				let iso = Isometry {
+				let mut iso = Isometry {
 					rotation: rot,
 					translation: pos,
 				};
+				// TODO: this isn't correct yet.
+				iso *= universe.translation.inverse();
+				iso *= UnitQuaternion::from_axis_angle(
+					&nalgebra::Vector3::y_axis(),
+					universe.yaw,
+				)
+				.inverse();
 				skeleton.set_isometry(kind, iso);
 				skeleton.set_length(kind, length);
 			}
