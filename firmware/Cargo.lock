@@ -1075,6 +1075,7 @@ dependencies = [
  "firmware_protocol",
  "fugit",
  "futures-util",
+ "heapless",
  "load-dotenv",
  "mpu6050-dmp",
  "nalgebra",
