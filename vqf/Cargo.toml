@@ -5,6 +5,12 @@ edition = "2021"
 license = "MIT"
 publish = false
 
+[features]
+default = ["single-precision"]
+debug-state = []
+single-precision = []
+
+
 [dependencies]
 nalgebra = { version = "0.32", default-features = false, features = ["libm"] }
 num-traits = { version = "0.2", default-features = false, features = ["libm"] }
