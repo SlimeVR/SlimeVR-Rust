@@ -67,7 +67,7 @@ fn check_features_compatible() {
 	mandatory_and_unique!("imu-stubbed", "imu-mpu6050", "imu-bmi160");
 	mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 	mandatory_and_unique!("net-wifi", "net-ble", "net-stubbed");
-	mandatory_and_unique!("fusion-stubbed", "fusion-dcm");
+	mandatory_and_unique!("fusion-stubbed", "fusion-dcm", "fusion-vqf");
 
 	#[cfg(any(feature = "mcu-nrf52840", feature = "mcu-nrf52832"))]
 	mandatory_and_unique!(

@@ -63,9 +63,9 @@ mcu-nrf52832 = [
 ]
 
 # Wi-fi dependencies
-net-wifi = ["esp-wifi?/wifi"]                 # use wifi
+net-wifi = ["esp-wifi?/wifi"] # use wifi
 net-ble = ["esp-wifi?/ble"]
-net-stubbed = []                                            # Stubs out network
+net-stubbed = []              # Stubs out network
 
 # Supported IMUs
 imu-bmi160 = []
@@ -80,6 +80,7 @@ log-uart = ["defmt_esp_println?/uart"]
 # Fusion algorithms for unfused imus
 fusion-stubbed = [] # Stubs out fusion so it returns the same pose every time
 fusion-dcm = []
+fusion-vqf = []
 
 # Enable to flash without needing `espflash`
 direct-boot = ["esp32c3-hal?/direct-boot"]
@@ -171,7 +172,11 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "76ba312", fe
 smoltcp = { version = "0.9", default-features = false, features = [
 ], optional = true }
 embassy-net = { version = "*", optional = true, features = [
-  "nightly", "tcp", "udp", "dhcpv4", "medium-ethernet"
+  "nightly",
+  "tcp",
+  "udp",
+  "dhcpv4",
+  "medium-ethernet",
 ] }
 
 # Generic BLE
@@ -205,6 +210,7 @@ bmi160 = "0.1"
 
 # Sensor fusion
 dcmimu = "0.2"
+vqf = { path = "../vqf" }
 
 # Other crates
 static_cell = "1"
@@ -268,7 +274,7 @@ opt-level = 'z'
 
 [profile.release]
 debug = true # Symbols get stripped when flashing anyway
-lto = false # LTO doesn't work for esp-wifi
+lto = false  # LTO doesn't work for esp-wifi
 
 
 ###################

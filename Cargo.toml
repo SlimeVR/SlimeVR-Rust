@@ -4,12 +4,11 @@ members = [
   "networking/firmware_protocol",
   "networking/solarxr",
   "networking/tokio_shutdown",
-  "overlay",
   "skeletal_model/rust",
   "skeletal_model/napi",
   "vqf",
 ]
-exclude = ["da_demo", "nrf_demo", "firmware"]
+exclude = ["da_demo", "nrf_demo", "firmware", "overlay",]
 default-members = [
   "autoupdater",
   "networking/firmware_protocol",
@@ -30,12 +29,12 @@ authors = ["Ryan Butler <thebutlah@gmail.com>"]
 repository = "https://github.com/SlimeVR/SlimeVR-Rust"
 
 edition = "2021"
-rust-version = "1.65" # GATs and let-else
+rust-version = "1.73"
 
 
 # These may be opted into use by members of the workspace
 [workspace.dependencies]
 log = "0.4"
 eyre = "0.6"
-nalgebra = "0.31"
+nalgebra = "0.32"
 feature_macros = { git = "https://github.com/TheButlah/feature_macros" }
