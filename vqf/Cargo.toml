@@ -12,5 +12,5 @@ single-precision = []
 
 
 [dependencies]
-nalgebra = { version = "0.32", default-features = false, features = ["libm"] }
+nalgebra = { version = "0.31", default-features = false, features = ["libm"] }
 num-traits = { version = "0.2", default-features = false, features = ["libm"] }

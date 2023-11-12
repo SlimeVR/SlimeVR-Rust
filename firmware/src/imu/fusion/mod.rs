@@ -1,8 +1,10 @@
 mod dcm;
 mod stubbed;
+mod vqf;
 
 pub use self::dcm::Dcm;
 pub use self::stubbed::Stubbed;
+pub use self::vqf::VqfFusion;
 
 use crate::imu::{FusedData, Imu, UnfusedData};
 
@@ -36,9 +38,11 @@ impl<I: Imu<Data = UnfusedData>, F: Fuser> Imu for FusedImu<I, F> {
 /// Builds a new fuser. The concrete impl is determined by a feature flag.
 pub fn new_fuser() -> impl Fuser {
 	#[cfg(feature = "fusion-stubbed")]
-	let f = Stubbed::new();
+	let fusion_algorithm = Stubbed::new();
 	#[cfg(feature = "fusion-dcm")]
-	let f = Dcm::new();
+	let fusion_algorithm = Dcm::new();
+	#[cfg(feature = "fusion-vqf")]
+	let fusion_algorithm = VqfFusion::new();
 
-	f
+	fusion_algorithm
 }

@@ -10,9 +10,7 @@
 #![warn(missing_docs)]
 
 use nalgebra::{ArrayStorage, U2, U9};
-
-#[allow(unused_imports)]
-use num_traits::float::Float; //why not build without you but rust says unused dep
+use num_traits::float::Float;
 
 #[cfg(feature = "single-precision")]
 use core::f32::consts::PI;
@@ -435,8 +433,8 @@ impl Vqf {
 
 		let pMotion = (params.biasSigmaMotion * 100.0).powi(2);
 		coeffs.biasMotionW = (pMotion).powi(2) / coeffs.biasV + pMotion;
-		coeffs.biasVerticalW = coeffs.biasMotionW
-			/ VQF_Real_T::max(params.biasVerticalForgettingFactor, 1e-10);
+		coeffs.biasVerticalW =
+			coeffs.biasMotionW / params.biasVerticalForgettingFactor.max(1e-10);
 
 		let pRest = (params.biasSigmaRest * 100.0).powi(2);
 		coeffs.biasRestW = (pRest).powi(2) / coeffs.biasV + pRest;
@@ -887,10 +885,9 @@ impl Vqf {
 		let sum3 = self._state.biasP[(2, 0)].abs()
 			+ self._state.biasP[(2, 1)].abs()
 			+ self._state.biasP[(2, 2)].abs();
-		let p = VQF_Real_T::min(
-			VQF_Real_T::max(VQF_Real_T::max(sum1, sum2), sum3),
-			self._coeffs.biasP0,
-		);
+
+		let max: Vec3 = [sum1, sum2, sum3].into();
+		let p = max.max().min(self._coeffs.biasP0);
 
 		let std_dev = p.sqrt() * (PI / 100.0 / 180.0);
 		(std_dev, self._state.bias)
