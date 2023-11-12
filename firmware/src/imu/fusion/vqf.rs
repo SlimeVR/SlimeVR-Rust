@@ -3,7 +3,6 @@ use vqf::{Vqf, VqfParameters};
 use crate::imu::fusion::Fuser;
 use crate::imu::{FusedData, UnfusedData};
 
-/// Extended Kalman filtering in direction cosine matrix formation
 pub struct VqfFusion {
 	vqf: Vqf,
 }
@@ -13,14 +12,13 @@ impl VqfFusion {
 	pub fn new() -> Self {
 		let param = VqfParameters::default();
 		Self {
-			vqf: Vqf::new(0.01818, 0.01818, 0.01818, param),
+			vqf: Vqf::new(0.01389, 0.01389, 0.01389, param),
 		}
 	}
 }
 
 impl Fuser for VqfFusion {
 	fn process(&mut self, unfused: &UnfusedData) -> FusedData {
-		//elapsed
 		self.vqf
 			.update(unfused.gyro.clone(), unfused.accel.clone(), None);
 
