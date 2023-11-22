@@ -151,27 +151,20 @@ async fn overlay(
 		.build(mngr)
 		.wrap_err("Could not create skeleton")?;
 
-	let mut skeleton_mirrored = SkeletonBuilder {key: String::from("slimevr_mirrored"), ..SkeletonBuilder::default()}	
-		.build(mngr)
-		.wrap_err("Could not create mirrored skeleton")?;
-
 	log::info!("Overlay Loop");
 
 	let loop_ = async {
 		let mut hidden_bones: HashSet<BoneKind> = HashSet::new();
-		let mut hidden_bones_mirrored: HashSet<BoneKind> = HashSet::new();
 		loop {
 			recv.changed()
 				.await
 				.wrap_err("Error while attempting to watch for feed update")?;
 			let is_skeleton_visible = display_settings.borrow().is_visible;
-			let is_skeleton_mirrored = display_settings.borrow().is_mirrored;
 
 			log::trace!("Got a feed update");
 
 			// Mark all bones as "need to hide"
 			hidden_bones.extend(BoneKind::iter());
-			hidden_bones_mirrored.extend(BoneKind::iter());
 
 			#[derive(Debug)]
 			struct BoneInfo {
@@ -236,70 +229,6 @@ async fn overlay(
 					.collect()
 			};
 
-			let bones_mirrored: Vec<BoneInfo> = {
-				let guard = recv.borrow_and_update();
-				let table = guard.as_ref().unwrap().0.table();
-				log::trace!("update: {:#?}", table);
-
-				let m = unwrap_or_continue!(table.data_feed_msgs());
-
-				// TODO: handle multiple updates?
-				let m = m.get(0);
-				let m = unwrap_or_continue!(m.message_as_data_feed_update());
-				let bones_mirrored = unwrap_or_continue!(m.bones());
-				log::debug!("Got {} bones before filtering", bones_mirrored.len());
-
-				bones_mirrored
-					.iter()
-					.filter_map(|b| {
-						let part = b.body_part();
-						log::trace!("body_part: {part:?}");
-
-						let bone_kind = BoneKind::try_from(part)
-							.map_err(|e| {
-								log::trace!("Filtering out {e:?}");
-								e
-							})
-							.ok()?;
-
-						let pos = if let Some(p) = b.head_position_g() {
-							p
-						} else {
-							log::warn!("No position");
-							return None;
-						};
-						let rot = if let Some(r) = b.rotation_g() {
-							r
-						} else {
-							log::warn!("No rotation");
-							return None;
-						};
-						let length = b.bone_length();
-
-						let pos = Translation3::new(pos.x(),pos.y(), -1.0 - pos.z());
-
-						let mut rot = UnitQuaternion::from_quaternion(
-							[rot.x(), rot.y(), rot.z(), rot.w()].into(),
-						);
-
-						// This is BAD, someone please fix this to use quaternions instead of converting to euler XD
-						let mut euler_angles = rot.euler_angles();
-						euler_angles = (euler_angles.0, euler_angles.1, euler_angles.2);
-						rot = UnitQuaternion::from_euler_angles(euler_angles.0,  - euler_angles.1  + std::f32::consts::PI,  euler_angles.2);
-
-						if is_skeleton_mirrored {
-							hidden_bones_mirrored.remove(&bone_kind);
-						}
-						Some(BoneInfo {
-							kind: bone_kind,
-							pos,
-							rot,
-							length,
-						})
-					})
-					.collect()
-			};
-
 			log::debug!(
 				"Bones after filtering: {:?}",
 				bones.iter().map(|t| t.kind).collect::<Vec<_>>()
@@ -322,30 +251,10 @@ async fn overlay(
 				skeleton.set_length(kind, length);
 			}
 
-			for BoneInfo {
-				kind,
-				pos,
-				rot,
-				length,
-			} in bones_mirrored
-			{
-				let iso_mirrored = Isometry {
-					rotation: rot,					
-					translation: pos,
-				};
-
-				skeleton_mirrored.set_isometry(kind, iso_mirrored);
-				skeleton_mirrored.set_length(kind, length);
-			}
-
 			// Update rendering state
 			for kind in BoneKind::iter() {
 				skeleton.set_visibility(kind, !hidden_bones.contains(&kind));
-				skeleton_mirrored.set_visibility(kind, !hidden_bones_mirrored.contains(&kind));
 				if let Err(e) = skeleton.update_render(kind, mngr) {
-					log::error!("Error updating render for bone {kind:?}: {:?}", e);
-				}
-				if let Err(e) = skeleton_mirrored.update_render(kind, mngr) {
 					log::error!("Error updating render for bone {kind:?}: {:?}", e);
 				}
 			}
