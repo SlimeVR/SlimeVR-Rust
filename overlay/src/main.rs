@@ -151,9 +151,12 @@ async fn overlay(
 		.build(mngr)
 		.wrap_err("Could not create skeleton")?;
 
-	let mut skeleton_mirrored = SkeletonBuilder {key: String::from("slimevr_mirrored"), ..SkeletonBuilder::default()}	
-		.build(mngr)
-		.wrap_err("Could not create mirrored skeleton")?;
+	let mut skeleton_mirrored = SkeletonBuilder {
+		key: String::from("slimevr_mirrored"),
+		..SkeletonBuilder::default()
+	}
+	.build(mngr)
+	.wrap_err("Could not create mirrored skeleton")?;
 
 	log::info!("Overlay Loop");
 
@@ -276,7 +279,7 @@ async fn overlay(
 						};
 						let length = b.bone_length();
 
-						let pos = Translation3::new(pos.x(),pos.y(), -1.0 - pos.z());
+						let pos = Translation3::new(pos.x(), pos.y(), -1.0 - pos.z());
 
 						let mut rot = UnitQuaternion::from_quaternion(
 							[rot.x(), rot.y(), rot.z(), rot.w()].into(),
@@ -285,7 +288,11 @@ async fn overlay(
 						// This is BAD, someone please fix this to use quaternions instead of converting to euler XD
 						let mut euler_angles = rot.euler_angles();
 						euler_angles = (euler_angles.0, euler_angles.1, euler_angles.2);
-						rot = UnitQuaternion::from_euler_angles(euler_angles.0,  - euler_angles.1  + std::f32::consts::PI,  euler_angles.2);
+						rot = UnitQuaternion::from_euler_angles(
+							euler_angles.0,
+							-euler_angles.1 + std::f32::consts::PI,
+							euler_angles.2,
+						);
 
 						if is_skeleton_mirrored {
 							hidden_bones_mirrored.remove(&bone_kind);
@@ -330,7 +337,7 @@ async fn overlay(
 			} in bones_mirrored
 			{
 				let iso_mirrored = Isometry {
-					rotation: rot,					
+					rotation: rot,
 					translation: pos,
 				};
 
@@ -341,7 +348,8 @@ async fn overlay(
 			// Update rendering state
 			for kind in BoneKind::iter() {
 				skeleton.set_visibility(kind, !hidden_bones.contains(&kind));
-				skeleton_mirrored.set_visibility(kind, !hidden_bones_mirrored.contains(&kind));
+				skeleton_mirrored
+					.set_visibility(kind, !hidden_bones_mirrored.contains(&kind));
 				if let Err(e) = skeleton.update_render(kind, mngr) {
 					log::error!("Error updating render for bone {kind:?}: {:?}", e);
 				}
