@@ -167,6 +167,7 @@ esp-wifi = { git = "https://github.com/esp-rs/esp-wifi.git", rev = "76ba312", fe
   "embedded-svc",
   "wifi",
   "embassy-net",
+  "ps-min-modem",
 ], optional = true }
 smoltcp = { version = "0.9", default-features = false, features = [
 ], optional = true }
@@ -213,6 +214,7 @@ nalgebra = { version = "0.31", default-features = false, features = [
   "macros",
   "libm",
 ] }
+approx = "0.5.1"
 fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [
   "nalgebra031",
