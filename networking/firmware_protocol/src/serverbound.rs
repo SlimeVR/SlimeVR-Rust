@@ -74,6 +74,26 @@ pub enum BoardType {
 	Beetle32C3,
 	#[deku(id = "12")]
 	ESP32C3DevKitM1,
+	#[deku(id = "13")]
+	OwoTrack,
+	#[deku(id = "14")]
+	Wrangler,
+	#[deku(id = "15")]
+	Mocopi,
+	#[deku(id = "16")]
+	WemosWroom02,
+	#[deku(id = "17")]
+	XiaoEsp32C3,
+	#[deku(id = "18")]
+	Haritora,
+	#[deku(id = "19")]
+	ESP32C6DevKitC1,
+	#[deku(id = "20")]
+	GloveImuSlimeVRDev,
+	#[deku(id = "21")]
+	Gestures,
+	#[deku(id = "250")]
+	DevReserved,
 	#[deku(id_pat = "_")]
 	Unknown(u32),
 }
@@ -101,6 +121,26 @@ pub enum ImuType {
 	Bmi160,
 	#[deku(id = "9")]
 	Icm20948,
+	#[deku(id = "10")]
+	Icm42688,
+	#[deku(id = "11")]
+	Bmi270,
+	#[deku(id = "12")]
+	Lsm6ds3trc,
+	#[deku(id = "13")]
+	Lsm6dsv,
+	#[deku(id = "14")]
+	Lsm6dso,
+	#[deku(id = "15")]
+	Lsm6dsr,
+	#[deku(id = "16")]
+	Icm45686,
+	#[deku(id = "17")]
+	Icm45605,
+	#[deku(id = "18")]
+	AdcResistance,
+	#[deku(id = "250")]
+	DevReserved,
 	#[deku(id_pat = "_")]
 	Unknown(u8),
 }
@@ -114,6 +154,20 @@ pub enum McuType {
 	Esp8266,
 	#[deku(id = "2")]
 	Esp32,
+	#[deku(id = "3")]
+	OwoTrackAndroid,
+	#[deku(id = "4")]
+	Wrangler,
+	#[deku(id = "5")]
+	OwoTrackIos,
+	#[deku(id = "6")]
+	Esp32_C3,
+	#[deku(id = "7")]
+	Mocopi,
+	#[deku(id = "8")]
+	Haritora,
+	#[deku(id = "250")]
+	DevReserved,
 	#[deku(id_pat = "_")]
 	Unknown(u32),
 }
@@ -153,6 +207,8 @@ pub enum ActionType {
 	ResetYaw,
 	#[deku(id = "4")]
 	ResetMounting,
+	#[deku(id = "5")]
+	PauseTracking,
 	#[deku(id_pat = "_")]
 	Unknown(u8),
 }
