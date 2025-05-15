@@ -46,10 +46,10 @@ const BONE_RADIUS: f32 = 0.002;
 
 /// Builder for the [`Skeleton`].
 pub struct SkeletonBuilder {
-	colors: Option<BoneMap<Option<RGBA>>>,
-	key: String,
-	bone_radius: f32,
-	bone_lengths: Option<BoneMap<f32>>,
+	pub colors: Option<BoneMap<Option<RGBA>>>,
+	pub key: String,
+	pub bone_radius: f32,
+	pub bone_lengths: Option<BoneMap<f32>>,
 }
 impl SkeletonBuilder {
 	#[allow(dead_code)]
