@@ -4,7 +4,6 @@ use defmt::debug;
 use embassy_time::{Duration, Ticker};
 use embedded_hal::blocking::delay::DelayMs;
 use firmware_protocol::ImuType;
-use futures_util::StreamExt;
 
 /// Fakes an IMU for easier testing.
 struct FakeImu(Ticker);
