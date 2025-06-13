@@ -167,12 +167,12 @@ impl AccelFsr {
 
 	/// least significant bits per accel
 	pub const fn lsb_per_accel(self) -> f32 {
-		self.lsb_per_g() * ACCEL_PER_G
+		self.lsb_per_g() * G_PER_ACCEL
 	}
 
 	/// g per least significant bit
 	pub const fn accel_per_lsb(self) -> f32 {
-		self.g_per_lsb() * G_PER_ACCEL
+		self.g_per_lsb() * ACCEL_PER_G
 	}
 
 	/// The bmi160 returns the data from the accel as an `i16`, we must use the Full

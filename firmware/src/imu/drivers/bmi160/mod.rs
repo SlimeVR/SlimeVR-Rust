@@ -89,6 +89,8 @@ impl<I: I2c> Imu for Bmi160<I> {
 	async fn next_data(&mut self) -> Result<Self::Data, Self::Error> {
 		// Avoids permablocking async tasks, since we don't do any actual waiting.
 		yield_now().await;
+		yield_now().await; //improves tps more
+		yield_now().await; //50-60 to 70-80
 
 		let data = self.driver.data(SensorSelector::new().gyro().accel())?;
 		let gyro = data.gyro.unwrap();

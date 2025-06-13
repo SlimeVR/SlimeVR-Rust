@@ -8,6 +8,7 @@ use crate::imu::{FusedData, Quat, UnfusedData};
 /// A fake fuser that just rotates around the x axis.
 pub struct Stubbed(Instant);
 impl Stubbed {
+	#[allow(dead_code)]
 	pub fn new() -> Self {
 		Self(Instant::now())
 	}
